@@ -1,31 +1,63 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import logoImg from "../../assets/images/logo.svg";
-import { Link } from "react-router-dom";
+import defaultProfile from "../../assets/images/default-profile.jpg";
+import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
+import notiIcon from "../../assets/icons/notifications.svg";
+import { NavLink } from "react-router-dom";
+import DropDown from "../DropDown";
+import AlarmDropdown from "../AlarmDropDown";
 
 function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAlarmOpen, setIsAlarmOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => {
+      if (!prev) setIsAlarmOpen(false);
+      return !prev;
+    });
+  };
+
+  const toggleAlarm = () => {
+    setIsAlarmOpen((prev) => {
+      if (!prev) setIsDropdownOpen(false);
+      return !prev;
+    });
+  };
+
   const name = "홍길동";
+  const profileUrl = null;
 
   return (
     <Container>
-      <img src={logoImg} alt="logo icon" />
+      <Logo src={logoImg} alt="logo icon" />
       <NavMenu>
-        <StyledLink to="/find-job">알바찾기</StyledLink>
-        <StyledLink to="/job-review">알바후기</StyledLink>
-        <StyledLink to="/support">고객지원</StyledLink>
-        <StyledLink to="/mypage">마이페이지</StyledLink>
+        <NavItem to="/alba/search">알바찾기</NavItem>
+        <NavItem to="/alba/review">알바후기</NavItem>
+        <NavItem to="/support">고객지원</NavItem>
+        <NavItem to="/mypage">마이페이지</NavItem>
       </NavMenu>
       {isAuthenticated ? (
         <ProfileSection>
-          <ProfileImg />
+          <NotiBtn onClick={toggleAlarm} src={notiIcon} alt="notification" />
+          {isAlarmOpen && <AlarmDropdown />}
+          <ProfileImg src={profileUrl || defaultProfile} alt={name} />
           <span>{name}님</span>
+          <IconBtn
+            src={arrowIcon}
+            alt="arrow down"
+            onClick={toggleDropdown}
+            isOpen={isDropdownOpen}
+          />
+          {isDropdownOpen && <DropDown />}
         </ProfileSection>
       ) : (
         <ProfileSection>
-          <StyledLink to="/login">로그인</StyledLink>
+          <ProfileNavItem to="/login">로그인</ProfileNavItem>
           <span>|</span>
-          <StyledLink to="/signup">회원가입</StyledLink>
+          <ProfileNavItem to="/signup">회원가입</ProfileNavItem>
         </ProfileSection>
       )}
     </Container>
@@ -38,10 +70,17 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   padding: 16px 50px;
-  border-bottom: 1px solid var(--gray_light, #c8c8c8);
-  img {
-    width: 80px;
-  }
+  border-bottom: 1px solid var(--gray_light);
+  position: fixed; /* 화면 상단 고정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1000;
+`;
+
+const Logo = styled.img`
+  width: 80px;
 `;
 
 const NavMenu = styled.nav`
@@ -50,15 +89,15 @@ const NavMenu = styled.nav`
   margin-left: 20px;
 `;
 
-const StyledLink = styled(Link)`
-  color: #000;
-  text-align: center;
-  font-family: Inter;
-  font-size: 1rem;
-  font-style: normal;
+const NavItem = styled(NavLink)`
+  color: var(--black);
+  font-size: 16px;
   font-weight: 700;
-  line-height: normal;
+  cursor: pointer;
   &:hover {
+    color: var(--primary-color-dark);
+  }
+  &.active {
     color: var(--primary-color-dark);
   }
 `;
@@ -68,11 +107,31 @@ const ProfileSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative; /* Dropdown 위치 설정을 위해 필요 */
+  span {
+    color: var(--black);
+    font-weight: 400;
+    font-size: 16px;
+  }
 `;
 
-const ProfileImg = styled.div`
-  width: 30px;
-  height: 30px;
-  background-color: #ddd;
+const ProfileNavItem = styled(NavItem)`
+  font-weight: 400;
+`;
+
+const ProfileImg = styled.img`
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  margin-right: 8px;
+`;
+
+const IconBtn = styled.img`
+  cursor: pointer;
+  transition: transform 0.5s ease;
+  transform: ${(props) => (props.isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+`;
+
+const NotiBtn = styled(IconBtn)`
+  width: 30px;
 `;
