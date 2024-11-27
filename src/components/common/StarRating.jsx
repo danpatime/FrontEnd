@@ -7,11 +7,6 @@ const StarRating=()=>{
     //마우스를 올린 별의 위치를 저장하는 변수
     const [hoverRating,setHoverRating]=useState(0);
 
-    /*페이지에 별점을 전송하는 함수
-    const transmitRating=()=>{
-      onUpdateRating(rating);
-    }*/
-
     //별점 렌더링 제어 공통 함수
     const commonRatingFun=(event,value,callback)=>{
         const {offsetX,target}=event.nativeEvent;
@@ -36,6 +31,27 @@ const StarRating=()=>{
     const handleMouseLeave=()=>{
       setHoverRating(0);
     };
+
+
+    // 별점 전송 함수
+    const submitRating = async () => {
+      const response = await fetch("API_ENDPOINT", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+      },
+        body: JSON.stringify({
+          starPoint: rating
+      }),
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log("Success:", data);
+    } else {
+        console.error("Failed to submit rating");
+    }
+  };
 
     return(
         <StarContainer>
