@@ -7,6 +7,7 @@ import notiIcon from "../../assets/icons/notifications.svg";
 import { NavLink } from "react-router-dom";
 import DropDown from "../DropDown";
 import AlarmDropdown from "../AlarmDropDown";
+import { Link } from "react-router-dom";
 
 function Header() {
   const [isAuthenticated] = useState(true);
@@ -32,7 +33,9 @@ function Header() {
 
   return (
     <Container>
-      <Logo src={logoImg} alt="logo icon" />
+      <Logo to="/">
+        <img src={logoImg} alt="logo icon" />
+      </Logo>
       <NavMenu>
         <NavItem to="/alba/search">알바찾기</NavItem>
         <NavItem to="/alba/review">알바후기</NavItem>
@@ -78,9 +81,11 @@ const Container = styled.div`
   background-color: white;
   z-index: 1000;
 `;
-
-const Logo = styled.img`
-  width: 80px;
+const Logo = styled(Link)`
+  text-decoration: none;
+  img {
+    width: 80px; 
+  }
 `;
 
 const NavMenu = styled.nav`
