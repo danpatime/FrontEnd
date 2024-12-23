@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ChatBubble from "../components/chat/ChatBubble";
-import chatData from "../assets/data/chatDummy.json"; 
+import chatData from "../assets/data/chatDummy.json";
 
 const ChattingPage = () => {
   const rooms = chatData.rooms;
@@ -10,7 +10,7 @@ const ChattingPage = () => {
   const [selectedRoom, setSelectedRoom] = useState(rooms[0].id);
   const [chatHistory, setChatHistory] = useState(rooms[0].chatHistory);
   const [currentChat, setCurrentChat] = useState("");
-
+  const [isRoomListOpen, setIsRoomListOpen] = useState(true);
 
   const handleInputChange = (e) => {
     setCurrentChat(e.target.value);
@@ -30,16 +30,19 @@ const ChattingPage = () => {
     setCurrentChat("");
   };
 
-  
   const handleRoomClick = (roomId) => {
     const selectedRoomData = rooms.find((room) => room.id === roomId);
     setSelectedRoom(roomId);
     setChatHistory(selectedRoomData.chatHistory);
   };
 
+  const toggleRoomList = () => {
+    setIsRoomListOpen((prev) => !prev);
+  };
+
   return (
     <ChatLayout>
-      <RoomList>
+      <RoomList isRoomListOpen={isRoomListOpen}>
         {rooms.map((room) => (
           <RoomItem
             key={room.id}
@@ -50,7 +53,9 @@ const ChattingPage = () => {
           </RoomItem>
         ))}
       </RoomList>
-
+      <button onClick={toggleRoomList}>
+        {isRoomListOpen ? "목록 닫기" : "목록 열기"}
+      </button>
       <ChatArea>
         {chatHistory.map((msg) => (
           <ChatBubble
@@ -83,7 +88,7 @@ const ChatLayout = styled.div`
 `;
 
 const RoomList = styled.nav`
-  width: 30vw;
+  width: ${({ isRoomListOpen }) => (isRoomListOpen ? "30vw" : "0")};
   border-right: 1px solid #ccc;
 `;
 
@@ -91,7 +96,7 @@ const RoomItem = styled.div`
   padding: 12px;
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
-  background-color: ${(props) => (props.isSelected ? "#ddd" : "transparent")};
+  background-color: ${(isSelected) => (isSelected ? "#ddd" : "transparent")};
 
   &:hover {
     background-color: #cacaca;
@@ -118,6 +123,6 @@ const InputContainer = styled.div`
 `;
 
 const SubmitBtn = styled.button`
-  width: 60px
+  width: 60px;
 `;
 export default ChattingPage;
