@@ -2,7 +2,7 @@
 
 /* 예시: 버튼 스타일링 */
 button {
-    background-color: var(--primary-color-dark);
+    background-color: var(--primary-color);
     color: white;
     padding: 5px 8px;
     border: none;
@@ -10,5 +10,5 @@ button {
   }
   
   button:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color-dark);
   }

@@ -54,4 +54,5 @@ a {
   --black: #121212;
   --disabled-color: #B0B0B0; /* 비활성화된 버튼이나 텍스트 색상 */
   --gray_light: #c8c8c8;
+  --gray_bg: #f9f9f9;
 }

@@ -1,33 +1,25 @@
 import React from "react";
 import styled from "styled-components";
 
-
-
 const ChatBubble = ({ message, sender, isSender }) => {
   return (
     <BubbleContainer isSender={isSender}>
       {!isSender && <SenderName>{sender}</SenderName>}
-      <Message>{message}</Message>
+      <Message isSender={isSender}>{message}</Message>
     </BubbleContainer>
   );
 };
 
 export default ChatBubble;
 
-
 const BubbleContainer = styled.div`
   max-width: 60%;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
+  margin: 2px;
   font-size: 14px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
-  background-color: ${(props) =>
-    props.isSender ? "var(--gray_light)" : "#ffffff"};
   align-self: ${(props) => (props.isSender ? "flex-end" : "flex-start")};
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const SenderName = styled.div`
@@ -39,4 +31,11 @@ const SenderName = styled.div`
 
 const Message = styled.div`
   color: #333333;
+  background-color: ${(props) =>
+    props.isSender ? "var(--primary-color-dark)" : "var(--gray_light)"};
+  color: ${(props) =>
+    props.isSender ? "white" : "black"};
+  padding: 10px;
+  border-radius: 10px;
+  margin: 0 8px;
 `;
