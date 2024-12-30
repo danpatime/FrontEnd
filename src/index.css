@@ -46,7 +46,7 @@ a {
 :root {
   --primary-color: #7B4B42; /* 기본(primary) 색상 */
   --secondary-color: #F7B32B; /* 보조(secondary) 색상 */
-
+  --primary-color-20: #7b4b4220;
   --primary-color-light: #9E6F60;
   --primary-color-dark: #5A3A2E;  
   --secondary-color-light: #F9C756;

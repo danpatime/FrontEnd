@@ -3,6 +3,7 @@ import styled from "styled-components";
 import ChatBubble from "../components/chat/ChatBubble";
 import chatData from "../assets/data/chatDummy.json";
 import { FaChevronLeft } from "react-icons/fa";
+import { ReactComponent as NewBadge } from "../assets/icons/new_badge.svg";
 
 const ChattingPage = () => {
   const rooms = chatData.rooms;
@@ -17,7 +18,7 @@ const ChattingPage = () => {
   };
   const handleKeyUp = (e) => {
     if (e.key === "Enter") {
-      handleSend(); // 엔터 키를 누르면 메시지 전송
+      handleSend();
     }
   };
 
@@ -48,8 +49,8 @@ const ChattingPage = () => {
   return (
     <ChatLayout>
       <RoomList isRoomListOpen={isRoomListOpen}>
-        <div>
-          <p>채팅방 목록</p>
+        <RoomListContainer>
+          <h3>채팅방 목록</h3>
           {isRoomListOpen &&
             rooms.map((room) => (
               <RoomItem
@@ -57,10 +58,14 @@ const ChattingPage = () => {
                 onClick={() => handleRoomClick(room.id)}
                 isSelected={room.id === selectedRoom}
               >
-                {room.name}
+                <TitleWrapper>
+                  <p>{room.name}</p>
+                  {room.isNew && <NewBadge>New</NewBadge>}
+                </TitleWrapper>
+                <span>{"최근 채팅 내용을 표시합니다."}</span>
               </RoomItem>
             ))}
-        </div>
+        </RoomListContainer>
         <ArrowIcon onClick={toggleRoomList} isRoomListOpen={isRoomListOpen} />
       </RoomList>
       <ChatArea>
@@ -107,37 +112,60 @@ const RoomList = styled.div`
   border-radius: 0 20px 20px 0;
   padding: 20px 10px;
   background-color: white;
-
-  p {
-    //추후 h1로 변경 필요
-    color: #000;
-    font-size: 16px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  div {
-    display: ${({ isRoomListOpen }) => (isRoomListOpen ? "block" : "none")};
-    width: 100%;
-  }
 `;
-
 const ArrowIcon = styled(FaChevronLeft)`
   transform: ${({ isRoomListOpen }) =>
     isRoomListOpen ? "rotate(0deg)" : "rotate(180deg)"};
   transition: transform 0.5s ease;
   cursor: pointer;
-  align-self: top;
+  align-self: flex-start;
   margin-left: 5px;
 `;
 
+const RoomListContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  h3{
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    margin-bottom: 14px;
+    padding-left: 12px;
+  }
+`;
+
 const RoomItem = styled.div`
+  align-items: center;
   padding: 12px;
-  cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
+  background-color: ${({ isSelected }) =>
+    isSelected ? "var(--primary-color-20)" : "transparent"};
   &:hover {
     background-color: #f0f0f0;
-    transition: 0.3s ease;
+  }
+  span {
+    font-weight: 100;
+    color: var(--gray_dark);
+    font-size: 12px;
+    display: block;
+  }
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between; 
+  width: 100%;
+  p {
+    font-weight: 700;
+    font-size: 14px;
+    display: inline;
+    margin-bottom:4px;
+  }
+  svg {
+    size: 10px;
   }
 `;
 
