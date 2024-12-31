@@ -49,7 +49,7 @@ const ChattingPage = () => {
   return (
     <ChatLayout>
       <RoomList isRoomListOpen={isRoomListOpen}>
-        <RoomListContainer>
+        <RoomListContainer isRoomListOpen={isRoomListOpen}>
           <h3>채팅방 목록</h3>
           {isRoomListOpen &&
             rooms.map((room) => (
@@ -124,10 +124,9 @@ const ArrowIcon = styled(FaChevronLeft)`
 
 const RoomListContainer = styled.div`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  h3{
+  display: ${({ isRoomListOpen }) => (isRoomListOpen ? "block" : "none")};
+  transition: 0.5s ease-out;
+  h3 {
     color: #000;
     font-size: 16px;
     font-weight: 700;
@@ -156,13 +155,13 @@ const RoomItem = styled.div`
 
 const TitleWrapper = styled.div`
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   width: 100%;
   p {
     font-weight: 700;
     font-size: 14px;
     display: inline;
-    margin-bottom:4px;
+    margin-bottom: 4px;
   }
   svg {
     size: 10px;
