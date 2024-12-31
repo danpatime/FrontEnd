@@ -52,6 +52,7 @@ a {
   --primary-color-dark: #5A3A2E;  
   --secondary-color-light: #F9C756;
   --secondary-color-dark: #F29F1F; 
-
+  --black: #121212;
   --disabled-color: #B0B0B0; /* 비활성화된 버튼이나 텍스트 색상 */
+  --gray_light: #c8c8c8;
 }

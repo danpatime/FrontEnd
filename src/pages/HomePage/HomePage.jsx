@@ -1,9 +1,11 @@
 import React from 'react'
+import CurrentAlbaHandler from './CurrentAlbaHandler'
+import './HomePage.css'
 
 function HomePage() {
   return (
     <div>
-      HomePage
+      <CurrentAlbaHandler />
     </div>
   )
 }
