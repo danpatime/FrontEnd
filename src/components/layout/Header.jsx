@@ -8,11 +8,21 @@ import { NavLink } from "react-router-dom";
 import DropDown from "../DropDown";
 import AlarmDropdown from "../AlarmDropDown";
 import { Link } from "react-router-dom";
+import LoginModal from "../../pages/LoginModal";
 
 function Header() {
-  const [isAuthenticated] = useState(true);
+  const [isAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenLoginModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseLoginModal = () => {
+    setIsModalOpen(false);
+  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => {
@@ -58,11 +68,12 @@ function Header() {
         </ProfileSection>
       ) : (
         <ProfileSection>
-          <ProfileNavItem to="/login">로그인</ProfileNavItem>
+          <ProfileNavItem onClick={handleOpenLoginModal}>로그인</ProfileNavItem>
           <span>|</span>
           <ProfileNavItem to="/signup">회원가입</ProfileNavItem>
         </ProfileSection>
       )}
+      {isModalOpen && <LoginModal onClose={handleCloseLoginModal} />}
     </Container>
   );
 }
