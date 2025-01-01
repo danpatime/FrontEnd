@@ -94,4 +94,6 @@ class Request {
 
 }
 
-export default Request;
+const request = new Request();
+
+export default request;
