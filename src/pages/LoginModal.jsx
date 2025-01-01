@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import request from '../api/request';
 import styled from 'styled-components';
 
 import IcNaver from '../assets/icons/ic-naver.png';
@@ -8,11 +9,49 @@ import { HiXMark } from "react-icons/hi2";
 
 function LoginModal({ onClose }) {
   const [selectedUserType, setSelectedUserType] = useState("worker");
+  const [loginId, setLoginId] = useState(""); 
+  const [password, setPassword] = useState("");
 
   const handleOverlayClick = (e) => {
     // ModalContainer를 클릭한 경우 이벤트 무시
     if (e.target === e.currentTarget) {
       onClose();
+    }
+  };
+
+  // 로그인 버튼 클릭 핸들러
+  const handleLogin = async () => {
+    if (!loginId || !password) {
+      alert("아이디와 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    const requestData = {
+      id: loginId,
+      password: password,
+    };
+
+    try {
+      const response = await request.post("/api/v1/auth/login", requestData);
+
+      if (response.isSuccess && response.code === 200) {
+        const { token, id, name, nickname, userType } = response.result;
+
+        // 서버에서 받은 토큰과 사용자 정보를 Context에 저장
+        updateUser({ id, name, nickname, userType });
+
+        // 서버에서 받은 토큰을 업데이트
+        request.updateToken(token);
+
+        onClose(); // 로그인 후 모달 닫기
+      } else {
+        // 실패 응답 처리
+        console.error(response.message); 
+        alert("오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error(error); 
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -46,10 +85,20 @@ function LoginModal({ onClose }) {
 
         <LoginForm>
           <InputSection>
-            <Input type="text" placeholder="아이디" />
-            <Input type="password" placeholder="비밀번호" />
+            <Input
+              type="text"
+              placeholder="아이디"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
+            />
+            <Input
+              type="password"
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </InputSection>
-          <Button>로그인</Button>
+          <Button onClick={handleLogin}>로그인</Button>
         </LoginForm>
         
         <OptionSection>
