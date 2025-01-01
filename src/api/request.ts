@@ -15,7 +15,7 @@ class Request {
       // 기존 헤더와 새로운 헤더 병합
       config.headers = new AxiosHeaders({
         ...config.headers, // 기존 헤더 유지
-        ...this.getHeaders(), // 새로운 헤더 추가
+        ...this.getHeaders(), // 헤더에 최신 토큰 추가
       });
       return config;
     });
