@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import request from '../api/request';
 import styled from 'styled-components';
+import request from "../api/request";
+import { useUserInfo } from '../contexts/useUserInfo';
 
 import IcNaver from '../assets/icons/ic-naver.png';
 import IcKakao from '../assets/icons/ic-kakao.png';
@@ -8,9 +9,10 @@ import { HiXMark } from "react-icons/hi2";
 
 
 function LoginModal({ onClose }) {
-  const [selectedUserType, setSelectedUserType] = useState("worker");
+  const [selectedUserType, setSelectedUserType] = useState("worker");  // 개인/기업 회원 선택
   const [loginId, setLoginId] = useState(""); 
   const [password, setPassword] = useState("");
+  const { updateUser } = useUserInfo();
 
   const handleOverlayClick = (e) => {
     // ModalContainer를 클릭한 경우 이벤트 무시
