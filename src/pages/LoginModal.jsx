@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import styled from 'styled-components';
 import request from "../api/request";
 import { useUserInfo } from '../contexts/useUserInfo';
+import Modal from "../components/common/Modal";
 
 import IcNaver from '../assets/icons/ic-naver.png';
 import IcKakao from '../assets/icons/ic-kakao.png';
-import { HiXMark } from "react-icons/hi2";
 
 
 function LoginModal({ onClose }) {
@@ -13,13 +13,6 @@ function LoginModal({ onClose }) {
   const [loginId, setLoginId] = useState(""); 
   const [password, setPassword] = useState("");
   const { updateUser } = useUserInfo();
-
-  const handleOverlayClick = (e) => {
-    // ModalContainer를 클릭한 경우 이벤트 무시
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
 
   // 로그인 버튼 클릭 핸들러
   const handleLogin = async () => {
@@ -58,15 +51,7 @@ function LoginModal({ onClose }) {
   };
 
   return (
-    <Overlay onClick={handleOverlayClick}>
-      <ModalContainer onClick={(e) => e.stopPropagation()}>
-
-        <TopSection>
-          <div></div>
-          <Title>로그인</Title>
-          <CloseIcon size={24} onClick={onClose}/>
-        </TopSection>
-
+      <Modal onClose={onClose} title="로그인">
         <UserType>
           <UserTypeOption
             isSelected={selectedUserType === "worker"}
@@ -124,61 +109,11 @@ function LoginModal({ onClose }) {
             </div>
           </SimpleLogin>
         )}
-      </ModalContainer>
-    </Overlay>
+      </Modal>
   );
 }
 
 export default LoginModal;
-
-
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7); /* 반투명 배경 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* 모달이 다른 요소 위에 오도록 설정 */
-`;
-
-const ModalContainer = styled.div`
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px 20px 30px;
-  width: 470px; /* 모달 너비 */
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const TopSection = styled.div`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  padding: 0 16px; 
-  margin-bottom: 60px;
-`;
-
-const Title = styled.h1`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  padding-top: 20px;
-  font-size: 20px;
-`;
-
-const CloseIcon = styled(HiXMark)`
-  margin-left: auto;
-  cursor: pointer;
-`;
 
 
 const Input = styled.input`
