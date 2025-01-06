@@ -1,8 +1,11 @@
 import React from 'react'
+import AlbaSearchFilter from '../components/common/AlbaSearchFilter'
 
 function AlbaSearchPage() {
   return (
-    <div>AlbaSearchPage</div>
+    <div>
+      <AlbaSearchFilter />
+    </div>
   )
 }
 
