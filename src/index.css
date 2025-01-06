@@ -46,7 +46,7 @@ a {
 :root {
   --primary-color: #7B4B42; /* 기본(primary) 색상 */
   --secondary-color: #F7B32B; /* 보조(secondary) 색상 */
-
+  --primary-color-20: #7b4b4220;
   --primary-color-light: #9E6F60;
   --primary-color-dark: #5A3A2E;  
   --secondary-color-light: #F9C756;
@@ -54,4 +54,5 @@ a {
   --black: #121212;
   --disabled-color: #B0B0B0; /* 비활성화된 버튼이나 텍스트 색상 */
   --gray_light: #c8c8c8;
+  --gray_bg: #f9f9f9;
 }

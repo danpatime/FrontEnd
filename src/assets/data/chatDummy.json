@@ -1,0 +1,34 @@
+{
+  "rooms": [
+    {
+      "id": 1,
+      "name": "오아영",
+      "isNew": false,
+      "chatHistory": [
+        { "id": 1, "sender": "오아영", "message": "안녕하세요! 오늘 날씨 좋네요.", "isSender": false },
+        { "id": 2, "sender": "Me", "message": "네, 정말 좋습니다!", "isSender": true },
+        { "id": 3, "sender": "오아영", "message": "주말 계획 있으세요?", "isSender": false }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "김태영",
+      "isNew": false,
+      "chatHistory": [
+        { "id": 1, "sender": "김태영", "message": "안녕하세요, 오랜만이에요.", "isSender": false },
+        { "id": 2, "sender": "Me", "message": "네, 정말 오랜만이네요!", "isSender": true },
+        { "id": 3, "sender": "김태영", "message": "요즘 어떻게 지내세요?", "isSender": false }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "김아영",
+      "isNew": true,
+      "chatHistory": [
+        { "id": 1, "sender": "김아영", "message": "안녕하세요! 시간 괜찮으세요?", "isSender": false },
+        { "id": 2, "sender": "Me", "message": "네, 괜찮습니다!", "isSender": true },
+        { "id": 3, "sender": "김아영", "message": "잠깐 이야기할 수 있을까요?", "isSender": false }
+      ]
+    }
+  ]
+}
