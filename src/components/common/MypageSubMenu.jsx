@@ -28,8 +28,8 @@ const MypageSubMenu = ({ userType }) => {
   ];
 
   const ownerMenu = [
-    { name: '관심 알바', path: '/MyPage/SavedWorkers', icon: <BsBookmarkFill /> },
-    { name: '나의 매장', path: '/MyPage/MyStore', icon: <SiHomeassistantcommunitystore /> },
+    { name: '관심 알바', path: '/mypage/SavedWorkers', icon: <BsBookmarkFill /> },
+    { name: '나의 매장', path: '/mypage/mystore', icon: <SiHomeassistantcommunitystore /> },
     ...commonMenu
   ];
 
@@ -66,7 +66,7 @@ export default MypageSubMenu;
 
 const SubMenuContainer = styled.div`
   width: 250px;
-  padding: 20px;
+  padding: 0 20px 0 70px;
   
   margin-top: 20vh;
 `;
@@ -114,5 +114,5 @@ const Icon = styled.span`
   font-size: 1.2rem;
 
   margin-top: 5px;
-  margin-right: 10px;
+  margin-right: 25px;
 `;
