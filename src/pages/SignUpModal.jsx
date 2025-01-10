@@ -15,6 +15,7 @@ function SignUpModal({ onClose }) {
 
   const handleSignUp = (type) => {
     navigate('/signup', { state: { userType: type } });
+    onClose();
   };
 
   return (
