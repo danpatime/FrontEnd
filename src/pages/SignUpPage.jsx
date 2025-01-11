@@ -13,9 +13,10 @@ const SignUpPage = () => {
 
   const [agreement, setAgreement] = useState({
     all: false,
-    age: false,
-    terms: false,
-    privacy: false,
+    age: false,    // 만 15세 이상 동의
+    terms: false,  // 이용약관 동의
+    privacy: false, // 개인정보 처리방침 동의
+    email: false,   // 이메일 수신 동의
   });
 
   // 전체 동의 상태 변경
@@ -48,6 +49,7 @@ const SignUpPage = () => {
     name: '',
     nickname: '',
     email: '',
+    confirmEmail: '',
     businessNumber: '',
     companyName: '',
     ceoName: '',
@@ -70,6 +72,55 @@ const SignUpPage = () => {
       } else {
         setError('');
       }
+    }
+  };
+
+
+  const handleSignUp = () => {
+    if (formData.password !== formData.confirmPassword) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return; 
+    }
+
+    if (userType === 'worker') {
+      const isFormComplete = Object.keys(formData).every((key) => {
+        if (['businessNumber', 'companyName', 'ceoName', 'companyAddress'].includes(key)) {
+          return true; // 해당 필드는 비어 있어도 괜찮음
+        }
+        return formData[key] !== ''; // 그 외의 필드는 비어 있으면 안됨
+      });
+  
+      // 모든 동의가 이루어졌는지 확인
+      const isAgreementComplete = Object.values(agreement).every((value) => value === true);
+  
+      if (!isFormComplete) {
+        alert('모든 정보를 입력해주세요.');
+        return;
+      }
+  
+      if (!isAgreementComplete) {
+        alert('필수 동의 항목에 체크해주세요.');
+        return;
+      }
+  
+      alert('worker 회원가입을 진행합니다.');
+    }
+  
+    if (userType === 'owner') {
+      const isFormComplete = Object.values(formData).every((value) => value !== '');
+      const isAgreementComplete = agreement.terms && agreement.privacy;
+  
+      if (!isFormComplete) {
+        alert('모든 정보를 입력해주세요.');
+        return;
+      }
+  
+      if (!isAgreementComplete) {
+        alert('필수 동의 항목에 체크해주세요.');
+        return;
+      }
+  
+      alert('owner 회원가입을 진행합니다.');
     }
   };
 
@@ -149,6 +200,8 @@ const SignUpPage = () => {
             <Input type="text" name="nickname" value={formData.nickname} onChange={handleChange} required />
           </InputBox>
 
+
+          {/* TODO: 버튼 클릭 후 요청 성공하면 인증번호 필드 아래에 이메일 확인하라는 문구 추가 */}
           <InputBox className="button">
             <InputLabel>이메일 <span>*</span></InputLabel>
             <div>
@@ -157,10 +210,12 @@ const SignUpPage = () => {
             </div>
           </InputBox>
 
+
+          {/* TODO: 인증번호 확인되면 해당 필드와 버튼 비활성화 */}
           <InputBox className="button">
             <InputLabel></InputLabel>
             <div>
-              <Input type="text" name="confirmEmail" placeholder="인증번호 입력" required />
+              <Input type="text" name="confirmEmail" value={formData.confirmEmail} onChange={handleChange} placeholder="인증번호 입력" required />
               <button>확인</button>
             </div>
           </InputBox>
@@ -193,7 +248,7 @@ const SignUpPage = () => {
           </div>
         )}
 
-        <ConfirmButton type="submit">가입하기</ConfirmButton>
+        <ConfirmButton onClick={handleSignUp}>가입하기</ConfirmButton>
       </SignUpForm>
     </Layout>
   );
