@@ -50,7 +50,7 @@ const MypageSubMenu = ({ userType }) => {
             onClick={() => handleMenuClick(item.name)} 
           >
             <StyledLink to={item.path} active={activeMenu === item.name}>
-              <Icon>{item.icon}</Icon>
+            <Icon active={activeMenu === item.name}>{item.icon}</Icon>
               {item.name}
             </StyledLink>
           </MenuItem>
@@ -68,7 +68,7 @@ const SubMenuContainer = styled.div`
   width: 250px;
   padding: 20px;
   
-  margin-top: 20vh;
+  margin-top: 10vh;
 `;
 
 const MenuList = styled.ul`
@@ -96,23 +96,18 @@ const StyledLink = styled(Link)`
 
   text-decoration: none;
   font-size: 1rem;
+  font-weight: 700;
 
   display: flex;
   align-items: center;
 
-  background-color: ${(props) => props.active ? "rgba(123, 75, 66, 0.2)" : "transparent"}; 
-  font-weight: ${(props) => (props.active ? "bold" : "500")};
-  color: ${(props) => (props.active ? "#000000" : "#767676")};
-
-  // 호버 기능은 없애도 될 듯
-  &:hover {
-    background-color: rgba(123, 75, 66, 0.1);
-  }
+  color: ${(props) => (props.active ? "#6E3C3B" : "#AFAFAF")};
 `;
 
 const Icon = styled.span`
   font-size: 1.2rem;
-
+  color: ${(props) => (props.active ? "#6E3C3B" : "#AFAFAF")};
+  
   margin-top: 5px;
   margin-right: 10px;
 `;
