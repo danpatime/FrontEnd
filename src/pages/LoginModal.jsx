@@ -115,7 +115,6 @@ function LoginModal({ onClose }) {
 
 export default LoginModal;
 
-
 const Input = styled.input`
   width: 230px;
   height: 40px;
