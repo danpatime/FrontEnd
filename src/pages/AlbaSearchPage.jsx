@@ -1,8 +1,11 @@
 import React from 'react'
+import CurrentAlba from '../components/common/CurrentAlba'
 
 function AlbaSearchPage() {
   return (
-    <div>AlbaSearchPage</div>
+    <div>
+      <CurrentAlba />
+    </div>
   )
 }
 
