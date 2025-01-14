@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { HiXMark } from "react-icons/hi2";
 
 
-function Modal({ onClose, children, title }) {
+function Modal({ onClose, children, title, width }) {
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -12,7 +12,7 @@ function Modal({ onClose, children, title }) {
 
   return (
     <Overlay onClick={handleOverlayClick}>
-      <ModalContainer onClick={(e) => e.stopPropagation()}>
+      <ModalContainer onClick={(e) => e.stopPropagation()} width={width}>
         <TopSection>
           <div></div>
           <Title>{title}</Title> {/* title을 동적으로 렌더링 */}
@@ -46,7 +46,7 @@ const ModalContainer = styled.div`
   background-color: white;
   border-radius: 10px;
   padding: 20px;
-  width: 470px;
+  width: ${(props) => props.width || '470px'};
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;

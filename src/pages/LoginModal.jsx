@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from 'styled-components';
-import request from "../api/request";
+import request from "../api/request.ts";
 import { useUserInfo } from '../contexts/useUserInfo';
 import Modal from "../components/common/Modal";
 
