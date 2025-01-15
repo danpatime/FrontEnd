@@ -46,7 +46,7 @@ const ModalContainer = styled.div`
   background-color: white;
   border-radius: 10px;
   padding: 20px;
-  width: ${(props) => props.width || '470px'};
+  width: ${(props) => props.width || '470px'}; /* 기본 너비 470px, props로 전달받은 width 적용 */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
