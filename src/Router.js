@@ -5,6 +5,7 @@ import MyPage from "./pages/MyPage/MyPage";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SignupPage";
 import ResumePage from "./pages/ResumePage";
+import ChattingPage from "./pages/ChattingPage";
 
 const AppRouter = () => {
   return (
@@ -15,6 +16,7 @@ const AppRouter = () => {
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/chat" element={<ChattingPage />} />
     </Routes>
   );
 };
