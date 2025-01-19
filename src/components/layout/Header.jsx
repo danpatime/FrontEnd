@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import logoImg from "../../assets/images/logo.svg";
-import defaultProfile from "../../assets/images/default-profile.jpg";
-import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
-import notiIcon from "../../assets/icons/notifications.svg";
-import { NavLink } from "react-router-dom";
-import DropDown from "../DropDown";
-import AlarmDropdown from "../AlarmDropDown";
-import { Link } from "react-router-dom";
-import LoginModal from "../../pages/LoginModal";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import logoImg from '../../assets/images/logo.svg';
+import defaultProfile from '../../assets/images/default-profile.jpg';
+import arrowIcon from '../../assets/icons/keyboard_arrow_down.svg';
+import notiIcon from '../../assets/icons/notifications.svg';
+import { NavLink } from 'react-router-dom';
+import AccountDropDown from '../AccountDropDown';
+import AlarmDropdown from '../AlarmDropDown';
+import { Link } from 'react-router-dom';
+import LoginModal from '../../pages/LoginModal';
 
 function Header() {
   const [isAuthenticated] = useState(false);
@@ -38,7 +38,7 @@ function Header() {
     });
   };
 
-  const name = "홍길동";
+  const name = '홍길동';
   const profileUrl = null;
 
   return (
@@ -64,7 +64,7 @@ function Header() {
             onClick={toggleDropdown}
             isOpen={isDropdownOpen}
           />
-          {isDropdownOpen && <DropDown />}
+          {isDropdownOpen && <AccountDropDown />}
         </ProfileSection>
       ) : (
         <ProfileSection>
@@ -95,7 +95,7 @@ const Container = styled.div`
 const Logo = styled(Link)`
   text-decoration: none;
   img {
-    width: 80px; 
+    width: 80px;
   }
 `;
 
@@ -145,7 +145,7 @@ const ProfileImg = styled.img`
 const IconBtn = styled.img`
   cursor: pointer;
   transition: transform 0.5s ease;
-  transform: ${(props) => (props.isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${(props) => (props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;
 
 const NotiBtn = styled(IconBtn)`
