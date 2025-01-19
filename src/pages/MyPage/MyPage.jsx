@@ -1,13 +1,8 @@
-import React from "react";
-import ContactStatus from "../../components/mypage/ContactStatus";
+import React from 'react';
+import ContactStatus from '../../components/mypage/ContactStatus';
 
 function MyPage() {
-  return (
-    <div>
-      MyPage
-      <ContactStatus />
-    </div>
-  );
+  return <div>MyPage</div>;
 }
 
 export default MyPage;

@@ -77,6 +77,7 @@ const DropdownItem = styled.div`
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.3s ease;
+  z-index: 1;
 
   &:before {
     content: '';
