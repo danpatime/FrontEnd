@@ -4,6 +4,9 @@ import Router from "./Router";
 import { UserInfoProvider } from "./contexts/UserInfoContext";
 
 
+import MypageSubMenu from "./components/common/MypageSubMenu";
+import MyStorePage from "./pages/MyPage/MyStorePage";
+
 function App() {
   return (
     <UserInfoProvider>
