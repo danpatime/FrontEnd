@@ -1,99 +1,61 @@
-import React,{useState} from 'react';
+import React, { useState } from "react";
 import styled from "styled-components";
 
-const StarRating=()=>{
-    //내가 입력한 별점을 저장하는 변수
-    const [rating,setRating]=useState(0);
-    //마우스를 올린 별의 위치를 저장하는 변수
-    const [hoverRating,setHoverRating]=useState(0);
+const StarRating = ({ setRating, starPoint, rating, size = 50 }) => {
+  const [hoverRating, setHoverRating] = useState(0); // 마우스가 hover 상태인 별점을 저장하는 상태
 
-    //별점 렌더링 제어 공통 함수
-    const commonRatingFun=(event,value,callback)=>{
-        const {offsetX,target}=event.nativeEvent;
-        const starWidth=target.offsetWidth;
-        const division=offsetX/starWidth;
-        const adjustedRating=value-1+Math.round(division*2)/2;
-        console.log("adjustedRating:", adjustedRating); // 디버깅
-        callback(adjustedRating);
-    };
-
-    //마우스로 별을 클릭했을 때 해당 위치까지의 별 색칠(이후 고정)
-    const handleStarClick=(event,value)=>{
-      commonRatingFun(event,value,setRating);
-    };
-
-    //마우스를 올렸을 때 해당 위치까지의 별 색칠
-    const handleMouseEnter=(event,value)=>{
-      commonRatingFun(event,value,setHoverRating);
-    };
-
-    //마우스를 떼면 별 색칠 취소
-    const handleMouseLeave=()=>{
-      setHoverRating(0);
-    };
-
-
-    // 별점 전송 함수
-    const submitRating = async () => {
-      const response = await fetch("API_ENDPOINT", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-      },
-        body: JSON.stringify({
-          starPoint: rating
-      }),
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        console.log("Success:", data);
-    } else {
-        console.error("Failed to submit rating");
-    }
+  // 클릭한 별점 값을 정수로 처리
+  const handleStarClick = (value) => {
+    if (rating) return; // 이미 존재하는 리뷰라면 클릭을 막음
+    setRating(value); // 클릭한 별점 값을 상태에 업데이트
   };
 
-    return(
-        <StarContainer>
-        {[1, 2, 3, 4, 5].map((value) => (
-            <Star
-              key={value}
-              filled={value <= Math.floor(hoverRating||rating)}
-              halfFilled={value - 0.5 <= (hoverRating||rating) && value > (hoverRating||rating)}
-              onClick={(e) => handleStarClick(e,value)}
-              onMouseEnter={(e)=>handleMouseEnter(e,value)}
-              onMouseLeave={()=>handleMouseLeave()}
-            >
-              ★
-            </Star>
+  // 마우스를 별 위에 올렸을 때 hover 상태 처리
+  const handleMouseEnter = (value) => {
+    if (rating) return; // 이미 존재하는 리뷰라면 hover도 막음
+    setHoverRating(value); // hover 위치를 상태에 저장
+  };
+
+  const showCurStar=(value)=>{
+    if(rating) return;
+    setHoverRating(rating);
+  }
+
+  return (
+    <StarContainer>
+      {[1, 2, 3, 4, 5].map((value) => (
+        <Star
+          key={value}
+          filled={value <= (hoverRating || rating || starPoint)} // hover 상태와 고정된 별점을 모두 반영
+          onClick={() => handleStarClick(value)} // 클릭 이벤트 처리
+          onMouseEnter={() => handleMouseEnter(value)} // hover 시작 처리
+          onMouseLeave={()=>showCurStar(value)}
+          size={size} // 별 크기 설정
+        >
+          ★
+        </Star>
       ))}
-      </StarContainer>
-    );
+    </StarContainer>
+  );
 };
 
 export default StarRating;
 
-const StarContainer=styled.div`
-  display:flex;
-  justify-content:center;
+// 별 컨테이너 스타일
+const StarContainer = styled.div`
+  display: flex;
+  justify-content: center;
 `;
-const Star = styled.div`
-  font-size: 100px; //임시 크기
-  cursor: pointer;
-  position: relative;
-  color: transparent;
-  margin:4px;
-  //linear-gradient로 반개 별 구현
-  background: ${(props) =>
-    props.halfFilled
-      ? 'linear-gradient(to right, #F7B32B 50%, lightgray 50%)'  // 반만 노란색
-      : props.filled
-      ? '#F7B32B'
-      : 'lightgray'
-  };
 
+// 별 스타일
+const Star = styled.div`
+  font-size: ${(props) => props.size}px; // 동적으로 크기 설정
+  cursor: ${(props) => (props.filled ? "default" : "pointer")}; // 채워진 별은 클릭 불가
+  color: transparent;
+  margin: 4px;
+  background: ${(props) => (props.filled ? "#F7B32B" : "lightgray")}; // 채워진 별과 빈 별 처리
   background-size: 100% 100%;
-  -webkit-background-clip: text;
-  display: inline-block;
+  -webkit-background-clip: text; // 텍스트에 색상 적용
   transition: background 0.1s ease-in-out;
-  `;
+  cursor:pointer;
+`;
