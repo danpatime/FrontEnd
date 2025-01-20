@@ -1,11 +1,12 @@
-import { Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import AlbaSearchPage from "./pages/AlbaSearchPage";
-import MyPage from "./pages/MyPage/MyPage";
-import ResumePage from "./pages/ResumePage";
-import ChattingPage from "./pages/ChattingPage";
-import MyResume from "./pages/MyResume/MyResume";
-import SignUpPage from "./pages/SignUpPage";
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import AlbaSearchPage from './pages/AlbaSearchPage';
+import MyPage from './pages/MyPage/MyPage';
+import ResumePage from './pages/ResumePage';
+import MyStatusPage from './pages/MyPage/MyStatusPage';
+import ChattingPage from './pages/ChattingPage';
+import MyResume from './pages/MyResume/MyResume';
+import SignUpPage from './pages/SignUpPage';
 
 const AppRouter = () => {
   return (
@@ -17,6 +18,7 @@ const AppRouter = () => {
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/chat" element={<ChattingPage />} />
       <Route path="/mypage/resume" element={<MyResume />} />
+      <Route path="/mypage/status" element={<MyStatusPage />} />
     </Routes>
   );
 };
