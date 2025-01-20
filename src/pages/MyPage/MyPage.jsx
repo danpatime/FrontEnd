@@ -1,8 +1,12 @@
-import React from 'react';
-import ContactStatus from '../../components/mypage/ContactStatus';
+import React from 'react'
+import MypageLayout from '../../components/layout/MypageLayout'
 
 function MyPage() {
-  return <div>MyPage</div>;
+  return (
+    <MypageLayout>
+      MyPage
+    </MypageLayout>
+  )
 }
 
 export default MyPage;
