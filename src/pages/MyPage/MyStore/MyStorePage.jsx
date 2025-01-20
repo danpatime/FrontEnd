@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
-<<<<<<< HEAD
-//import axios from 'axios';
-=======
->>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
 import styled from 'styled-components';
-import MypageLayout from '../../components/layout/MypageLayout';
+import MypageLayout from '../../../components/layout/MypageLayout';
 
-import { RiSettings4Fill } from 'react-icons/ri';
+import { RiSettings4Fill } from "react-icons/ri";
 
 const MyStorePage = () => {
   const [stores, setStores] = useState([]); // 매장 목록 상태
@@ -17,36 +13,33 @@ const MyStorePage = () => {
     const dummyData = {
       stores: [
         {
-          name: '파스쿠찌',
-          category: '카페',
-          address: '부산광역시 남구 부경로 123 1층',
-          ownerName: '홍길동',
-          contact: '010-1234-5678',
-          email: 'owner1@example.com',
-          imageUrl:
-            'https://search.pstatic.net/sunny/?src=http%3A%2F%2Ffile3.instiz.net%2Fdata%2Fcached_img%2Fupload%2F2021%2F07%2F09%2F12%2Feb8287345c0b95a83777c54065f13c04.jpg&type=sc960_832', // 예시 이미지 URL
+          name: "파스쿠찌",
+          category: "카페",
+          address: "부산광역시 남구 부경로 123 1층",
+          ownerName: "홍길동",
+          contact: "010-1234-5678",
+          email: "owner1@example.com",
+          imageUrl: "https://search.pstatic.net/sunny/?src=http%3A%2F%2Ffile3.instiz.net%2Fdata%2Fcached_img%2Fupload%2F2021%2F07%2F09%2F12%2Feb8287345c0b95a83777c54065f13c04.jpg&type=sc960_832" 
         },
         {
-          name: 'BHC',
-          category: '패스트푸드',
-          address: '서울특별시 강남구 테헤란로 456',
-          ownerName: '이순신',
-          contact: '02-3456-7890',
-          email: 'owner2@example.com',
-          imageUrl:
-            'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTA2MTZfMjg3%2FMDAxNjIzODA2NDc3NjY5.ooK9MfX81XTOznDbUiJCgeg5zl30JbOAJtypG0id_zMg.TR1JrvWOQQXvTWdNrYriizVaP0PovnTy2sIsoXfw-mgg.JPEG.congha%2Fbhc1.jpg&type=a340', // 예시 이미지 URL
+          name: "BHC",
+          category: "패스트푸드",
+          address: "서울특별시 강남구 테헤란로 456",
+          ownerName: "이순신",
+          contact: "02-3456-7890",
+          email: "owner2@example.com",
+          imageUrl: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTA2MTZfMjg3%2FMDAxNjIzODA2NDc3NjY5.ooK9MfX81XTOznDbUiJCgeg5zl30JbOAJtypG0id_zMg.TR1JrvWOQQXvTWdNrYriizVaP0PovnTy2sIsoXfw-mgg.JPEG.congha%2Fbhc1.jpg&type=a340" 
         },
         {
-          name: '할리스 커피',
-          category: '카페',
-          address: '인천광역시 연수구 송도동 123',
-          ownerName: '김유신',
-          contact: '032-987-6543',
-          email: 'owner3@example.com',
-          imageUrl:
-            'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20160606_247%2Fppanppane_1465209346510ebnAl_PNG%2F%25C7%25D2%25B8%25AE%25BD%25BA_%25C4%25BF%25C7%25C7_%25B7%25CE%25B0%25ED_%25281%2529.png&type=sc960_832', // 예시 이미지 URL
-        },
-      ],
+          name: "할리스 커피",
+          category: "카페",
+          address: "인천광역시 연수구 송도동 123",
+          ownerName: "김유신",
+          contact: "032-987-6543",
+          email: "owner3@example.com",
+          imageUrl: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20160606_247%2Fppanppane_1465209346510ebnAl_PNG%2F%25C7%25D2%25B8%25AE%25BD%25BA_%25C4%25BF%25C7%25C7_%25B7%25CE%25B0%25ED_%25281%2529.png&type=sc960_832" 
+        }
+      ]
     };
 
     // 더미 데이터를 설정
@@ -62,13 +55,9 @@ const MyStorePage = () => {
 
   // 매장 클릭 시 해당 매장 정보로 변경
   const handleStoreClick = (storeName) => {
-    const store = stores.find((s) => s.name === storeName);
+    const store = stores.find(s => s.name === storeName);
     if (store) {
-<<<<<<< HEAD
-      //console.log("Selected Store:", store); // 선택된 매장 확인
-=======
       // console.log("Selected Store:", store); // 선택된 매장 확인
->>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
       setSelectedStore(store); // 상태 업데이트
     }
   };
@@ -96,20 +85,15 @@ const MyStorePage = () => {
               </StoreItem>
             ))}
           </StoreList>
-          <StoreDetails
-            isFirstStore={selectedStore && stores.indexOf(selectedStore) === 0}
-          >
+          <StoreDetails isFirstStore={selectedStore && stores.indexOf(selectedStore) === 0}>
             {selectedStore ? (
               <>
                 <div className="top-section">
                   <section>
-                    <StoreImg
-                      src={
-                        selectedStore?.imageUrl ||
-                        'https://via.placeholder.com/150'
-                      }
-                      alt={selectedStore?.name || 'Default Image'}
-                    />
+                  <StoreImg 
+                    src={selectedStore?.imageUrl || "https://via.placeholder.com/150"} 
+                    alt={selectedStore?.name || "Default Image"} 
+                  />
                     <StoreNameSection>
                       <h5>{selectedStore.category}</h5>
                       <h3>{selectedStore.name}</h3>
@@ -162,7 +146,7 @@ const Title = styled.div`
   div {
     width: 5px;
     height: 35px;
-    background-color: #6e3c3b;
+    background-color: #6E3C3B;
   }
 
   h2 {
@@ -173,7 +157,7 @@ const Title = styled.div`
 
 const AddButton = styled.button`
   padding: 10px 20px;
-  background-color: #6e3c3b;
+  background-color: #6E3C3B;
 
   color: white;
   font-size: 16px;
@@ -184,7 +168,7 @@ const AddButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #6e3c3b;
+    background-color: #6E3C3B;
   }
 `;
 
@@ -209,26 +193,25 @@ const StoreItem = styled.div`
   align-items: center;
 
   width: auto;
-
+  
   cursor: pointer;
   padding: 25px 35px;
-  background-color: ${(props) => (props.isSelected ? '#FAF4F2' : 'white')};
-  color: ${(props) => (props.isSelected ? '#9C6B60' : '#BBBBBB')};
+  background-color: ${(props) => (props.isSelected ? "#FAF4F2" : "white")};
+  color: ${(props) => (props.isSelected ? "#9C6B60" : "#BBBBBB")};
   font-size: 16px;
   font-weight: 700;
   border-radius: 20px 0px 0px 20px;
 
   &:hover {
-    background-color: ${(props) => (props.isSelected ? '#e9ecef' : '#f1f1f1')};
+    background-color: ${(props) => (props.isSelected ? "#e9ecef" : "#f1f1f1")};
   }
 `;
 
 const StoreDetails = styled.div`
   padding: 25px 35px 40px;
   flex-grow: 1;
-  background-color: #faf4f2;
-  border-radius: ${(props) =>
-    props.isFirstStore ? '0px 20px 20px 20px' : '20px'};
+  background-color: #FAF4F2;
+  border-radius: ${(props) => (props.isFirstStore ? '0px 20px 20px 20px' : '20px')};
 
   .top-section {
     display: flex;
@@ -257,7 +240,7 @@ const StoreNameSection = styled.div`
 
 const SettingIcon = styled(RiSettings4Fill)`
   font-size: 24px;
-  color: #5a5857;
+  color: #5A5857;
   cursor: pointer;
 `;
 
@@ -275,7 +258,7 @@ const StoreInfo = styled.div`
   }
 
   span {
-    color: #bfbfbf;
+    color: #BFBFBF;
     font-size: 16px;
     font-weight: 700;
   }

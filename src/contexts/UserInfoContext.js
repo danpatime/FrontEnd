@@ -1,6 +1,11 @@
 // Provider와 Context 정의 (사용자 정보 관련)
+<<<<<<< HEAD
 /*eslint-disable*/
 import React, { createContext, useState, useEffect } from 'react';
+=======
+
+import React, { createContext, useState } from 'react';
+>>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
 
 const UserInfoContext = createContext();
 

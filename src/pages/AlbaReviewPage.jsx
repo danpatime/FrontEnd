@@ -119,7 +119,6 @@ const AlbaReviewPage = () => {
 
 export default AlbaReviewPage;
 
-// 스타일링
 const Container = styled.div`
   padding: 20px 100px;
   margin: 0 auto;

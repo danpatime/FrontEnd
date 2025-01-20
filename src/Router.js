@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AlbaSearchPage from "./pages/AlbaSearchPage";
@@ -8,6 +9,17 @@ import Signup from "./pages/SignupPage";
 import ResumePage from "./pages/ResumePage";
 import ChattingPage from "./pages/ChattingPage";
 import React from 'react';
+=======
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import AlbaSearchPage from './pages/AlbaSearchPage';
+import MyPage from './pages/MyPage/MyPage';
+import ResumePage from './pages/ResumePage';
+import MyStatusPage from './pages/MyPage/MyStatusPage';
+import ChattingPage from './pages/ChattingPage';
+import MyResume from './pages/MyResume/MyResume';
+import SignUpPage from './pages/SignUpPage';
+>>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
 
 const AppRouter = () => {
   return (
@@ -17,9 +29,10 @@ const AppRouter = () => {
       <Route path="/alba/review" element={<AlbaReviewPage/>}/>
       <Route path="/alba/resume/:id" element={<ResumePage />} />
       <Route path="/mypage" element={<MyPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="/signup" element={<SignUpPage />} />
       <Route path="/chat" element={<ChattingPage />} />
+      <Route path="/mypage/resume" element={<MyResume />} />
+      <Route path="/mypage/status" element={<MyStatusPage />} />
     </Routes>
   );
 };
