@@ -1,31 +1,57 @@
 import React, { useState } from "react";
 import styled from 'styled-components';
+import request from "../api/request.ts";
+import { useUserInfo } from '../contexts/useUserInfo';
+import Modal from "../components/common/Modal";
 
 import IcNaver from '../assets/icons/ic-naver.png';
 import IcKakao from '../assets/icons/ic-kakao.png';
-import { HiXMark } from "react-icons/hi2";
 
 
 function LoginModal({ onClose }) {
-  const [selectedUserType, setSelectedUserType] = useState("worker");
+  const [selectedUserType, setSelectedUserType] = useState("worker");  // 개인/기업 회원 선택
+  const [loginId, setLoginId] = useState(""); 
+  const [password, setPassword] = useState("");
+  const { updateUser } = useUserInfo();
 
-  const handleOverlayClick = (e) => {
-    // ModalContainer를 클릭한 경우 이벤트 무시
-    if (e.target === e.currentTarget) {
-      onClose();
+  // 로그인 버튼 클릭 핸들러
+  const handleLogin = async () => {
+    if (!loginId || !password) {
+      alert("아이디와 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    const requestData = {
+      id: loginId,
+      password: password,
+    };
+
+    try {
+      const response = await request.post("/api/v1/auth/login", requestData);
+
+      if (response.isSuccess && response.code === 200) {
+        const { token, id, name, nickname, userType } = response.result;
+
+        // 서버에서 받은 토큰과 사용자 정보를 Context에 저장
+        updateUser({ id, name, nickname, userType });
+
+        // 서버에서 받은 토큰을 업데이트
+        request.updateToken(token);
+
+        onClose(); // 로그인 후 모달 닫기
+      } else {
+        // 실패 응답 처리
+        console.error(response.message); 
+        alert("오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error(error); 
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
   return (
-    <Overlay onClick={handleOverlayClick}>
-      <ModalContainer onClick={(e) => e.stopPropagation()}>
-
-        <TopSection>
-          <div></div>
-          <Title>로그인</Title>
-          <CloseIcon size={24} onClick={onClose}/>
-        </TopSection>
-
+      <Modal onClose={onClose} title="로그인">
         <UserType>
           <UserTypeOption
             isSelected={selectedUserType === "worker"}
@@ -46,10 +72,20 @@ function LoginModal({ onClose }) {
 
         <LoginForm>
           <InputSection>
-            <Input type="text" placeholder="아이디" />
-            <Input type="password" placeholder="비밀번호" />
+            <Input
+              type="text"
+              placeholder="아이디"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
+            />
+            <Input
+              type="password"
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </InputSection>
-          <Button>로그인</Button>
+          <Button onClick={handleLogin}>로그인</Button>
         </LoginForm>
         
         <OptionSection>
@@ -73,62 +109,11 @@ function LoginModal({ onClose }) {
             </div>
           </SimpleLogin>
         )}
-      </ModalContainer>
-    </Overlay>
+      </Modal>
   );
 }
 
 export default LoginModal;
-
-
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7); /* 반투명 배경 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* 모달이 다른 요소 위에 오도록 설정 */
-`;
-
-const ModalContainer = styled.div`
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px 20px 30px;
-  width: 470px; /* 모달 너비 */
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const TopSection = styled.div`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  padding: 0 16px; 
-  margin-bottom: 60px;
-`;
-
-const Title = styled.h1`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  padding-top: 20px;
-  font-size: 20px;
-`;
-
-const CloseIcon = styled(HiXMark)`
-  margin-left: auto;
-  cursor: pointer;
-`;
-
 
 const Input = styled.input`
   width: 230px;

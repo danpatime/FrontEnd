@@ -5,23 +5,33 @@ import defaultProfile from "../../assets/images/default-profile.jpg";
 import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
 import notiIcon from "../../assets/icons/notifications.svg";
 import { NavLink } from "react-router-dom";
-import DropDown from "../DropDown";
+import AccountDropDown from "../AccountDropDown";
 import AlarmDropdown from "../AlarmDropDown";
 import { Link } from "react-router-dom";
 import LoginModal from "../../pages/LoginModal";
+import SignupModal from "../../pages/SignUpModal";
 
 function Header() {
   const [isAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const handleOpenLoginModal = () => {
-    setIsModalOpen(true);
+    setIsLoginModalOpen(true);
   };
 
   const handleCloseLoginModal = () => {
-    setIsModalOpen(false);
+    setIsLoginModalOpen(false);
+  };
+
+  const handleOpenSignupModal = () => {
+    setIsSignupModalOpen(true); 
+  };
+
+  const handleCloseSignupModal = () => {
+    setIsSignupModalOpen(false); 
   };
 
   const toggleDropdown = () => {
@@ -38,7 +48,7 @@ function Header() {
     });
   };
 
-  const name = "홍길동";
+  const name = '홍길동';
   const profileUrl = null;
 
   return (
@@ -64,16 +74,17 @@ function Header() {
             onClick={toggleDropdown}
             isOpen={isDropdownOpen}
           />
-          {isDropdownOpen && <DropDown />}
+          {isDropdownOpen && <AccountDropDown />}
         </ProfileSection>
       ) : (
         <ProfileSection>
           <ProfileNavItem onClick={handleOpenLoginModal}>로그인</ProfileNavItem>
           <span>|</span>
-          <ProfileNavItem to="/signup">회원가입</ProfileNavItem>
+          <ProfileNavItem onClick={handleOpenSignupModal}>회원가입</ProfileNavItem>
         </ProfileSection>
       )}
-      {isModalOpen && <LoginModal onClose={handleCloseLoginModal} />}
+      {isLoginModalOpen && <LoginModal onClose={handleCloseLoginModal} />}
+      {isSignupModalOpen && <SignupModal onClose={handleCloseSignupModal} />} 
     </Container>
   );
 }
@@ -95,7 +106,7 @@ const Container = styled.div`
 const Logo = styled(Link)`
   text-decoration: none;
   img {
-    width: 80px; 
+    width: 80px;
   }
 `;
 
@@ -145,7 +156,7 @@ const ProfileImg = styled.img`
 const IconBtn = styled.img`
   cursor: pointer;
   transition: transform 0.5s ease;
-  transform: ${(props) => (props.isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${(props) => (props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;
 
 const NotiBtn = styled(IconBtn)`
