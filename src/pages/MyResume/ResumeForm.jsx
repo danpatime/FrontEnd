@@ -167,9 +167,9 @@ const ResumeForm = () => {
             <div className='userinfo-items'>
               <label>생년월일</label>
               <div id="birthdate-input">
-                <div><input id="year" value={birthdate.year} onChange={(e) => setBirthdate({ ...birthdate, year: e.target.value })} /><span>년</span></div>
-                <div><input id="month" value={birthdate.month} onChange={(e) => setBirthdate({ ...birthdate, month: e.target.value })} /><span>월</span></div>
-                <div><input id="day" value={birthdate.day} onChange={(e) => setBirthdate({ ...birthdate, day: e.target.value })} /><span>일</span></div>
+                <div><input id="year" type="number" value={birthdate.year} onChange={(e) => setBirthdate({ ...birthdate, year: e.target.value })} /><span>년</span></div>
+                <div><input id="month" type="number" value={birthdate.month} onChange={(e) => setBirthdate({ ...birthdate, month: e.target.value })} /><span>월</span></div>
+                <div><input id="day" type="number" value={birthdate.day} onChange={(e) => setBirthdate({ ...birthdate, day: e.target.value })} /><span>일</span></div>
               </div>
             </div>
 
