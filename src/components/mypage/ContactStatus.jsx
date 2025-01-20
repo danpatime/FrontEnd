@@ -47,7 +47,7 @@ const dummyData = [
   },
 ];
 
-// const ContactStatus = ({ statusFilter, sortOrder }) => {
+//sortOrder props 추가하기
 const ContactStatus = ({ statusFilter }) => {
   const navigate = useNavigate();
 
@@ -99,7 +99,6 @@ const ContactStatus = ({ statusFilter }) => {
   );
 };
 
-// 스타일 정의
 const Section = styled.section`
   padding: 20px;
   display: flex;
