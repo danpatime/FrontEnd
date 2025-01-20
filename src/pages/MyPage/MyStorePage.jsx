@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import styled from 'styled-components';
 import MypageLayout from '../../components/layout/MypageLayout';
 
@@ -58,7 +58,7 @@ const MyStorePage = () => {
   const handleStoreClick = (storeName) => {
     const store = stores.find(s => s.name === storeName);
     if (store) {
-      console.log("Selected Store:", store); // 선택된 매장 확인
+      //console.log("Selected Store:", store); // 선택된 매장 확인
       setSelectedStore(store); // 상태 업데이트
     }
   };
