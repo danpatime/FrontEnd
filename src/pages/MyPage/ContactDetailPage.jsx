@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { renderStars } from '../../utils/RenderStars';
+
 // Dummy Data
 const dummyData = {
   workCondition: {
@@ -27,6 +28,13 @@ const dummyData = {
   },
 };
 
+const InfoRow = ({ label, content }) => (
+  <Row>
+    <Label>{label}</Label>
+    <Info>{content}</Info>
+  </Row>
+);
+
 const ContactDetailPage = () => {
   const { workCondition, albaInfo } = dummyData;
 
@@ -37,36 +45,27 @@ const ContactDetailPage = () => {
         <Card>
           <Row>
             <StoreName>
-              <LogoWrapper>
-                <StoreLogo src={workCondition.storeLogo} alt="Store Logo" />
-              </LogoWrapper>
+              <RoundImg src={workCondition.storeLogo} alt="Store Logo" />
               {workCondition.storeName}
             </StoreName>
           </Row>
-          <InfoRow>
-            <Label>주소</Label>
-            <Info>{workCondition.address}</Info>
-          </InfoRow>
-          <InfoRow>
-            <Label>사장님</Label>
-            <Info>{workCondition.owner}</Info>
-          </InfoRow>
-          <InfoRow>
-            <Label>번호</Label>
-            <Info>{workCondition.phone}</Info>
-          </InfoRow>
-          <InfoRow>
-            <Label>시급</Label>
-            <Wage>{workCondition.hourlyWage}</Wage>
-          </InfoRow>
-          <InfoRow>
-            <Label>근무 일정</Label>
-            <Schedule>
-              {workCondition.schedule.map((item, index) => (
-                <Info key={index}>{item}</Info>
-              ))}
-            </Schedule>
-          </InfoRow>
+          <InfoRow label="주소" content={workCondition.address} />
+          <InfoRow label="사장님" content={workCondition.owner} />
+          <InfoRow label="번호" content={workCondition.phone} />
+          <InfoRow
+            label="시급"
+            content={<Wage>{workCondition.hourlyWage}</Wage>}
+          />
+          <InfoRow
+            label="근무 일정"
+            content={
+              <Schedule>
+                {workCondition.schedule.map((item, index) => (
+                  <Info key={index}>{item}</Info>
+                ))}
+              </Schedule>
+            }
+          />
         </Card>
       </Section>
 
@@ -75,34 +74,30 @@ const ContactDetailPage = () => {
         <Card>
           <Tag>{albaInfo.experience}</Tag>
           <Profile>
-            <ProfileImage src={albaInfo.profileImage} alt="Profile" />
+            <RoundImg src={albaInfo.profileImage} alt="Profile" />
             <ProfileDetails>
+              <Rating>
+                {renderStars(albaInfo.ratings, 14)}
+                <RatingValue>{albaInfo.ratings}/5</RatingValue>
+              </Rating>
               <Name>{albaInfo.name}</Name>
               <SubInfo>
                 {albaInfo.gender} {albaInfo.age}세
               </SubInfo>
-              <Rating>
-                {renderStars(albaInfo.ratings)}
-                <RatingValue>{albaInfo.ratings}/5</RatingValue>
-              </Rating>
             </ProfileDetails>
           </Profile>
-          <InfoRow>
-            <Label>희망</Label>
-            <Tags>
-              {albaInfo.hopes.map((hope, i) => (
-                <HopeTag key={i}>{hope}</HopeTag>
-              ))}
-            </Tags>
-          </InfoRow>
-          <InfoRow>
-            <Label>지역</Label>
-            <Info>{albaInfo.region}</Info>
-          </InfoRow>
-          <InfoRow>
-            <Label>전화번호</Label>
-            <Info>{albaInfo.phone}</Info>
-          </InfoRow>
+          <InfoRow
+            label="희망"
+            content={
+              <Tags>
+                {albaInfo.hopes.map((hope, i) => (
+                  <HopeTag key={i}>{hope}</HopeTag>
+                ))}
+              </Tags>
+            }
+          />
+          <InfoRow label="지역" content={albaInfo.region} />
+          <InfoRow label="전화번호" content={albaInfo.phone} />
           <CenteredButton>자세히 보기</CenteredButton>
         </Card>
       </Section>
@@ -135,12 +130,29 @@ const Card = styled.div`
   border: 1px solid #dee2e6;
   border-radius: 12px;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;
 
 const Row = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  padding: 6px 0;
+`;
+
+const Label = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 100px;
+  color: #343a40;
+`;
+
+const Info = styled.div`
+  font-size: 14px;
+  color: #495057;
+  text-align: left;
+  flex: 1;
 `;
 
 const StoreName = styled.div`
@@ -152,105 +164,32 @@ const StoreName = styled.div`
   gap: 8px;
 `;
 
-const LogoWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const StoreLogo = styled.img`
+const RoundImg = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 50%;
+  background: #dee2e6;
+  border: 1px solid #adb5bd;
   object-fit: cover;
-`;
-
-const InfoRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f3f5;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const Label = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  color: #868e96;
-`;
-
-const Info = styled.div`
-  font-size: 14px;
-  color: #495057;
-  text-align: left;
-`;
-
-const Wage = styled.div`
-  font-size: 16px;
-  font-weight: bold;
-  color: #d9534f;
-`;
-
-const Schedule = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const Tag = styled.div`
-  display: inline-block;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #495057;
-  background: #e9ecef;
-  border: 1px solid #adb5bd;
-  border-radius: 16px;
-  margin-right: 4px;
-`;
-
-const HopeTag = styled.div`
-  display: inline-block;
-  padding: 4px 8px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #495057;
-  background: #fff;
-  border: 1px solid #adb5bd;
-  border-radius: 8px;
-  margin-right: 4px;
 `;
 
 const Profile = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
-`;
-
-const ProfileImage = styled.img`
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #dee2e6;
-  margin-right: 16px;
-  object-fit: cover;
+  margin: 16px 0;
 `;
 
 const ProfileDetails = styled.div`
-  display: flex;
-  flex-direction: column;
+  margin-left: 10px;
 `;
 
-const Name = styled.div`
+const Name = styled.span`
   font-size: 16px;
   font-weight: bold;
   color: #495057;
 `;
 
-const SubInfo = styled.div`
+const SubInfo = styled.span`
   font-size: 14px;
   color: #868e96;
 `;
@@ -266,6 +205,35 @@ const RatingValue = styled.span`
   color: #495057;
 `;
 
+const Tag = styled.div`
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #495057;
+  background: #e9ecef;
+  border: 1px solid #adb5bd;
+  border-radius: 16px;
+  margin-right: 4px;
+`;
+
+const HopeTag = styled(Tag)`
+  padding: 4px 8px;
+  border-radius: 8px;
+`;
+
+const Wage = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  color: #d9534f;
+`;
+
+const Schedule = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
 const Tags = styled.div`
   display: flex;
   gap: 8px;
@@ -273,18 +241,18 @@ const Tags = styled.div`
 `;
 
 const CenteredButton = styled.button`
-  display: block;
-  width: 50%;
-  color: #adadad;
-  padding: 12px 16px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
+  align-self: center;
+  padding: 10px 50px;
+  font-size: 14px;
+  border: 1px solid #adb5bd;
+  background-color: #fff;
+  color: '#767676';
+  font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 16px;
 
   &:hover {
-    background-color: #acacac;
+    background-color: #dddddd;
   }
 `;
