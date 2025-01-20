@@ -1,6 +1,8 @@
+// ContactDetailPage.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { renderStars } from '../../utils/RenderStars';
+import ExperienceTag from '../../components/common/ExperienceTag';
 
 // Dummy Data
 const dummyData = {
@@ -16,7 +18,7 @@ const dummyData = {
   },
   albaInfo: {
     title: '알바 정보',
-    experience: '단팥 경력 12회',
+    experience: '12',
     ratings: 4.5,
     name: '김OO',
     gender: '남성',
@@ -72,7 +74,7 @@ const ContactDetailPage = () => {
       <Section>
         <Title>{albaInfo.title}</Title>
         <Card>
-          <Tag>{albaInfo.experience}</Tag>
+          <ExperienceTag experience={albaInfo.experience} />
           <Profile>
             <RoundImg src={albaInfo.profileImage} alt="Profile" />
             <ProfileDetails>
@@ -205,27 +207,18 @@ const RatingValue = styled.span`
   color: #495057;
 `;
 
-const Tag = styled.div`
-  display: inline-block;
-  padding: 4px 12px;
+const HopeTag = styled.div`
+  padding: 2px 8px;
   font-size: 12px;
-  font-weight: bold;
-  color: #495057;
-  background: #e9ecef;
   border: 1px solid #adb5bd;
-  border-radius: 16px;
-  margin-right: 4px;
-`;
-
-const HopeTag = styled(Tag)`
-  padding: 4px 8px;
   border-radius: 8px;
+  color: #495057;
 `;
 
 const Wage = styled.div`
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
-  color: #d9534f;
+  color: var(--primary-color);
 `;
 
 const Schedule = styled.div`
@@ -246,7 +239,6 @@ const CenteredButton = styled.button`
   font-size: 14px;
   border: 1px solid #adb5bd;
   background-color: #fff;
-  color: '#767676';
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
