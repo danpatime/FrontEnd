@@ -52,12 +52,13 @@ const ContactStatus = ({ statusFilter }) => {
   const navigate = useNavigate();
 
   const handleRowClick = (id) => {
-    navigate(`/status/details/${id}`);
+    navigate(`/contracts/${id}`);
   };
 
-  const filteredData = dummyData.filter((data) =>
-    statusFilter === '상태' ? true : data.status === statusFilter,
-  );
+  const filteredData =
+    statusFilter === '상태'
+      ? dummyData
+      : dummyData.filter((data) => data.status === statusFilter);
 
   // 정렬기능 추후 구현
 
