@@ -9,19 +9,29 @@ import DropDown from "../DropDown";
 import AlarmDropdown from "../AlarmDropDown";
 import { Link } from "react-router-dom";
 import LoginModal from "../../pages/LoginModal";
+import SignupModal from "../../pages/SignUpModal";
 
 function Header() {
   const [isAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const handleOpenLoginModal = () => {
-    setIsModalOpen(true);
+    setIsLoginModalOpen(true);
   };
 
   const handleCloseLoginModal = () => {
-    setIsModalOpen(false);
+    setIsLoginModalOpen(false);
+  };
+
+  const handleOpenSignupModal = () => {
+    setIsSignupModalOpen(true); 
+  };
+
+  const handleCloseSignupModal = () => {
+    setIsSignupModalOpen(false); 
   };
 
   const toggleDropdown = () => {
@@ -70,10 +80,11 @@ function Header() {
         <ProfileSection>
           <ProfileNavItem onClick={handleOpenLoginModal}>로그인</ProfileNavItem>
           <span>|</span>
-          <ProfileNavItem to="/signup">회원가입</ProfileNavItem>
+          <ProfileNavItem onClick={handleOpenSignupModal}>회원가입</ProfileNavItem>
         </ProfileSection>
       )}
-      {isModalOpen && <LoginModal onClose={handleCloseLoginModal} />}
+      {isLoginModalOpen && <LoginModal onClose={handleCloseLoginModal} />}
+      {isSignupModalOpen && <SignupModal onClose={handleCloseSignupModal} />} 
     </Container>
   );
 }
