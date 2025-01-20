@@ -4,6 +4,7 @@ import AlbaSearchPage from "./pages/AlbaSearchPage";
 import MyPage from "./pages/MyPage/MyPage";
 import ResumePage from "./pages/ResumePage";
 import ChattingPage from "./pages/ChattingPage";
+import MyResume from "./pages/MyResume/MyResume";
 import SignUpPage from "./pages/SignUpPage";
 
 const AppRouter = () => {
@@ -15,6 +16,7 @@ const AppRouter = () => {
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/chat" element={<ChattingPage />} />
+      <Route path="/mypage/resume" element={<MyResume />} />
     </Routes>
   );
 };

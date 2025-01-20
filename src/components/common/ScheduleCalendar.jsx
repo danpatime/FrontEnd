@@ -6,7 +6,7 @@ import styled from "styled-components";
 import koLocale from "@fullcalendar/core/locales/ko"; // 한글 로케일
 import ScheduleAdd from "../modal/ScheduleAdd";
 
-const ScheduleCalendar = () => {
+const ScheduleCalendar = ({ isClickEnabled = true }) => {
   const [events, setEvents] = useState([
     {
       id: "1",
@@ -37,6 +37,7 @@ const ScheduleCalendar = () => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   const handleDateClick = (info) => {
+    if (!isClickEnabled) return; // isClickEnabled가 false이면 날짜 클릭 비활성화
     setSelectedDate(info.dateStr);
     setSelectedEvent(null);
     setIsEditMode(false);
@@ -44,6 +45,7 @@ const ScheduleCalendar = () => {
   };
 
   const handleEventClick = (info) => {
+    if (!isClickEnabled) return; // isClickEnabled가 false이면 일정 클릭 비활성화
     const event = events.find((e) => e.id === info.event.id);
     setSelectedEvent(event);
     setSelectedDate(event.start.split("T")[0]);
@@ -168,9 +170,8 @@ const ScheduleCalendar = () => {
 export default ScheduleCalendar;
 
 const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 814px;
+
 
   /* FullCalendar 기본 변수 재정의 */
   --fc-page-bg-color: transparent;
@@ -191,8 +192,8 @@ const Container = styled.div`
   }
 
   .fc-toolbar-title {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 600;
     padding: 0 15px;
     color: #333;
   }
@@ -252,5 +253,9 @@ const Container = styled.div`
 
   .fc-day {
     cursor: pointer; 
+  }
+
+  .fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 5px;
   }
 `;
