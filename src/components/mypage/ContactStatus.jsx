@@ -47,8 +47,7 @@ const dummyData = [
   },
 ];
 
-// const ContactStatus = ({ statusFilter, sortOrder }) => {
-const ContactStatus = ({ statusFilter }) => {
+const ContactStatus = ({ statusFilter, sortOrder }) => {
   const navigate = useNavigate();
 
   const handleRowClick = (id) => {
@@ -60,7 +59,15 @@ const ContactStatus = ({ statusFilter }) => {
       ? dummyData
       : dummyData.filter((data) => data.status === statusFilter);
 
-  // 정렬기능 추후 구현
+  //실제 동작 없음
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortOrder === '최신순') {
+      return new Date(b.date) - new Date(a.date);
+    } else if (sortOrder === '오래된순') {
+      return new Date(a.date) - new Date(b.date);
+    }
+    return 0;
+  });
 
   return (
     <Section>
@@ -76,7 +83,7 @@ const ContactStatus = ({ statusFilter }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((data) => (
+            {sortedData.map((data) => (
               <Tr key={data.id} onClick={() => handleRowClick(data.id)}>
                 <Td>
                   <CustomTag text={data.status} type="status" />
@@ -100,7 +107,6 @@ const ContactStatus = ({ statusFilter }) => {
   );
 };
 
-// 스타일 정의
 const Section = styled.section`
   padding: 20px;
   display: flex;
