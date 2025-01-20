@@ -51,12 +51,13 @@ const ContactStatus = ({ statusFilter, sortOrder }) => {
   const navigate = useNavigate();
 
   const handleRowClick = (id) => {
-    navigate(`/status/details/${id}`);
+    navigate(`/contracts/${id}`);
   };
 
-  const filteredData = dummyData.filter((data) =>
-    statusFilter === '상태' ? true : data.status === statusFilter,
-  );
+  const filteredData =
+    statusFilter === '상태'
+      ? dummyData
+      : dummyData.filter((data) => data.status === statusFilter);
 
   //실제 동작 없음
   const sortedData = [...filteredData].sort((a, b) => {
