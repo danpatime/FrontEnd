@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaStar, FaRegStar, FaCoffee } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
 
+// Dummy Data
 const dummyData = {
   workCondition: {
     title: '근무조건',
     storeName: '할리스 송정점',
+    storeLogo: 'https://via.placeholder.com/48',
     address: '부산광역시 남구 용소로 123',
     owner: '홍길동',
     phone: '010-9876-5432',
@@ -22,6 +24,7 @@ const dummyData = {
     hopes: ['카페', '베이커리'],
     region: '부산 남구 용호동, 부산 남구 대연동',
     phone: '010-1234-5678',
+    profileImage: '',
   },
 };
 
@@ -30,15 +33,14 @@ const ContactDetailPage = () => {
 
   return (
     <Container>
-      {/* 근무 조건 */}
       <Section>
         <Title>{workCondition.title}</Title>
         <Card>
           <Row>
             <StoreName>
-              <IconWrapper>
-                <FaCoffee size={24} color="#7b4b42" />
-              </IconWrapper>
+              <LogoWrapper>
+                <StoreLogo src={workCondition.storeLogo} alt="Store Logo" />
+              </LogoWrapper>
               {workCondition.storeName}
             </StoreName>
           </Row>
@@ -69,33 +71,30 @@ const ContactDetailPage = () => {
         </Card>
       </Section>
 
-      {/* 알바 정보 */}
       <Section>
         <Title>{albaInfo.title}</Title>
         <Card>
           <Tag>{albaInfo.experience}</Tag>
           <Profile>
-            <ProfileImage />
+            <ProfileImage src={albaInfo.profileImage} alt="Profile" />
             <ProfileDetails>
               <Name>{albaInfo.name}</Name>
               <SubInfo>
                 {albaInfo.gender} {albaInfo.age}세
               </SubInfo>
               <Rating>
-                {[...Array(5)].map((_, i) =>
-                  i < albaInfo.ratings ? (
-                    <FaStar key={i} size={18} color="#f9c74f" />
-                  ) : (
-                    <FaRegStar key={i} size={18} color="#e9ecef" />
-                  ),
-                )}
+                {renderStars(albaInfo.ratings)}
                 <RatingValue>{albaInfo.ratings}/5</RatingValue>
               </Rating>
             </ProfileDetails>
           </Profile>
           <InfoRow>
             <Label>희망</Label>
-            <Info>{albaInfo.hopes.join(', ')}</Info>
+            <Tags>
+              {albaInfo.hopes.map((hope, i) => (
+                <HopeTag key={i}>{hope}</HopeTag>
+              ))}
+            </Tags>
           </InfoRow>
           <InfoRow>
             <Label>지역</Label>
@@ -105,16 +104,29 @@ const ContactDetailPage = () => {
             <Label>전화번호</Label>
             <Info>{albaInfo.phone}</Info>
           </InfoRow>
-          <Button>자세히 보기</Button>
+          <CenteredButton>자세히 보기</CenteredButton>
         </Card>
       </Section>
     </Container>
   );
 };
 
+const renderStars = (rating) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(rating)) {
+      stars.push(<FaStar key={i} size={18} color="#f9c74f" />);
+    } else if (i === Math.ceil(rating) && !Number.isInteger(rating)) {
+      stars.push(<FaStarHalfAlt key={i} size={18} color="#f9c74f" />);
+    } else {
+      stars.push(<FaRegStar key={i} size={18} color="#e9ecef" />);
+    }
+  }
+  return stars;
+};
+
 export default ContactDetailPage;
 
-// 스타일링
 const Container = styled.div`
   max-width: 768px;
   margin: 0 auto;
@@ -138,7 +150,6 @@ const Card = styled.div`
   border: 1px solid #dee2e6;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const Row = styled.div`
@@ -156,10 +167,17 @@ const StoreName = styled.div`
   gap: 8px;
 `;
 
-const IconWrapper = styled.div`
+const LogoWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const StoreLogo = styled.img`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
 `;
 
 const InfoRow = styled.div`
@@ -182,6 +200,7 @@ const Label = styled.div`
 const Info = styled.div`
   font-size: 14px;
   color: #495057;
+  text-align: left;
 `;
 
 const Wage = styled.div`
@@ -201,10 +220,23 @@ const Tag = styled.div`
   padding: 4px 12px;
   font-size: 12px;
   font-weight: bold;
-  color: #fff;
-  background: #7b4b42;
+  color: #495057;
+  background: #e9ecef;
+  border: 1px solid #adb5bd;
   border-radius: 16px;
-  margin-bottom: 16px;
+  margin-right: 4px;
+`;
+
+const HopeTag = styled.div`
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #495057;
+  background: #fff;
+  border: 1px solid #adb5bd;
+  border-radius: 8px;
+  margin-right: 4px;
 `;
 
 const Profile = styled.div`
@@ -213,12 +245,13 @@ const Profile = styled.div`
   margin-bottom: 16px;
 `;
 
-const ProfileImage = styled.div`
+const ProfileImage = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 50%;
   background: #dee2e6;
   margin-right: 16px;
+  object-fit: cover;
 `;
 
 const ProfileDetails = styled.div`
@@ -248,18 +281,25 @@ const RatingValue = styled.span`
   color: #495057;
 `;
 
-const Button = styled.button`
-  background: #7b4b42;
-  color: #fff;
+const Tags = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+`;
+
+const CenteredButton = styled.button`
+  display: block;
+  width: 50%;
+  color: #adadad;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  margin-top: 16px;
 
   &:hover {
-    background: #5a3730;
+    background-color: #acacac;
   }
 `;

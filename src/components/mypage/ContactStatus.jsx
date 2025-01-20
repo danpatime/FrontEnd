@@ -47,7 +47,8 @@ const dummyData = [
   },
 ];
 
-const ContactStatus = ({ statusFilter, sortOrder }) => {
+// const ContactStatus = ({ statusFilter, sortOrder }) => {
+const ContactStatus = ({ statusFilter }) => {
   const navigate = useNavigate();
 
   const handleRowClick = (id) => {

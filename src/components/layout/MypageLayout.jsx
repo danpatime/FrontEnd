@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 const MypageLayout = ({ children }) => {
 
-  const owner = 'owner';
+  const owner = 'worker';
 
   return (
     <Layout>
@@ -26,5 +26,5 @@ const Container = styled.div`
 const Main = styled.main`
     flex-grow: 1; 
     margin: 0;
-    padding: 20px 230px 20px 20px; 
+    padding: 20px 230px 50px 20px; 
 `;
