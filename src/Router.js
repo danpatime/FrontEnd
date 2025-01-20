@@ -4,6 +4,7 @@ import AlbaSearchPage from "./pages/AlbaSearchPage";
 import MyPage from "./pages/MyPage/MyPage";
 import ResumePage from "./pages/ResumePage";
 import ChattingPage from "./pages/ChattingPage";
+import SignUpPage from "./pages/SignUpPage";
 
 const AppRouter = () => {
   return (
@@ -12,8 +13,7 @@ const AppRouter = () => {
       <Route path="/alba/search" element={<AlbaSearchPage />} />
       <Route path="/alba/resume/:id" element={<ResumePage />} />
       <Route path="/mypage" element={<MyPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="/signup" element={<SignUpPage />} />
       <Route path="/chat" element={<ChattingPage />} />
     </Routes>
   );

@@ -14,7 +14,8 @@ const Layout = ({ children }) => {
 
 const Main = styled.main`
   padding-top: 75.5px; //헤더 높이
+  padding-bottom: 30px;
   background-color: var(--gray_bg);
-  height: 100vh;
+  min-height: calc(100vh - 75.5px); 
 `
 export default Layout;

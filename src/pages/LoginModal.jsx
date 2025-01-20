@@ -34,7 +34,7 @@ function LoginModal({ onClose }) {
 
         // 서버에서 받은 토큰과 사용자 정보를 Context에 저장
         updateUser({ id, name, nickname, userType });
-        
+
         // 서버에서 받은 토큰을 업데이트
         request.updateToken(token);
 

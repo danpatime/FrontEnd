@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { HiXMark } from "react-icons/hi2";
 
 
+
 function Modal({ onClose, children, title, width }) {
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
