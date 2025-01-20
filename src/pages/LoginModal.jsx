@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from 'styled-components';
-import request from "../api/request";
+import request from "../api/request.ts";
 import { useUserInfo } from '../contexts/useUserInfo';
 import Modal from "../components/common/Modal";
 
@@ -34,7 +34,7 @@ function LoginModal({ onClose }) {
 
         // 서버에서 받은 토큰과 사용자 정보를 Context에 저장
         updateUser({ id, name, nickname, userType });
-
+        
         // 서버에서 받은 토큰을 업데이트
         request.updateToken(token);
 
@@ -114,7 +114,6 @@ function LoginModal({ onClose }) {
 }
 
 export default LoginModal;
-
 
 const Input = styled.input`
   width: 230px;
