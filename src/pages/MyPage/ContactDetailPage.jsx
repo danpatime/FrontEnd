@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
-
+import { renderStars } from '../../utils/RenderStars';
 // Dummy Data
 const dummyData = {
   workCondition: {
@@ -109,20 +108,6 @@ const ContactDetailPage = () => {
       </Section>
     </Container>
   );
-};
-
-const renderStars = (rating) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    if (i <= Math.floor(rating)) {
-      stars.push(<FaStar key={i} size={18} color="#f9c74f" />);
-    } else if (i === Math.ceil(rating) && !Number.isInteger(rating)) {
-      stars.push(<FaStarHalfAlt key={i} size={18} color="#f9c74f" />);
-    } else {
-      stars.push(<FaRegStar key={i} size={18} color="#e9ecef" />);
-    }
-  }
-  return stars;
 };
 
 export default ContactDetailPage;
