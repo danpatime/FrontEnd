@@ -151,8 +151,7 @@ const Profile = styled.div`
   padding: 20px 10px;
 
   img {
-    background-color: #D9D9D9;
-    background-size;
+    background-size: cover;
     border-radius: 50px;
     width: 160px;
     height: 160px;
