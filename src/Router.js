@@ -8,6 +8,7 @@ import ChattingPage from './pages/ChattingPage';
 import MyResume from './pages/MyResume/MyResume';
 import SignUpPage from './pages/SignUpPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
+import MyStorePage from './pages/MyPage/MyStore/MyStorePage';
 
 const AppRouter = () => {
   return (
@@ -21,6 +22,7 @@ const AppRouter = () => {
       <Route path="/mypage/resume" element={<MyResume />} />
       <Route path="/mypage/contracts" element={<MyStatusPage />} />
       <Route path="/contracts/:id" element={<ContactDetailPage />} />
+      <Route path="/mypage/mystore" element={<MyStorePage />} />
     </Routes>
   );
 };
