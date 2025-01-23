@@ -8,8 +8,9 @@ import SignUpPage from './pages/SignUpPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
 import MyStorePage from './pages/MyPage/MyStore/MyStorePage';
 import ResumePage from "./pages/ResumePage";
-import ChattingPage from "./pages/ChattingPage"
 import MyResume from "./pages/MyResume/MyResume";
+import ResumeForm from "./pages/MyResume/ResumeForm";
+import MyStoreForm from "./pages/MyPage/MyStore/MyStoreForm";
 
 const AppRouter = () => {
   return (
@@ -25,6 +26,7 @@ const AppRouter = () => {
       <Route path="/mypage/contracts" element={<MyStatusPage />} />
       <Route path="/contracts/:id" element={<ContactDetailPage />} />
       <Route path="/mypage/mystore" element={<MyStorePage />} />
+      <Route path="/mypage/mystore-form" element={<MyStoreForm />} />
     </Routes>
   );
 };
