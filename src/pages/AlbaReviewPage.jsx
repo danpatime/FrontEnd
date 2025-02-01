@@ -449,6 +449,10 @@ const PageNumber = styled.button`
   border: 1px solid #ddd;
   border-radius: 5px;
   cursor: pointer;
+
+    &:hover {
+    background-color: #F7B32B;
+  }
 `;
 
 const Modal = styled.div`
@@ -473,6 +477,11 @@ const AddReviewButton = styled.button`
   color: white;
   border-radius: 5px;
   margin-left:auto;
+  cursor:pointer;
+
+  &:hover {
+    background-color: #F7B32B;
+  }
 `;
 
 export default AlbaReviewPage;

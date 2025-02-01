@@ -1,51 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-
 import { HiClipboardDocumentList  } from "react-icons/hi2";
 import { PiIdentificationBadgeFill, PiPencilLineBold } from "react-icons/pi";
 import { TbMessageChatbotFilled } from "react-icons/tb";
+// import { BiSolidChat } from "react-icons/bi";
 import { RiSettings4Fill } from "react-icons/ri";
 import { SiHomeassistantcommunitystore } from "react-icons/si";
 import { BsBookmarkFill } from "react-icons/bs";
 
 const MypageSubMenu = ({ userType }) => {
-  const location = useLocation(); // 현재 경로 가져오기
-  const [activeMenu, setActiveMenu] = useState(null);
+  const [ activeMenu, setActiveMenu ] = useState(null); // 클릭된 항목 관리
 
   // 알바생과 사장님의 공통 메뉴 항목
   const commonMenu = [
-    { name: '체결 현황', path: '/mypage/contracts', icon: <HiClipboardDocumentList /> },
-    { name: '리뷰 관리', path: '/manage-reviews', icon: <PiPencilLineBold /> },
-    { name: '채팅방', path: '/chat', icon: <TbMessageChatbotFilled /> },
-    { name: '설정', path: '/mypage/settings', icon: <RiSettings4Fill /> }
+    { name: '체결 현황', path: '/MyPage/ContractStatus', icon: <HiClipboardDocumentList /> },
+    { name: '리뷰 관리', path: '/MyPage/ReviewManagement', icon: <PiPencilLineBold /> },
+    { name: '채팅방', path: '/MyPage/Chat', icon: <TbMessageChatbotFilled /> },
+    { name: '설정', path: '/MyPage/Settings', icon: <RiSettings4Fill /> }
   ];
 
   // 알바생 메뉴 항목(사장님은 없는 메뉴)
   const workerMenu = [
-    { name: '나의 이력서', path: '/mypage/resume', icon: <PiIdentificationBadgeFill /> },
+    { name: '나의 이력서', path: '/MyPage/MyResume', icon: <PiIdentificationBadgeFill /> },
     ...commonMenu
   ];
 
   const ownerMenu = [
-    { name: '관심 알바', path: '/mypage/saved-workers', icon: <BsBookmarkFill /> },
+    { name: '관심 알바', path: '/mypage/SavedWorkers', icon: <BsBookmarkFill /> },
     { name: '나의 매장', path: '/mypage/mystore', icon: <SiHomeassistantcommunitystore /> },
     ...commonMenu
   ];
 
   // 사용자 타입에 맞는 메뉴 선택
   const menuItems = userType === 'worker' ? workerMenu : ownerMenu;
-
-  // 초기 activeMenu를 현재 경로로 설정
-  useEffect(() => {
-    const currentPath = location.pathname;
-    const activeItem = menuItems.find((item) => item.path === currentPath);
-    if (activeItem) {
-      setActiveMenu(activeItem.name);
-    }
-  }, [location.pathname, menuItems]);
-
 
   // 메뉴 항목 클릭 시 activeMenu 상태 업데이트
   const handleMenuClick = (name) => {
@@ -56,9 +44,12 @@ const MypageSubMenu = ({ userType }) => {
     <SubMenuContainer>
       <MenuList>
         {menuItems.map((item) => (
-          <MenuItem key={item.name} onClick={() => handleMenuClick(item.name)}>
+          <MenuItem 
+            key={item.name}
+            onClick={() => handleMenuClick(item.name)} 
+          >
             <StyledLink to={item.path} active={activeMenu === item.name}>
-              <Icon active={activeMenu === item.name}>{item.icon}</Icon>
+            <Icon active={activeMenu === item.name}>{item.icon}</Icon>
               {item.name}
             </StyledLink>
           </MenuItem>
@@ -66,6 +57,7 @@ const MypageSubMenu = ({ userType }) => {
       </MenuList>
     </SubMenuContainer>
   );
+
 };
 
 export default MypageSubMenu;
@@ -73,8 +65,9 @@ export default MypageSubMenu;
 
 const SubMenuContainer = styled.div`
   width: 250px;
-  padding: 0 20px;
-  min-width: 160px;
+  padding: 0 20px 0 70px;
+  
+  margin-top: 10vh;
 `;
 
 const MenuList = styled.ul`
@@ -115,5 +108,5 @@ const Icon = styled.span`
   color: ${(props) => (props.active ? "#6E3C3B" : "#AFAFAF")};
   
   margin-top: 5px;
-  margin-right: 15px;
+  margin-right: 25px;
 `;
