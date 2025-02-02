@@ -20,15 +20,12 @@ const AlbaSearchFilter = () => {
   };
 
   const handleSubmit = () => {
-    console.log('검색 조건:', filters);
     fetch('/api/mock/alba-search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(filters),
     })
       .then((response) => response.json())
-      .then((data) => console.log('검색 결과:', data))
-      .catch((error) => console.error('오류 발생:', error));
   };
 
   const handleReset = () => {

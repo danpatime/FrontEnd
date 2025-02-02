@@ -44,9 +44,7 @@ const AlbaSearchPage = () => {
       return newProfiles;
     });
   };
-
-  function AlbaSearchPage() {
-    return (
+return (
     <div>
       <CurrentAlbaHandler />
       <AlbaSearchFilter />
@@ -56,7 +54,6 @@ const AlbaSearchPage = () => {
       />
     </div>
   );
-  }
   
 };
 
