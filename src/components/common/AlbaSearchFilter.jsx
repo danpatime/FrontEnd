@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-/*
-<To do List>
-1. 시간 30분 단위로 설정
-2. 검색/초기화 버튼 따로 설정 -> 스타일링 따로따로
-3. 파일경로 원래대로 되돌려놓기
-*/
-
 const AlbaSearchFilter = () => {
   const [filters, setFilters] = useState({
     region: { region_1: '', region_2: '', region_3: '' },
@@ -47,13 +40,15 @@ const AlbaSearchFilter = () => {
     });
   };
 
+
   return (
       <div>
           <Container>
-          
-      <FilterSection>
-        <Label>지역</Label>
-        <Region onChange={(e) => handleInputChange(e, 'region', 'region_1')}>
+        <FilterContents>
+           <FilterSection>
+        <FilterLabel>지역</FilterLabel>
+          <RegionSection>
+            <Region onChange={(e) => handleInputChange(e, 'region', 'region_1')}>
           <option value="">시/도</option>
         </Region>
         <Region onChange={(e) => handleInputChange(e, 'region', 'region_2')}>
@@ -62,10 +57,11 @@ const AlbaSearchFilter = () => {
         <Region onChange={(e) => handleInputChange(e, 'region', 'region_3')}>
           <option value="">동/읍/면</option>
         </Region>
+          </RegionSection>
       </FilterSection>
       
       <FilterSection>
-        <Label>희망 업종</Label>
+        <FilterLabel>희망 업종</FilterLabel>
         <Category onChange={(e) => handleInputChange(e, 'category', 'mainJobCategory')}>
           <option value="">대분류</option>
         </Category>
@@ -75,7 +71,7 @@ const AlbaSearchFilter = () => {
       </FilterSection>
       
       <FilterSection>
-        <Label>날짜</Label>
+        <FilterLabel>날짜</FilterLabel>
         <AlbaDate
           type="date"
           onChange={(e) => handleInputChange(e, 'albaDate', 'startDate')}
@@ -87,7 +83,7 @@ const AlbaSearchFilter = () => {
       </FilterSection>
       
       <FilterSection>
-        <Label>시간</Label>
+        <FilterLabel>시간</FilterLabel>
         <AlbaTime
           type="time"
           onChange={(e) => handleInputChange(e, 'albaTime', 'startTime')}
@@ -97,9 +93,11 @@ const AlbaSearchFilter = () => {
           onChange={(e) => handleInputChange(e, 'albaTime', 'endTime')}
         />
       </FilterSection>
+          </FilterContents>
+     
+      </Container>
       
-      
-          </Container>
+
           <ButtonGroup>
         <Button onClick={handleSubmit}>검색</Button>
         <Button onClick={handleReset} reset>
@@ -115,7 +113,7 @@ export default AlbaSearchFilter;
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1000px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ddd;
@@ -124,21 +122,29 @@ const Container = styled.div`
   position: relative;
   top: 20px;
 `;
-
+const FilterContents = styled.div`
+  margin-right: 30px;
+`;
 const FilterSection = styled.div`
   margin-bottom: 10px;
   display: flex;
   align-items:center;
 `;
 
-const Label = styled.label`
+const FilterLabel = styled.label`
   display: block;
+  margin-left:30px;
   font-weight: bold;
+  width: 270px;
   padding-right: 200px;
 `;
-
+const RegionSection = styled.div`
+  position: relative;
+  left: 20px;
+  width: 500px;
+`;
 const Region = styled.select`
-  width: 20%;
+  width: 30%;
   padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -151,7 +157,6 @@ const Category = styled.select`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 0 10px 10px 0;
-  position: relative;
   right: 30px;
 `;
 const AlbaDate = styled.input`
@@ -178,18 +183,23 @@ const ButtonGroup = styled.div`
   justify-content: space-between;
   left: 45%;
   top: 40px;
+  margin-bottom: 50px;
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
   width: 80px;
-  background-color: ${(props) => (props.reset ? '#ccc' : '#7B4B42')};
+  background-color: ${(props) => (props.reset ? "var(--disabled-color)" : "var(--primary-color)")};
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-
+  &:focus,
+  &:active {
+    outline: none;
+    box-shadow: none;
+  }
   &:hover {
-    background-color: ${(props) => (props.reset ? '#b5b5b5' : '5A3A2E')};
+    background-color: ${(props) => (props.reset ? "var(--gray_light)" : "var(--primary-color-dark)")};
   }
 `;

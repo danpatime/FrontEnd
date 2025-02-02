@@ -9,6 +9,7 @@ import ChattingPage from "./pages/ChattingPage";
 
 const AppRouter = () => {
   return (
+    
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/alba/search" element={<AlbaSearchPage />} />
@@ -18,6 +19,7 @@ const AppRouter = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/chat" element={<ChattingPage />} />
     </Routes>
+    
   );
 };
 
