@@ -1,11 +1,12 @@
 import React from 'react'
+import MypageLayout from '../../components/layout/MypageLayout'
 
 function MyPage() {
   return (
-    <div>
+    <MypageLayout>
       MyPage
-    </div>
+    </MypageLayout>
   )
 }
 
-export default MyPage
+export default MyPage;

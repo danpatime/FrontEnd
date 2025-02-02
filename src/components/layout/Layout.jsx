@@ -13,6 +13,9 @@ const Layout = ({ children }) => {
 };
 
 const Main = styled.main`
-  margin-top: 75.5px; //헤더 높이
+  padding-top: 75.5px; //헤더 높이
+  padding-bottom: 30px;
+  background-color: var(--gray_bg);
+  min-height: calc(100vh - 75.5px); 
 `
 export default Layout;
