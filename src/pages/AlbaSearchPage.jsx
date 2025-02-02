@@ -1,6 +1,7 @@
 import { AlbaProfileList } from "../components/common/AlbaProfileCard";
 import AlbaSearchFilter from '../components/common/AlbaSearchFilter';
-import React, { useState } from 'react';
+import React from "react";
+import { useState } from "react";
 import CurrentAlbaHandler from "../components/common/CurrentAlba";
 
 const AlbaSearchPage = () => {
@@ -31,7 +32,7 @@ const AlbaSearchPage = () => {
       isDanpat: false,
       isBookmarked: false,
     },
-    
+
   ]);
   const toggleBookmark = (index) => {
     setProfiles((prev) => {
@@ -44,7 +45,8 @@ const AlbaSearchPage = () => {
     });
   };
 
-  return (
+  function AlbaSearchPage() {
+    return (
     <div>
       <CurrentAlbaHandler />
       <AlbaSearchFilter />
@@ -54,6 +56,8 @@ const AlbaSearchPage = () => {
       />
     </div>
   );
+  }
+  
 };
 
 export default AlbaSearchPage;
