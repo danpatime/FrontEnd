@@ -1,8 +1,8 @@
 import React,{useState} from "react";
 import styled from "styled-components";
-import Dropdown from "../components/common/DropDown";
+import Dropdown from "../../components/common/DropDown";
 
-const SupportPage=()=>{
+const Inquiry=()=>{
   const [DDOpen1,setDDOpen1]=useState(false);
   const [DDOpen2,setDDOpen2]=useState(false);
   const [inqType1, setInqType1] = useState("선택해주세요");
@@ -115,7 +115,7 @@ const SupportPage=()=>{
   );
 };
 
-export default SupportPage;
+export default Inquiry;
 
 const Container = styled.div`
   padding: 50px 100px;
@@ -131,9 +131,7 @@ const CenterWrapper = styled.div`
 const SupportText = styled.div`
   font-size: 16px;
   color: grey;
-  letter-spacing: 1px;
   line-height: 30px;
-  margin: 0 auto;
   margin-top: 30px;
 `;
 
@@ -166,7 +164,6 @@ const FormArea = styled.div`
   flex-direction: column;
   gap: 15px;
   margin: 20px 0;
-  margin-left:50px;
 `;
 
 const InputForm = styled.input`

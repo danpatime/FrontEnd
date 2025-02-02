@@ -4,6 +4,7 @@ import { useReviewInfo } from '../../contexts/useReviewInfo';
 import styled from "styled-components";
 import logo from "../../assets/images/logo.png";
 import ReviewForm from '../../components/common/ReviewForm';
+import MypageLayout from '../../components/layout/MypageLayout';
 
 const MyReviewPage = () => {
   const { reviews,editReview,deleteReview,reportReview,getReviewsByName } = useReviewInfo();
@@ -66,7 +67,7 @@ const MyReviewPage = () => {
   };
 
   return (
-    <div>
+    <MypageLayout>
       <h1>리뷰 관리</h1>
       <Container>
         <SelectContainer>
@@ -172,7 +173,7 @@ const MyReviewPage = () => {
           </ReportContent>
         </Modal>
       )}
-    </div>
+    </MypageLayout>
   );
 };
 
@@ -329,6 +330,7 @@ const ButtonContainer = styled.div`
 `;
 
 const CancelButton = styled.button`
+  color:white;
   background-color: #5c3a32;
   padding: 5px 15px;
   border: none;

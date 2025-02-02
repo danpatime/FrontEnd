@@ -9,7 +9,8 @@ import React from 'react';
 import MyStatusPage from './pages/MyPage/MyStatusPage';
 import MyResume from './pages/MyResume/MyResume';
 import SignUpPage from './pages/SignUpPage';
-import SupportPage from "./pages/SupportPage";
+import MyReviewPage from "./pages/MyPage/MyReviewPage";
+import SupportPage from './pages/Support/SupportPage';
 
 const AppRouter = () => {
   return (
@@ -24,6 +25,8 @@ const AppRouter = () => {
       <Route path="/chat" element={<ChattingPage />} />
       <Route path="/mypage/resume" element={<MyResume />} />
       <Route path="/mypage/status" element={<MyStatusPage />} />
+      <Route path="/manage-reviews" element={<MyReviewPage />} />
+      <Route path="/support" element={<SupportPage />} />
     </Routes>
   );
 };

@@ -1,11 +1,9 @@
-/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import StarRating from "./StarRating";
 import { useReviewInfo } from "../../contexts/useReviewInfo";
 
 const ReviewForm = ({ onClose, initialData }) => {
-  const [review, setReview] = useState(initialData || {});
   const [starPoint, setStarPoint] = useState(0);
   const [content, setContent] = useState("");
   const [reviewCount,setReviewCount]=useState(1);
@@ -13,7 +11,7 @@ const ReviewForm = ({ onClose, initialData }) => {
   const [selectedStore, setSelectedStore] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedTag, setSelectedTag] = useState([]);
-  const [reviewTag, setReviewTag] = useState([
+  const reviewTag = useState([
     "일을 잘해요", 
     "시간 엄수를 잘해요",
     "일이 서툴러요",
@@ -35,7 +33,6 @@ const ReviewForm = ({ onClose, initialData }) => {
 
   useEffect(() => {
     if (initialData) {
-      setReview(initialData);
       setStarPoint(initialData.starPoint || 0);
       setContent(initialData.content || "");
       setReviewCount(initialData.reviewCount||1);
