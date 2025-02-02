@@ -1,5 +1,5 @@
-import React from 'react'
-import MypageLayout from '../../components/layout/MypageLayout'
+import React from 'react';
+import MypageLayout from '../../components/layout/MypageLayout';
 
 function MyPage() {
   return (

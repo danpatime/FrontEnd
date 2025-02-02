@@ -8,9 +8,11 @@ import { ReviewProvider } from "./contexts/ReviewInfoContext";
 function App() {
   return (
     <UserInfoProvider>
+    <ReviewProvider>
       <Layout>
         <Router />
       </Layout>
+    </ReviewProvider>
     </UserInfoProvider>
   );
 }
