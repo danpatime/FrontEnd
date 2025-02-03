@@ -133,8 +133,8 @@ const Page = styled.div`
   border-radius: 20px;
   min-width: 1000px;
   max-width: 1400px;
-`
 
+`
 const Title = styled.div`
   display: flex;
   justify-content: space-between;

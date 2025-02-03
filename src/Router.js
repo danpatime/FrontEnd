@@ -9,6 +9,7 @@ import MyResume from './pages/MyResume/MyResume';
 import SignUpPage from './pages/SignUpPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
 
+
 const AppRouter = () => {
   return (
     <Routes>
