@@ -36,10 +36,12 @@ const Inquiry=()=>{
     setInqType1(option);
     setInqType2('선택해주세요');
     setDDOpen2(false);
+    setDDOpen1(false);
   };
 
   const handleInq2Select = (option) => {
     setInqType2(option);
+    setDDOpen2(false);
   };
 
   // 문의 등록
@@ -76,20 +78,20 @@ const Inquiry=()=>{
           <DropDownGroup>
           <FormLabel>문의 유형</FormLabel>
           <Dropdown
+            key={`inqType1-${inqType1}`}
             label={inqType1}
             options={options1}
             isActive={DDOpen1}
             onToggle={handleInq1Toggle}
             onSelect={handleInq1Select}
-            selectedOption={inqType1}
           />
           <Dropdown
+            key={`inqType2-${inqType2}`}
             label={inqType2}
             options={options2[inqType1] || []}
             isActive={DDOpen2}
             onToggle={handleInq2Toggle}
             onSelect={handleInq2Select}
-            selectedOption={inqType2}
           />
           </DropDownGroup>
           <FormLabel>제목</FormLabel>

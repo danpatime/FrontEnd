@@ -1,10 +1,10 @@
-/*eslint-disable*/
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import KeyboardArrowDown from '../../assets/icons/keyboard_arrow_down.svg';
 
-const Dropdown = ({ label, options, isActive, onToggle, onSelect,selectedOption }) => {
+const Dropdown = ({ label, options, isActive, onToggle, onSelect }) => {
   const [isOpen, setIsOpen] = useState(isActive);
+  const [selectedOption, setSelectedOption] = useState(label);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -12,6 +12,7 @@ const Dropdown = ({ label, options, isActive, onToggle, onSelect,selectedOption 
   };
 
   const handleSelect = (option) => {
+    setSelectedOption(option);
     onSelect(option);
     setIsOpen(false);
   };
@@ -19,7 +20,7 @@ const Dropdown = ({ label, options, isActive, onToggle, onSelect,selectedOption 
   return (
     <DropdownWrapper>
       <DropdownButton onClick={toggleDropdown}>
-        {selectedOption||label}
+        {selectedOption}
         <Icon src={KeyboardArrowDown} alt="arrow icon" isOpen={isOpen} />
       </DropdownButton>
       {isOpen && (
