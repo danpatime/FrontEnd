@@ -4,6 +4,8 @@ import StarRating from "./StarRating";
 import { useReviewInfo } from "../../contexts/useReviewInfo";
 
 const ReviewForm = ({ onClose, initialData }) => {
+  const isEditing=initialData;
+  const [reviewId,setReviewId]=useState(Date.now());
   const [starPoint, setStarPoint] = useState(0);
   const [content, setContent] = useState("");
   const [reviewCount,setReviewCount]=useState(1);
@@ -11,7 +13,7 @@ const ReviewForm = ({ onClose, initialData }) => {
   const [selectedStore, setSelectedStore] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedTag, setSelectedTag] = useState([]);
-  const reviewTag = useState([
+  const [reviewTag] = useState([
     "일을 잘해요", 
     "시간 엄수를 잘해요",
     "일이 서툴러요",
@@ -33,6 +35,7 @@ const ReviewForm = ({ onClose, initialData }) => {
 
   useEffect(() => {
     if (initialData) {
+      setReviewId(initialData.id||Date.now());
       setStarPoint(initialData.starPoint || 0);
       setContent(initialData.content || "");
       setReviewCount(initialData.reviewCount||1);
@@ -45,7 +48,7 @@ const ReviewForm = ({ onClose, initialData }) => {
 
   const handleSubmit = () => {
     const newReview = {
-      id: Date.now(),
+      id: reviewId,
       storeID: selectedStore,
       albaID: selectedAlba,
       starPoint: starPoint,
@@ -55,8 +58,20 @@ const ReviewForm = ({ onClose, initialData }) => {
       tags: selectedTag,
     };
 
+    if (!selectedStore || !selectedAlba || !starPoint || !content) {
+      let missingFields = [];
+      
+      if (!selectedStore) missingFields.push("가게");
+      if (!selectedAlba) missingFields.push("알바생");
+      if (!starPoint) missingFields.push("평점");
+      if (!content) missingFields.push("한줄평");
+  
+      alert(`${missingFields.join(", ")}을(를) 입력해 주세요.`);
+      return; // 입력 받지 않은 항목에 대해 alert 메시지
+    }
+
     if (initialData) {
-      editReview(newReview); // 수정 시 editReview 사용(아직 수정 기능 미구현)
+      editReview(newReview);
     } else {
       addReview(newReview);
     }
@@ -88,7 +103,9 @@ const ReviewForm = ({ onClose, initialData }) => {
         <FieldContainer>
           <Field>
             <Label>가게</Label>
-            <Select value={selectedStore} onChange={handleStoreChange}>
+            <Select value={selectedStore}
+            onChange={handleStoreChange}
+            disabled={isEditing}>
               <option value="" disabled>
                 선택하세요
               </option>
@@ -105,7 +122,7 @@ const ReviewForm = ({ onClose, initialData }) => {
             <Select
               value={selectedAlba}
               onChange={(e) => setSelectedAlba(e.target.value)}
-              disabled={!selectedStore}
+              disabled={!selectedStore||isEditing}
             >
               <option value="" disabled>
                 선택하세요
