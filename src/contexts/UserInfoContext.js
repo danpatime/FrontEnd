@@ -1,19 +1,32 @@
 // Provider와 Context 정의 (사용자 정보 관련)
 
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 const UserInfoContext = createContext();
 
 export const UserInfoProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  // 페이지 새로고침 시 로컬스토리지에서 user 정보 불러오기
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));  // 로컬스토리지에서 user 정보를 불러와서 상태 설정
+    }
+  }, []);
+
   // 사용자 정보를 업데이트하는 함수
   const updateUser = (userData) => {
     setUser(userData);
+    // user 정보를 로컬스토리지에 저장
+    localStorage.setItem('user', JSON.stringify(userData));  // 로그인 후 user를 로컬스토리지에 저장
   };
 
+  // 로그인 여부 체크 (user 값이 있으면 로그인 상태)
+  const isAuthenticated = !!user;
+
   return (
-    <UserInfoContext.Provider value={{ user, updateUser }}>
+    <UserInfoContext.Provider value={{ user, isAuthenticated, updateUser }}>
       {children}
     </UserInfoContext.Provider>
   );
