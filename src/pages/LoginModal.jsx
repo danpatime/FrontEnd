@@ -22,30 +22,23 @@ function LoginModal({ onClose }) {
     }
 
     const requestData = {
-      id: loginId,
+      loginId: loginId,
       password: password,
     };
 
     try {
       const response = await request.post("/api/v1/auth/login", requestData);
 
-      if (response.isSuccess && response.code === 200) {
-        const { token, id, name, nickname, userType } = response.result;
+      const { accessToken, userId, userRole } = response;
 
-        // 서버에서 받은 토큰과 사용자 정보를 Context에 저장
-        updateUser({ id, name, nickname, userType });
+      // 사용자 정보 업데이트 (나중에 이름 추가)
+      updateUser({ id: userId, role: userRole });
 
-        // 서버에서 받은 토큰을 업데이트
-        request.updateToken(token);
+      // 토큰 저장 및 Axios 헤더 업데이트
+      request.updateToken(accessToken);
 
-        onClose(); // 로그인 후 모달 닫기
-      } else {
-        // 실패 응답 처리
-        console.error(response.message); 
-        alert("오류가 발생했습니다. 다시 시도해주세요.");
-      }
-    } catch (error) {
-      console.error(error); 
+      onClose(); // 로그인 후 모달 닫기
+      } catch (error) {
       alert("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
