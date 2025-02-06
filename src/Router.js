@@ -2,12 +2,13 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AlbaSearchPage from "./pages/AlbaSearchPage";
 import MyPage from "./pages/MyPage/MyPage";
-import Login from "./pages/LoginPage";
-import Signup from "./pages/SignupPage";
+import SignUpPage from "./pages/SignUpPage";
 import ResumePage from "./pages/ResumePage";
 import ChattingPage from "./pages/ChattingPage";
 import MyResume from "./pages/MyResume/MyResume";
 import ResumeForm from "./pages/MyResume/ResumeForm";
+import MyStatusPage from "./pages/MyPage/MyStatusPage";
+import ContactDetailPage from "./pages/MyPage/ContactDetailPage";
 
 const AppRouter = () => {
   return (
