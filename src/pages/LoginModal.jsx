@@ -29,10 +29,10 @@ function LoginModal({ onClose }) {
     try {
       const response = await request.post("/api/v1/auth/login", requestData);
 
-      const { accessToken, userId, userRole } = response;
+      const { accessToken, userId, userRole, name, profile } = response;
 
       // 사용자 정보 업데이트 (나중에 이름 추가)
-      updateUser({ id: userId, role: userRole });
+      updateUser({ id: userId, role: userRole, name: name, profileImage: profile });
 
       // 토큰 저장 및 Axios 헤더 업데이트
       request.updateToken(accessToken);
