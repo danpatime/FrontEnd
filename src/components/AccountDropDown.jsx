@@ -1,12 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
+import { useUserInfo } from "../contexts/useUserInfo.js";
 
 const DropDown = () => {
+  const { logoutUser } = useUserInfo();
+
   return (
     <Dropdown>
       <DropdownItem to="/mypage">내 정보</DropdownItem>
-      <DropdownItem to="/logout">로그아웃</DropdownItem>
+      <DropdownItem onClick={logoutUser}>로그아웃</DropdownItem>
     </Dropdown>
   );
 };
