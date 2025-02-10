@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import MypageLayout from '../../components/layout/MypageLayout';
 import ScheduleCalendar from '../../components/common/ScheduleCalendar';
@@ -6,6 +7,7 @@ import defaultProfileImage from "../../assets/images/default-profile.jpg";
 
 
 const MyResume = () => {
+  const navigate = useNavigate();
   const [resumeData, setResumeData] = useState(null);
 
   useEffect(() => {
@@ -34,13 +36,17 @@ const MyResume = () => {
     // setResumeData(null);
   }, []);
 
+  const handleNavigation = (mode) => {
+    navigate("/mypage/resume-form", { state: { modeType: mode } });
+  };
+
   return (
     <MypageLayout>
       <Page>
         {resumeData ? (
           <>
             <Title>나의 이력서 <ButtonContainer>
-              <button>수정</button>
+              <button onClick={() => handleNavigation("edit")}>수정</button>
               <button>삭제</button>
             </ButtonContainer></Title>
 
@@ -115,7 +121,7 @@ const MyResume = () => {
         ) : (
           <NoResume>
             <p>아직 이력서를 등록하지 않았습니다.</p>
-            <button>이력서 등록</button>
+            <button onClick={() => handleNavigation("register")}>이력서 등록</button>
           </NoResume>
         )}
       </Page>
@@ -155,6 +161,7 @@ const Profile = styled.div`
     border-radius: 50px;
     width: 160px;
     height: 160px;
+    border-radius: 50px;
     object-fit: cover; 
     object-position: center;
   }
@@ -250,6 +257,7 @@ const ButtonContainer = styled.div`
     border: 1px solid #E8E8E8;
     border-radius: 10px;
     background-color: unset;
+    cursor: pointer;
 
     &:hover {
       background-color: #7B4B42;

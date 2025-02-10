@@ -1,73 +1,97 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import StarRating from "./StarRating";
+import { useReviewInfo } from "../../contexts/useReviewInfo";
 
-const mockMappingData = {
-  "가게1": ["홍길동", "박지훈", "장미숙", "홍유진", "최수빈", "김서연"],
-  "가게2": ["김민수", "최유나", "김하늘", "오지훈", "이수연", "박진영"],
-  "가게3": ["이영희", "정수빈", "박성민", "김지수", "박준호"],
-};
-
-const ReviewForm = ({ onClose, addReview,initialData }) => {
-  const [review,setReview]=useState(initialData ||{});
+const ReviewForm = ({ onClose, initialData }) => {
+  const isEditing=initialData;
+  const [reviewId,setReviewId]=useState(Date.now());
   const [starPoint, setStarPoint] = useState(0);
   const [content, setContent] = useState("");
+  const [reviewCount,setReviewCount]=useState(1);
+  const [reviewDate,setReviewDate]=useState(new Date());
   const [selectedStore, setSelectedStore] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedTag, setSelectedTag] = useState([]);
-  const [selectedRCount,setSelectedRCount]=useState(0);
-  const [reviewTag,setReviewTag]=useState([
-    '일을 잘해요', 
-    '시간 엄수를 잘해요',
-    '일이 서툴러요',
-    '근무시간을 못 지켰어요', 
-    '성실해요',
-    '꼼꼼해요',
-     '신뢰가 가요', 
-     '또 같이 일하고 싶어요']);
+  const [reviewTag] = useState([
+    "일을 잘해요", 
+    "시간 엄수를 잘해요",
+    "일이 서툴러요",
+    "근무시간을 못 지켰어요", 
+    "성실해요",
+    "꼼꼼해요",
+    "신뢰가 가요", 
+    "또 같이 일하고 싶어요"
+  ]);
+
+  const {addReview,editReview}=useReviewInfo();
+
+  // 더미 가게 및 알바 목록
+  const storeData = {
+    "크리스피 크림도넛 경성대점": ["홍길동", "유재석", "하하"],
+    "할리스커피 부경대점": ["김철수", "이영희", "신동엽"],
+    "GS25 대연점": ["박민수", "강호동"]
+  };  
 
   useEffect(() => {
     if (initialData) {
-      setReview(initialData);
+      setReviewId(initialData.id||Date.now());
       setStarPoint(initialData.starPoint || 0);
       setContent(initialData.content || "");
+      setReviewCount(initialData.reviewCount||1);
+      setReviewDate(initialData.date||"");
       setSelectedStore(initialData.storeID || "");
       setSelectedAlba(initialData.albaID || "");
       setSelectedTag(initialData.tags || []);
     }
   }, [initialData]);
 
-
   const handleSubmit = () => {
     const newReview = {
-      id: Date.now(),
+      id: reviewId,
       storeID: selectedStore,
       albaID: selectedAlba,
       starPoint: starPoint,
-      reviewCount: selectedRCount+1,
-      date: new Date().toISOString().split("T")[0],
+      reviewCount: reviewCount,
+      date:reviewDate,
       content: content,
-      tags: selectedTag, // 태그 추가
+      tags: selectedTag,
     };
+
+    if (!selectedStore || !selectedAlba || !starPoint || !content) {
+      let missingFields = [];
+      
+      if (!selectedStore) missingFields.push("가게");
+      if (!selectedAlba) missingFields.push("알바생");
+      if (!starPoint) missingFields.push("평점");
+      if (!content) missingFields.push("한줄평");
   
-    addReview(newReview); // 부모 컴포넌트에 리뷰 전달
-    onClose(); // 모달 닫기
+      alert(`${missingFields.join(", ")}을(를) 입력해 주세요.`);
+      return; // 입력 받지 않은 항목에 대해 alert 메시지
+    }
+
+    if (initialData) {
+      editReview(newReview);
+    } else {
+      addReview(newReview);
+    }
+
+    onClose();
   };
 
   const toggleTagSelection = (tag) => {
     if (selectedTag.includes(tag)) {
-      setSelectedTag((prev) => prev.filter((t) => t !== tag)); // 태그 해제
+      setSelectedTag((prev) => prev.filter((t) => t !== tag));
     } else {
-      setSelectedTag((prev) => [...prev, tag]); // 태그 선택
+      setSelectedTag((prev) => [...prev, tag]);
     }
   };
 
   const handleStoreChange = (e) => {
     const store = e.target.value;
     setSelectedStore(store);
-    setSelectedAlba(""); // 가게 변경 시, 알바 선택 초기화
+    setSelectedAlba(""); // 가게 변경 시 알바 리스트 새로 불러오기
   };
-  
 
   return (
     <Overlay>
@@ -78,29 +102,34 @@ const ReviewForm = ({ onClose, addReview,initialData }) => {
         </Header>
         <FieldContainer>
           <Field>
-            <Label>근무지</Label>
-            <Select value={selectedStore} onChange={handleStoreChange}>
+            <Label>가게</Label>
+            <Select value={selectedStore}
+            onChange={handleStoreChange}
+            disabled={isEditing}>
               <option value="" disabled>
                 선택하세요
               </option>
-              <option value="가게1">가게 1</option>
-              <option value="가게2">가게 2</option>
-              <option value="가게3">가게 3</option>
+              {Object.keys(storeData).map((store) => (
+                <option key={store} value={store}>
+                  {store}
+                </option>
+              ))}
             </Select>
           </Field>
 
           <Field>
-            <Label>근무자</Label>
+            <Label>알바생</Label>
             <Select
               value={selectedAlba}
               onChange={(e) => setSelectedAlba(e.target.value)}
-              disabled={!selectedStore} // 가게가 선택되지 않으면 비활성화
+              disabled={!selectedStore||isEditing}
             >
               <option value="" disabled>
                 선택하세요
               </option>
               {selectedStore &&
-                mockMappingData[selectedStore].map((alba) => (
+                storeData[selectedStore] &&
+                storeData[selectedStore].map((alba) => (
                   <option key={alba} value={alba}>
                     {alba}
                   </option>
@@ -110,12 +139,12 @@ const ReviewForm = ({ onClose, addReview,initialData }) => {
         </FieldContainer>
 
         <Field>
-          <Label>알바 리뷰 별점</Label>
-          <StarRating setRating={setStarPoint} starPoint={starPoint}/>
+          <Label>알바 후기 별점</Label>
+          <StarRating setRating={setStarPoint} starPoint={starPoint} />
         </Field>
 
         <Field>
-          <Label>한줄 평을 작성해주세요</Label>
+          <Label>한줄평을 작성해주세요</Label>
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -202,7 +231,7 @@ const Field = styled.div`
 `;
 
 const Label = styled.label`
-  margin-bottom: 8px; 
+  margin: 10px; 
   font-weight: bold;
 `;
 
@@ -210,6 +239,8 @@ const Select = styled.select`
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin:5px;
+  background-color:rgb(210, 185, 179);
 `;
 
 const Textarea = styled.textarea`
@@ -226,10 +257,15 @@ const SubmitButton = styled.button`
   padding: 10px;
   font-size: 16px;
   color: white;
-  background:#5c3a32;
+  background-color:#5c3a32;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+
+  &:hover {
+    background-color: ${(props) =>
+      props.isSelected ? "#5c3a32" : "rgb(241, 199, 59)"};
+  }
 `;
 
 const TagContainer = styled.div`
