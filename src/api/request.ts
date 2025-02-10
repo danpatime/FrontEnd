@@ -1,13 +1,11 @@
 import axios, { AxiosInstance, AxiosHeaders  } from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 class Request {
   private api: AxiosInstance;
 
   constructor() {
     this.api = axios.create({
-      baseURL: BASE_URL,
+      baseURL: "/",
     });
 
     // 요청 전 최신 토큰을 헤더에 추가
