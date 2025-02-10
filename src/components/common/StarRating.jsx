@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useState } from "react";
 import styled from "styled-components";
 
@@ -16,7 +17,7 @@ const StarRating = ({ setRating, starPoint, rating, size = 50 }) => {
     setHoverRating(value); // hover 위치를 상태에 저장
   };
 
-  const showCurStar=(value)=>{
+  const showCurStar=()=>{
     if(rating) return;
     setHoverRating(rating);
   }
