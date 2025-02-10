@@ -14,6 +14,7 @@ const AppRouter = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/alba/search" element={<AlbaSearchPage />} />
+      <Route path="/alba/review" element={<AlbaReviewPage/>}/>
       <Route path="/alba/resume/:id" element={<ResumePage />} />
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/signup" element={<SignUpPage />} />
