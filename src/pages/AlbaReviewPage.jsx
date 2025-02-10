@@ -261,9 +261,12 @@ const AddReviewButton = styled.button`
   color: white;
   border-radius: 5px;
   margin-left:auto;
+<<<<<<< HEAD
   cursor:pointer;
 
    &:hover {
     background-color: #F7B32B;
   }
+=======
+>>>>>>> develop
 `;

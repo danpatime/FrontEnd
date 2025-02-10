@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import request from '../api/request.ts';
 import Layout from "../components/layout/Layout";
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
@@ -10,6 +12,8 @@ const SignUpPage = () => {
   const userType = location.state?.userType || 'worker';
   const isOwner = userType === 'owner';
   const [error, setError] = useState(''); // 비밀번호 일치 여부
+  const [emailVerified, setEmailVerified] = useState(false); 
+  const navigate = useNavigate();
 
   const [agreement, setAgreement] = useState({
     all: false,
@@ -43,31 +47,48 @@ const SignUpPage = () => {
   };
 
   const [formData, setFormData] = useState({
-    username: '',
+    loginId: '',
     password: '',
     confirmPassword: '',
     name: '',
     nickname: '',
     email: '',
+    phoneNumber: '',
     confirmEmail: '',
-    businessNumber: '',
-    companyName: '',
-    ceoName: '',
-    companyAddress: '',
-    agreement: false,
+    businessRegistrationNumber: '',
+    businessName: '',
+    representationName: '',
+    location: '',
+    role: '',
+    nationality: '',
   });
 
 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let newValue = value;
+  
+    // 전화번호 입력 필드인 경우 숫자만 필터링 후 포맷 적용
+    if (name === "phoneNumber") {
+      newValue = value.replace(/[^0-9]/g, ''); // 숫자만 허용
+  
+      if (newValue.length > 3 && newValue.length <= 7) {
+        newValue = newValue.replace(/(\d{3})(\d{0,4})/, '$1-$2');
+      } else if (newValue.length > 7) {
+        newValue = newValue.replace(/(\d{3})(\d{4})(\d{0,4})/, '$1-$2-$3');
+      }
+    }
+  
+    // 상태 업데이트
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: newValue, 
     });
-
+  
+    // 비밀번호 확인 처리
     if (name === 'confirmPassword') {
-      if (value !== formData.password) {
+      if (newValue !== formData.password) {
         setError('비밀번호가 일치하지 않습니다.');
       } else {
         setError('');
@@ -75,54 +96,155 @@ const SignUpPage = () => {
     }
   };
 
+  const handleSendEmailCode = async () => {
+    if (!formData.email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+  
+    try {
+      await request.post("api/v1/account/email/code", {
+        email: formData.email,
+      });
+  
+      alert("인증번호가 이메일로 발송되었습니다. 이메일을 확인해주세요.");
+    } catch (error) {
+      alert("이메일 인증번호 요청에 실패했습니다.");
+      console.error(error);
+    }
+  };
 
-  const handleSignUp = () => {
+  
+  const handleVerifyEmailCode = async () => {
+    if (!formData.confirmEmail) {
+      alert("인증번호를 입력해주세요.");
+      return;
+    }
+  
+    try {
+      await request.post("api/v1/account/email/verification", {
+        email: formData.email,
+        code: formData.confirmEmail,
+      });
+
+      alert("이메일 인증이 완료되었습니다.");
+      setEmailVerified(true); // 인증 완료 상태 저장
+      } catch (error) {
+      alert("이메일 인증 요청에 실패했습니다.");
+      console.error(error);
+    }
+  };
+
+  const handleVerifyBusinessNumber = async () => {
+    if (!formData.businessRegistrationNumber || !formData.businessName || !formData.representationName || !formData.businessOpenDate) {
+      alert("사업자 정보를 모두 입력해주세요.");
+      return;
+    }
+  
+    try {
+      await request.post("/api/v1/account/validation/business-number", {
+        businessRegistrationNumber: formData.businessRegistrationNumber,
+        businessName: formData.businessName,
+        representationName: formData.representationName,
+        businessOpenDate: formData.businessOpenDate,
+      });
+
+        alert("사업자등록번호가 인증되었습니다.");
+      } catch (error) {
+      alert("사업자등록번호 인증 요청에 실패했습니다.");
+      console.error(error);
+    }
+  };
+
+  const handleAddressSearch = () => {
+    new window.daum.Postcode({
+      oncomplete: (data) => {
+        setFormData((prev) => ({
+          ...prev,
+          location: {
+            ...prev.location, // 기존 location 유지
+            zipcode: data.zonecode, // 우편번호 설정 (화면에는 표시 안 함)
+            address: data.address,  // 주소 설정 (화면에는 표시)
+          },
+        }));
+      },
+    }).open();
+  };
+  
+
+  const handleSignUp = async () => { // async 키워드 추가
     if (formData.password !== formData.confirmPassword) {
       alert('비밀번호가 일치하지 않습니다.');
       return; 
     }
-
-    if (userType === 'worker') {
-      const isFormComplete = Object.keys(formData).every((key) => {
-        if (['businessNumber', 'companyName', 'ceoName', 'companyAddress'].includes(key)) {
-          return true; // 해당 필드는 비어 있어도 괜찮음
-        }
-        return formData[key] !== ''; // 그 외의 필드는 비어 있으면 안됨
-      });
   
-      // 모든 동의가 이루어졌는지 확인
-      const isAgreementComplete = Object.values(agreement).every((value) => value === true);
+    const requiredFields = !isOwner
+      ? ["loginId", "password", "email", "name", "nickname", "phoneNumber", "nationality"]
+      : Object.keys(formData); 
   
-      if (!isFormComplete) {
-        alert('모든 정보를 입력해주세요.');
-        return;
+    const isFormComplete = requiredFields.every((key) => {
+      if (key === "location") {
+        return formData.location.address !== "" && formData.location.zipcode !== "";
       }
+      return formData[key] !== "";
+    });
+    const isAgreementComplete = agreement.terms && agreement.privacy;
   
-      if (!isAgreementComplete) {
-        alert('필수 동의 항목에 체크해주세요.');
-        return;
-      }
-  
-      alert('worker 회원가입을 진행합니다.');
+    if (!isFormComplete) {
+      alert('모든 정보를 입력해주세요.');
+      return;
     }
   
-    if (userType === 'owner') {
-      const isFormComplete = Object.values(formData).every((value) => value !== '');
-      const isAgreementComplete = agreement.terms && agreement.privacy;
-  
-      if (!isFormComplete) {
-        alert('모든 정보를 입력해주세요.');
-        return;
+    if (!isAgreementComplete) {
+      alert('필수 동의 항목에 체크해주세요.');
+      return;
+    }
+
+    // 회원가입 요청 데이터 구성
+    const requestData = isOwner
+    ? {
+        loginId: formData.loginId,
+        password: formData.password,
+        email: formData.email,
+        businessRegistrationNumber: formData.businessRegistrationNumber,
+        businessName: formData.businessName,
+        representationName: formData.representationName,
+        businessOpenDate: formData.businessOpenDate || "", // 필요하면 추가
+        location: {
+          zipcode: formData.location.zipcode,
+          address: formData.location.address,
+          detailAddress: formData.location.detailAddress || "",
+        },
+        nationality: formData.nationality || "KOREAN",
+        role: "EMPLOYER",
+        phoneNumber: formData.phoneNumber,
       }
+    : {
+        loginId: formData.loginId,
+        password: formData.password,
+        name: formData.name,
+        nickname: formData.nickname,
+        email: formData.email,
+        nationality: formData.nationality || "KOREAN",
+        role: "EMPLOYEE",
+        phoneNumber: formData.phoneNumber,
+        emailReceivable: agreement.email,
+      };
   
-      if (!isAgreementComplete) {
-        alert('필수 동의 항목에 체크해주세요.');
-        return;
-      }
+    const endpoint = !isOwner
+      ? "api/v1/account/sign-up/employee"
+      : "api/v1/account/sign-up/employer";
   
-      alert('owner 회원가입을 진행합니다.');
+    try {
+      await request.post(endpoint, requestData);
+
+        alert("회원가입이 완료되었습니다! 로그인 후 이용해주세요.");
+        navigate("/");
+      } catch (error) {
+      alert(error.message || "회원가입에 실패했습니다. 나중에 다시 시도해주세요.");
     }
   };
+  
 
   return (
     <Layout>
@@ -174,7 +296,7 @@ const SignUpPage = () => {
         <div className="info-section">
           <InputBox>
             <InputLabel>아이디 <span>*</span></InputLabel>
-            <Input type="text" name="username" value={formData.username} onChange={handleChange} required />
+            <Input type="text" name="loginId" value={formData.loginId} onChange={handleChange} required />
           </InputBox>
 
           <InputBox>
@@ -190,63 +312,151 @@ const SignUpPage = () => {
             </div>
           </InputBox>
 
-          <InputBox>
-            <InputLabel>이름 <span>*</span></InputLabel>
-            <Input type="text" name="name" value={formData.name} onChange={handleChange} required />
-          </InputBox>
+          {!isOwner && (
+            <>
+            <InputBox>
+              <InputLabel>이름 <span>*</span></InputLabel>
+              <Input type="text" name="name" value={formData.name} onChange={handleChange} required />
+            </InputBox>
 
-          <InputBox>
-            <InputLabel>닉네임 <span>*</span></InputLabel>
-            <Input type="text" name="nickname" value={formData.nickname} onChange={handleChange} required />
-          </InputBox>
+            <InputBox>
+              <InputLabel>닉네임 <span>*</span></InputLabel>
+              <Input type="text" name="nickname" value={formData.nickname} onChange={handleChange} required />
+            </InputBox>
+            </>
+          )}
 
 
-          {/* TODO: 버튼 클릭 후 요청 성공하면 인증번호 필드 아래에 이메일 확인하라는 문구 추가 */}
           <InputBox className="button">
             <InputLabel>이메일 <span>*</span></InputLabel>
             <div>
-              <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
-              <button>인증번호</button>
+              <Input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                disabled={emailVerified} // 인증 완료되면 입력 비활성화
+              />
+              <button onClick={handleSendEmailCode} disabled={emailVerified}>인증번호</button>
             </div>
           </InputBox>
 
-
-          {/* TODO: 인증번호 확인되면 해당 필드와 버튼 비활성화 */}
           <InputBox className="button">
             <InputLabel></InputLabel>
             <div>
-              <Input type="text" name="confirmEmail" value={formData.confirmEmail} onChange={handleChange} placeholder="인증번호 입력" required />
-              <button>확인</button>
+              <Input
+                type="text"
+                name="confirmEmail"
+                value={formData.confirmEmail}
+                onChange={handleChange}
+                placeholder="인증번호 입력"
+                required
+                disabled={emailVerified} // 인증 완료되면 입력 비활성화
+              />
+              <button onClick={handleVerifyEmailCode} disabled={emailVerified}>확인</button>
             </div>
           </InputBox>
+
+          <InputBox>
+            <InputLabel>연락처 <span>*</span></InputLabel>
+            <Input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} maxLength="13" placeholder="000-0000-0000" required />
+          </InputBox> 
         </div>
 
+
         {isOwner && (
-          <div id="store-info" class="info-section">
-            <InputBox className="button">
-              <InputLabel>사업자등록번호 <span>*</span></InputLabel>
-              <div>
-                <Input type="text" name="businessNumber" value={formData.businessNumber} onChange={handleChange} required />
-                <button>확인</button>
-              </div>
+          <div id="store-info" className="info-section">
+            <InputBox>
+              <InputLabel>대표자명 <span>*</span></InputLabel>
+              <Input type="text" name="representationName" value={formData.representationName} onChange={handleChange} required />
             </InputBox>
 
             <InputBox>
               <InputLabel>회사/상점명 <span>*</span></InputLabel>
-              <Input type="text" name="companyName" value={formData.companyName} onChange={handleChange} required />
+              <Input type="text" name="businessName" value={formData.businessName} onChange={handleChange} required />
             </InputBox>
 
-            <InputBox>
-              <InputLabel>대표자명 <span>*</span></InputLabel>
-              <Input type="text" name="ceoName" value={formData.ceoName} onChange={handleChange} required />
+            <InputBox className="button">
+              <InputLabel>
+                회사/상점 주소 <span>*</span>
+              </InputLabel>
+              <div>
+                <Input
+                  type="text"
+                  name="address"
+                  value={formData.location.address} // 주소 표시
+                  readOnly
+                  placeholder="주소를 입력해주세요"
+                  required
+                />
+                <button type="button" onClick={handleAddressSearch}>주소찾기</button>
+              </div>
             </InputBox>
 
+            {/* 상세주소 입력 */}
+            {formData.location.address && (
+              <InputBox>
+                <InputLabel></InputLabel>
+                <Input
+                  type="text"
+                  name="detailAddress"
+                  value={formData.location.detailAddress || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: {
+                        ...prev.location,
+                        detailAddress: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="상세주소를 입력해주세요"
+                  required
+                />
+              </InputBox>
+            )}
+
             <InputBox>
-              <InputLabel>회사/상점 주소 <span>*</span></InputLabel>
-              <Input type="text" name="companyAddress" value={formData.companyAddress} onChange={handleChange} required />
+              <InputLabel>사업시작일<span>*</span></InputLabel>
+              <Input type="date" name="businessOpenDate" value={formData.businessOpenDate} onChange={handleChange} required />
+            </InputBox>
+
+            <InputBox className="button">
+              <InputLabel>사업자등록번호 <span>*</span></InputLabel>
+              <div>
+                <Input type="text" name="businessRegistrationNumber" value={formData.businessRegistrationNumber} onChange={handleChange} required />
+                <button onClick={handleVerifyBusinessNumber}>확인</button>
+              </div>
             </InputBox>
           </div>
         )}
+
+        <InputBox>
+          <RadioBox>
+            <RadioItem>
+              <Input
+                type="radio"
+                name="nationality"
+                value="KOREAN"
+                checked={formData.nationality === "KOREAN"}
+                onChange={handleChange}
+              />
+              내국인
+            </RadioItem>
+
+            <RadioItem>
+              <Input
+                type="radio"
+                name="nationality"
+                value="FOREIGNER"
+                checked={formData.nationality === "FOREIGNER"}
+                onChange={handleChange}
+              />
+              외국인
+            </RadioItem>
+          </RadioBox>
+        </InputBox>
 
         <ConfirmButton onClick={handleSignUp}>가입하기</ConfirmButton>
       </SignUpForm>
@@ -387,6 +597,7 @@ const InputBox = styled.div`
       background-color: #E9E9E9;
       color: #000000;
       font-weight: 500;
+      cursor: pointer;
     }
 
     div {
@@ -428,6 +639,24 @@ const ConfirmButton = styled.button`
   font-size: 14px;
   font-weight: 600;
 `;
+
+const RadioBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-left: 10px;
+  margin-top: 30px;
+  width: 160px;
+`
+
+const RadioItem = styled.label`
+  display: flex;
+  font-size: 14px;
+  gap: 8px;
+
+  input {
+    width: 14px;
+  }
+`
 
 const ErrorText = styled.div`
   margin-top: 5px;

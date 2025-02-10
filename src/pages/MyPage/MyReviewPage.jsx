@@ -330,7 +330,10 @@ const ButtonContainer = styled.div`
 `;
 
 const CancelButton = styled.button`
+<<<<<<< HEAD
   color:white;
+=======
+>>>>>>> develop
   background-color: #5c3a32;
   padding: 5px 15px;
   border: none;
