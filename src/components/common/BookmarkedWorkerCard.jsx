@@ -8,30 +8,8 @@ import { GiJellyBeans } from "react-icons/gi";
 
 
 
-function BookmarkedWorkerCard() {
+function BookmarkedWorkerCard({ worker }) {
   const [isBookmarked, setIsBookmarked] = useState(true);
-
-  const dummyData = {
-    userInfo: {
-      profileImg: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMzA4MjZfMTAw%2FMDAxNjkzMDQ4MTgwMzg2.0VBcbQc9LNhiudLzdUizVK3-UpU8YCq-cOY3s-c5Pn8g.4GPuscETBrJax8vWP3nvsWC0pMAIaEvR6bcPeLkBknIg.PNG.bj2604%2F%25C0%25CE%25BD%25BA%25C5%25B8%25BF%25EB.png&type=sc960_832", // 프로필 이미지 URL
-      nickname: "팥빙수가 너무 먹고 싶은데 이걸 어떡하지",
-      details: "남성 24세",
-    },
-    workPreferences: {
-      locations: ["부산 전체", "대연동", "화명동"],
-      categories: ["서빙", "일반음식점", "커피전문점"],
-    },
-    workExperience: {
-      external: "단팥 경력 12회",
-      internal: [
-        { text: "커피전문점 2회" },
-        { text: "커피전문점 3회" },
-        { text: "일반음식점 1회" },
-      ],
-    },
-  };
-
-  const { userInfo, workPreferences, workExperience } = dummyData;
 
 
   // 찜 상태 변경 핸들러
@@ -58,10 +36,10 @@ function BookmarkedWorkerCard() {
     <Container>
       <Headline>
         <div id="user-info">
-          <img src={userInfo.profileImg || DefaultProfileImage} alt="프로필 사진" />
+          <img src={worker.profileImg || DefaultProfileImage} alt="프로필 사진" />
           <div>
-            <p>{userInfo.nickname}</p>
-            <span>{userInfo.details}</span>
+            <p>{worker.name}</p>
+            <span>{`${worker.gender} ${worker.age}세`}</span>
           </div>
         </div>
         <BookmarkIcon onClick={handleBookmarkToggle}>
@@ -71,24 +49,19 @@ function BookmarkedWorkerCard() {
 
       <WorkPreferences>
         <div>
-          <FaLocationDot /> <p>{workPreferences.locations.join(", ")}</p>
+          <FaLocationDot /> <p>{worker.locations.join(", ")}</p>
         </div>
         <div>
-          <MdWork /> <p>{workPreferences.categories.join(", ")}</p>
+          <MdWork /> <p>{worker.categories.join(", ")}</p>
         </div>
       </WorkPreferences>
 
       <WorkExperience>
-        {/* 외부 경력 */}
-        <div id="external">
-          <GiJellyBeans />
-          {workExperience.external}
-        </div>
-
-        {/* 내부 경력 */}
-        {workExperience.internal.map((experience, index) => (
-          <div id="internal" key={index}>
-            {experience.text}
+        {worker.experience.map((exp, index) => (
+          <div key={index} id={exp.type}>
+            {/* type이 'external'인 경우 아이콘 포함 */}
+            {exp.type === 'external' && <GiJellyBeans />}
+            {exp.text}
           </div>
         ))}
       </WorkExperience>
