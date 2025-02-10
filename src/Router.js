@@ -8,6 +8,7 @@ import ChattingPage from './pages/ChattingPage';
 import MyResume from './pages/MyResume/MyResume';
 import SignUpPage from './pages/SignUpPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
+import Settings from './pages/MyPage/Settings';
 import SupportPage from './pages/Support/SupportPage';
 import ResumeForm from "./pages/MyResume/ResumeForm";
 import SavedWorkers from './pages/MyPage/SavedWorkers';
@@ -28,6 +29,7 @@ const AppRouter = () => {
       <Route path="/mypage/mystore" element={<MyStorePage />} />
       <Route path="/mypage/contracts" element={<MyStatusPage />} />
       <Route path="/contracts/:id" element={<ContactDetailPage />} />
+      <Route path="/mypage/settings" element={<Settings />} />
       <Route path="/mypage/saved-workers" element={<SavedWorkers />} />
       <Route path="/support" element={<SupportPage />} />
     </Routes>
