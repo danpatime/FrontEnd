@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-<<<<<<< HEAD
-//import axios from 'axios';
-=======
->>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
+
 import styled from 'styled-components';
 import MypageLayout from '../../components/layout/MypageLayout';
 
@@ -64,11 +61,7 @@ const MyStorePage = () => {
   const handleStoreClick = (storeName) => {
     const store = stores.find((s) => s.name === storeName);
     if (store) {
-<<<<<<< HEAD
       //console.log("Selected Store:", store); // 선택된 매장 확인
-=======
-      // console.log("Selected Store:", store); // 선택된 매장 확인
->>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
       setSelectedStore(store); // 상태 업데이트
     }
   };
