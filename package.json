@@ -11,8 +11,13 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+<<<<<<< HEAD
+    "@typescript-eslint/parser": "^8.20.0",
+    "axios": "^1.7.9",
+=======
     "lucide-react": "^0.469.0",
     "axios": "^1.7.8",
+>>>>>>> eb70e5d2652d150105aa5b6d898226fb96c4a45c
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
@@ -56,6 +61,7 @@
     "eslint-plugin-react": "^7.37.3",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
   }
 }
