@@ -14,16 +14,16 @@ import SupportPage from './pages/Support/SupportPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
 import Settings from './pages/MyPage/Settings';
 import SupportPage from './pages/Support/SupportPage';
-import ResumeForm from "./pages/MyResume/ResumeForm";
+import ResumeForm from './pages/MyResume/ResumeForm';
 import SavedWorkers from './pages/MyPage/SavedWorkers';
 import MyStorePage from './pages/MyPage/MyStorePage';
-
+import AlbaReviewPage from './pages/AlbaReviewPage';
 const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/alba/search" element={<AlbaSearchPage />} />
-      <Route path="/alba/review" element={<AlbaReviewPage/>}/>
+      <Route path="/alba/review" element={<AlbaReviewPage />} />
       <Route path="/alba/resume/:id" element={<ResumePage />} />
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/signup" element={<SignUpPage />} />
