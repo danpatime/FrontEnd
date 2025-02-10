@@ -29,7 +29,7 @@ class Request {
   }
 
   // 토큰 업데이트 함수
-  updateToken(newToken) {
+  updateToken(newToken : string) {
     localStorage.setItem('authToken', newToken); // 새 토큰을 로컬스토리지에 저장
     this.api.defaults.headers.Authorization = `Bearer ${newToken}`; // Axios 기본 헤더 업데이트
   }
