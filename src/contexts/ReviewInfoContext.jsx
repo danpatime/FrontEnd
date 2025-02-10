@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React, { createContext, useState } from "react";
 
 const ReviewInfoContext = createContext();
@@ -169,6 +168,7 @@ export const ReviewProvider = ({ children }) => {
   ];
   
 
+  
   const [reviews, setReviews] = useState(dummyReviews); // 리뷰 데이터 상태
   const [sortOption, setSortOption] = useState("latest"); // 정렬 옵션
   const [searchQuery, setSearchQuery] = useState(""); // 검색어
@@ -180,17 +180,51 @@ export const ReviewProvider = ({ children }) => {
 
   // 리뷰 추가
   const addReview = (newReview) => {
-    setReviews((prevReviews) => [newReview, ...prevReviews]);
-    updateReviewCount(newReview.albaID);
-  };
-
+    setReviews((prevReviews) => {
+      // 알바 ID가 이미 존재하는지 확인
+      const albaExists = prevReviews.some((review) => review.albaID === newReview.albaID);
+  
+      if (albaExists) {
+        // 기존 알바ID가 있으면 그 알바ID의 reviewCount만 +1 증가
+        const updatedReviews = prevReviews.map((review) => {
+          if (review.albaID === newReview.albaID) {
+            // 해당 albaID의 reviewCount만 증가
+            return {
+              ...review,
+              reviewCount: review.reviewCount + 1,
+            };
+          }
+          return review;
+        });
+  
+        // 새 리뷰 추가
+        updatedReviews.push({
+          ...newReview,
+          reviewCount: updatedReviews.find((review) => review.albaID === newReview.albaID).reviewCount, // 해당 albaID의 reviewCount 계승
+        });
+  
+        return updatedReviews;
+      } else {
+        // 알바ID가 처음 작성되는 경우
+        return [
+          ...prevReviews,
+          {
+            ...newReview,
+            reviewCount: 1, // 처음 작성되는 리뷰는 reviewCount 1로 설정
+          },
+        ];
+      }
+    });
+  };  
+  
   // 리뷰 수정
   const editReview = (updatedReview) => {
-    setReviews((prevReviews) =>
-      prevReviews.map((review) =>
+    setReviews(prevReviews => 
+      prevReviews.map(review => 
         review.id === updatedReview.id ? updatedReview : review
       )
     );
+    return reviews;
   };
 
   // 리뷰 삭제
@@ -199,18 +233,8 @@ export const ReviewProvider = ({ children }) => {
   };
 
   // 리뷰 신고(서버 전송 로직 필요)
-  const reportReview=(reviewId,reportReason)=>{
+  const reportReview = (reviewId, reportReason) => {
     alert(`${reviewId}를 ${reportReason}의 사유로 신고 접수`);
-  };
-
-  // 리뷰 수 업데이트
-  const updateReviewCount = (albaID) => {
-    setReviewCounts((prevCounts) => {
-      return {
-        ...prevCounts,
-        [albaID]: (prevCounts[albaID] || 0) + 1,
-      };
-    });
   };
 
   // 필터링 및 정렬된 리뷰 반환
