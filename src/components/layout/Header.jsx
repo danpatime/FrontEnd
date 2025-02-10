@@ -10,13 +10,14 @@ import AlarmDropdown from "../AlarmDropDown";
 import { Link } from "react-router-dom";
 import LoginModal from "../../pages/LoginModal";
 import SignupModal from "../../pages/SignUpModal";
+import { useUserInfo } from "../../contexts/useUserInfo";
 
 function Header() {
-  const [isAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const { user, isAuthenticated } = useUserInfo();
 
   const handleOpenLoginModal = () => {
     setIsLoginModalOpen(true);
@@ -48,7 +49,6 @@ function Header() {
     });
   };
 
-  const name = '홍길동';
   const profileUrl = null;
 
   return (
@@ -66,8 +66,8 @@ function Header() {
         <ProfileSection>
           <NotiBtn onClick={toggleAlarm} src={notiIcon} alt="notification" />
           {isAlarmOpen && <AlarmDropdown />}
-          <ProfileImg src={profileUrl || defaultProfile} alt={name} />
-          <span>{name}님</span>
+          <ProfileImg src={profileUrl || defaultProfile} alt={user.name} />
+          <span>{user?.name || "단팥러"}님</span>
           <IconBtn
             src={arrowIcon}
             alt="arrow down"
