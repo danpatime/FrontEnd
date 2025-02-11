@@ -18,6 +18,8 @@ import ResumeForm from './pages/MyResume/ResumeForm';
 import SavedWorkers from './pages/MyPage/SavedWorkers';
 import MyStorePage from './pages/MyPage/MyStorePage';
 import AlbaReviewPage from './pages/AlbaReviewPage';
+import MyStorePage from './pages/MyPage/MyStore/MyStorePage';
+
 const AppRouter = () => {
   return (
     <Routes>
@@ -39,6 +41,7 @@ const AppRouter = () => {
       <Route path="/mypage/settings" element={<Settings />} />
       <Route path="/mypage/saved-workers" element={<SavedWorkers />} />
       <Route path="/support" element={<SupportPage />} />
+      <Route path="/mypage/mystore" element={<MyStorePage />} />
     </Routes>
   );
 };
