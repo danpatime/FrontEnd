@@ -5,7 +5,6 @@ import { IoMdSettings } from "react-icons/io";
 
 const MyStorePage = () => {
   const navigate = useNavigate();
-
   const storeData = [
     {
       id: 1,
@@ -35,7 +34,7 @@ const MyStorePage = () => {
       email: "coffee@starbucks.com",
     },
   ];
-
+  
   const handleNavigation = (mode) => {
     navigate("/mypage/mystore-form", { state: { modeType: mode } });
   };
