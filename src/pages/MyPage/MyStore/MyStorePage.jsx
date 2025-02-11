@@ -1,9 +1,10 @@
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import MypageLayout from "../../../components/layout/MypageLayout";
 import { IoMdSettings } from "react-icons/io";
 
 const MyStorePage = () => {
-  
+  const navigate = useNavigate();
   const storeData = [
     {
       id: 1,
@@ -33,13 +34,17 @@ const MyStorePage = () => {
       email: "coffee@starbucks.com",
     },
   ];
+  
+  const handleNavigation = (mode) => {
+    navigate("/mypage/mystore-form", { state: { modeType: mode } });
+  };
 
   return (
     <MypageLayout>
       <Page>
         <Title>
           나의 매장
-          <button>매장등록</button>
+          <button onClick={() => handleNavigation("register")}>매장등록</button>
         </Title>
 
         <StoreList>
@@ -50,7 +55,7 @@ const MyStorePage = () => {
               <div>
                 <div className="store-name">
                   {store.name}
-                  <div className="edit-button">
+                  <div className="edit-button" onClick={() => handleNavigation("edit")}>
                     <IoMdSettings />
                     매장 정보 수정
                   </div>
