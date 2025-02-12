@@ -12,7 +12,6 @@ import MyReviewPage from "./pages/MyPage/MyReviewPage";
 import SupportPage from './pages/Support/SupportPage';
 import Settings from './pages/MyPage/Settings';
 import SavedWorkers from './pages/MyPage/SavedWorkers';
-import MyStorePage from './pages/MyPage/MyStorePage';
 import AlbaReviewPage from './pages/AlbaReviewPage';
 import MyResume from "./pages/MyResume/MyResume";
 import ResumeForm from "./pages/MyResume/ResumeForm";

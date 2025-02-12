@@ -56,8 +56,4 @@ const Content = styled.div`
   height: 100vh;
   padding: 20px 150px;
   border-top: 1px solid #DFDFDF;
-<<<<<<< HEAD
 `;
-=======
-`;
->>>>>>> develop
