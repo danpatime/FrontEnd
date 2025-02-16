@@ -1,13 +1,11 @@
 import axios, { AxiosInstance, AxiosHeaders  } from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 class Request {
   private api: AxiosInstance;
 
   constructor() {
     this.api = axios.create({
-      baseURL: BASE_URL,
+      baseURL: "/",
     });
 
     // 요청 전 최신 토큰을 헤더에 추가
@@ -31,7 +29,7 @@ class Request {
   }
 
   // 토큰 업데이트 함수
-  updateToken(newToken) {
+  updateToken(newToken : string) {
     localStorage.setItem('authToken', newToken); // 새 토큰을 로컬스토리지에 저장
     this.api.defaults.headers.Authorization = `Bearer ${newToken}`; // Axios 기본 헤더 업데이트
   }

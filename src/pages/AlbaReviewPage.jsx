@@ -9,8 +9,8 @@ const AlbaReviewPage = () => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
 
   // Context에서 상태와 함수 가져오기
-  const { reviews, addReview, editReview, getFilteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
-
+  const { reviews, getFilteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
+  
   const filteredReviews = getFilteredReviews(); // 필터링된 리뷰 데이터
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
@@ -107,8 +107,6 @@ const AlbaReviewPage = () => {
             <ReviewForm
               onClose={closeModal}
               initialData={editingReview} // 부모 페이지에서 받은 데이터
-              addReview={addReview} // 새 리뷰 작성 시 사용하는 함수
-              editReview={editReview} // 수정할 때 사용하는 함수
             />
           </Modal>
         )}
@@ -235,7 +233,11 @@ const PageNumber = styled.button`
   border: 1px solid #ddd;
   border-radius: 5px;
   cursor: pointer;
-`;
+
+   &:hover {
+    background-color: #F7B32B;
+  }
+  `;
 
 const Modal = styled.div`
   position: fixed;
@@ -259,4 +261,12 @@ const AddReviewButton = styled.button`
   color: white;
   border-radius: 5px;
   margin-left:auto;
+<<<<<<< HEAD
+  cursor:pointer;
+
+   &:hover {
+    background-color: #F7B32B;
+  }
+=======
+>>>>>>> develop
 `;
