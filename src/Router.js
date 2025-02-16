@@ -1,26 +1,24 @@
-import { Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import AlbaSearchPage from "./pages/AlbaSearchPage";
-import MyPage from "./pages/MyPage/MyPage";
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import AlbaSearchPage from './pages/AlbaSearchPage';
+import MyPage from './pages/MyPage/MyPage';
 import MyStatusPage from './pages/MyPage/MyStatusPage';
 import SignUpPage from './pages/SignUpPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
 import MyStorePage from './pages/MyPage/MyStore/MyStorePage';
-import ResumePage from "./pages/ResumePage";
-import ChattingPage from "./pages/ChattingPage";
-import MyReviewPage from "./pages/MyPage/MyReviewPage";
+import ResumePage from './pages/ResumePage';
+import ChattingPage from './pages/ChattingPage';
+import MyReviewPage from './pages/MyPage/MyReviewPage';
 import SupportPage from './pages/Support/SupportPage';
 import Settings from './pages/MyPage/Settings';
 import SavedWorkers from './pages/MyPage/SavedWorkers';
-import MyStorePage from './pages/MyPage/MyStorePage';
 import AlbaReviewPage from './pages/AlbaReviewPage';
-import MyResume from "./pages/MyResume/MyResume";
-import ResumeForm from "./pages/MyResume/ResumeForm";
-import MyStoreForm from "./pages/MyPage/MyStore/MyStoreForm";
+import MyResume from './pages/MyResume/MyResume';
+import ResumeForm from './pages/MyResume/ResumeForm';
+import MyStoreForm from './pages/MyPage/MyStore/MyStoreForm';
 
 const AppRouter = () => {
   return (
-    
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/alba/search" element={<AlbaSearchPage />} />
@@ -42,7 +40,6 @@ const AppRouter = () => {
       <Route path="/support" element={<SupportPage />} />
       <Route path="/mypage/mystore-form" element={<MyStoreForm />} />
     </Routes>
-    
   );
 };
 
