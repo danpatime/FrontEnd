@@ -103,7 +103,7 @@ const NewAlbaList = () => {
   return (
     <Wrapper>
       <Button onClick={handlePrev} disabled={currentIndex === 0}>
-        <FaChevronLeft size={24} />
+        <FaChevronLeft size={40} />
       </Button>
       <CardContainer>
         {dummyProfiles
@@ -119,7 +119,7 @@ const NewAlbaList = () => {
         onClick={handleNext}
         disabled={currentIndex >= dummyProfiles.length - itemsPerPage}
       >
-        <FaChevronRight size={24} />
+        <FaChevronRight size={40} />
       </Button>
     </Wrapper>
   );
@@ -130,18 +130,19 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-
   margin: 10px;
 `;
 
 const Button = styled.button`
   color: white;
   border: none;
-  padding: 100px 10px;
+  background: transparent;
+  padding: 20px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+
   &:disabled {
     cursor: not-allowed;
   }
@@ -153,7 +154,7 @@ const CardContainer = styled.div`
   gap: 10px;
   justify-content: center;
   overflow: hidden;
-  transition: transform 0.5s ease-in-out; /* Adds sliding effect */
+  transition: transform 0.5s ease-in-out;
   width: 100%;
 `;
 

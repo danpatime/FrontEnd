@@ -68,7 +68,7 @@ const ReviewCell = ({
               openModalForRep(review);
             }}
           >
-            리뷰 신고
+            신고
           </Button>
         </ActionButtons>
       )}

@@ -5,6 +5,8 @@ const SideBar = ({
   name = '사용자',
   profileImage = 'https://via.placeholder.com/100',
 }) => {
+  const buttons = ['채팅방', '체결현황', '내 이력서']; // 기본 버튼 세 개
+
   return (
     <SidebarContainer>
       {/* 프로필 영역 */}
@@ -15,12 +17,9 @@ const SideBar = ({
 
       {/* 버튼 영역 */}
       <ButtonGrid>
-        <SidebarButton>버튼 1</SidebarButton>
-        <SidebarButton>버튼 2</SidebarButton>
-        <SidebarButton>버튼 3</SidebarButton>
-        <SidebarButton>버튼 4</SidebarButton>
-        <SidebarButton>버튼 5</SidebarButton>
-        <SidebarButton>버튼 6</SidebarButton>
+        {buttons.map((button, index) => (
+          <SidebarButton key={index}>{button}</SidebarButton>
+        ))}
       </ButtonGrid>
     </SidebarContainer>
   );
@@ -33,45 +32,53 @@ const SidebarContainer = styled.div`
   padding: 20px;
   border-radius: 10px;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const ProfileSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 `;
 
 const ProfileImg = styled.img`
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 10px;
 `;
 
 const UserName = styled.div`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
+  color: #333;
 `;
 
 const ButtonGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
 `;
 
 const SidebarButton = styled.button`
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  padding: 10px;
+  padding: 12px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-color-dark);
+  }
+
+  &:active {
+    background-color: var(--primary-color-dark);
   }
 `;
 
