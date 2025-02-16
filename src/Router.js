@@ -20,6 +20,7 @@ import MyStoreForm from "./pages/MyPage/MyStore/MyStoreForm";
 
 const AppRouter = () => {
   return (
+    
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/alba/search" element={<AlbaSearchPage />} />
@@ -41,6 +42,7 @@ const AppRouter = () => {
       <Route path="/support" element={<SupportPage />} />
       <Route path="/mypage/mystore-form" element={<MyStoreForm />} />
     </Routes>
+    
   );
 };
 
