@@ -10,7 +10,6 @@ import MyStatusPage from './pages/MyPage/MyStatusPage';
 import MyResume from './pages/MyResume/MyResume';
 import SignUpPage from './pages/SignUpPage';
 import MyReviewPage from "./pages/MyPage/MyReviewPage";
-import SupportPage from './pages/Support/SupportPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
 import Settings from './pages/MyPage/Settings';
 import SupportPage from './pages/Support/SupportPage';

@@ -1,23 +1,42 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import styled from "styled-components";
 import ReviewForm from "../components/common/ReviewForm";
 import { useReviewInfo } from "../contexts/useReviewInfo";
+import { useUserInfo } from "../contexts/useUserInfo.js";
+import { useNavigate } from "react-router-dom";
 
 const AlbaReviewPage = () => {
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열림/닫힘 상태
   const [editingReview, setEditingReview] = useState(null); // 수정할 리뷰 데이터
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const {user,isAuthenticated}=useUserInfo(); // 유저 정보가 사장인 경우에만 페이지를 렌더링링
+  const role=user?.role; // 사용자 타입
+  const navigate=useNavigate();
 
   // Context에서 상태와 함수 가져오기
-  const { reviews, getFilteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
+  const { reviews, filteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
   
-  const filteredReviews = getFilteredReviews(); // 필터링된 리뷰 데이터
+  //const filteredReviews = getFilteredReviews(); // 필터링된 리뷰 데이터
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
   const currentReviews = filteredReviews.slice(
     (currentPage - 1) * reviewsPerPage,
     currentPage * reviewsPerPage
   );
+
+  useEffect(()=>{
+    if(!isAuthenticated){
+      alert("로그인 후 이용해주세요.");
+      navigate("/");
+    }
+  },[isAuthenticated,navigate]);
+
+  useEffect(() => {
+    if (role === "EMPLOYEE") {
+      alert("해당 페이지는 기업 회원에게만 제공되는 페이지입니다.\n회원님의 리뷰는 '마이페이지'-'리뷰 관리'에서 확인하실 수 있습니다.");
+      navigate("/");
+    }
+  }, [role, navigate]);
 
   const openModal = () => {
     setModalOpen(true);
@@ -44,6 +63,7 @@ const AlbaReviewPage = () => {
 
   return (
     <div>
+      {role!=="EMPLOYEE"&&(
       <Container>
         <HeaderSection>
           <h1>알바 리뷰</h1>
@@ -111,6 +131,7 @@ const AlbaReviewPage = () => {
           </Modal>
         )}
       </Container>
+      )}
     </div>
   );
 };
@@ -261,12 +282,9 @@ const AddReviewButton = styled.button`
   color: white;
   border-radius: 5px;
   margin-left:auto;
-<<<<<<< HEAD
   cursor:pointer;
 
    &:hover {
     background-color: #F7B32B;
   }
-=======
->>>>>>> develop
 `;

@@ -11,6 +11,7 @@ const ReviewForm = ({ onClose, initialData }) => {
   const [reviewCount,setReviewCount]=useState(1);
   const [reviewDate,setReviewDate]=useState(new Date());
   const [selectedStore, setSelectedStore] = useState("");
+  const [selectedStoreID,setSelectedStoreID]=useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedTag, setSelectedTag] = useState([]);
   const [reviewTag] = useState([
@@ -35,12 +36,13 @@ const ReviewForm = ({ onClose, initialData }) => {
 
   useEffect(() => {
     if (initialData) {
-      setReviewId(initialData.id||Date.now());
+      setReviewId(initialData.reviewId||Date.now());
       setStarPoint(initialData.starPoint || 0);
       setContent(initialData.content || "");
       setReviewCount(initialData.reviewCount||1);
       setReviewDate(initialData.date||"");
-      setSelectedStore(initialData.storeID || "");
+      setSelectedStore(initialData.businessId || "");
+      setSelectedStoreID(initialData.businessID||"");
       setSelectedAlba(initialData.albaID || "");
       setSelectedTag(initialData.tags || []);
     }
@@ -48,14 +50,17 @@ const ReviewForm = ({ onClose, initialData }) => {
 
   const handleSubmit = () => {
     const newReview = {
-      id: reviewId,
-      storeID: selectedStore,
-      albaID: selectedAlba,
-      starPoint: starPoint,
-      reviewCount: reviewCount,
-      date:reviewDate,
-      content: content,
-      tags: selectedTag,
+      reviewId: reviewId,
+      businessName: selectedStore,
+      businessId: selectedStoreID,
+      workerId: selectedAlba, // 없음
+      //contractStartTime: selectedSTime,
+      //contractEndTime: selectedETime,
+      reviewStarPoint: starPoint,
+      reviewCount: reviewCount, // 없음
+      date:reviewDate, // 없음
+      reviewContent: content,
+      tags: selectedTag, // 없음
     };
 
     if (!selectedStore || !selectedAlba || !starPoint || !content) {

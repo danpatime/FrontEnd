@@ -1,5 +1,6 @@
 import React,{useState} from "react";
 import styled from "styled-components";
+import request from "../../api/request.ts";
 import Dropdown from "../../components/common/DropDown";
 
 const Inquiry=()=>{
@@ -43,24 +44,38 @@ const Inquiry=()=>{
     setInqType2(option);
     setDDOpen2(false);
   };
-
+  
   // 문의 등록
-  const handleSendInq = () => {
+  const handleSendInq = async () => {
     if (inqType1 === "선택해주세요" || inqType2 === "선택해주세요" || !inqTitle || !inqReason) {
       alert("모든 항목을 입력해주세요.");
       return;
     }
-
-    alert(`카테고리: ${inqType1}-${inqType2}\n제목: ${inqTitle}\n내용: ${inqReason}\n문의가 접수되었습니다.`);
-
-    // 초기화
-    setInqType1("선택해주세요");
-    setInqType2("선택해주세요");
-    setInqTitle("");
-    setInqReason("");
-    setDDOpen1(false);
-    setDDOpen2(false);
+  
+    try {
+      const response = await request.post("/api/v1/support/inquiry", {
+        inquiryType: inqType1,
+        subInquiryType: inqType2,
+        title: inqTitle,
+        content: inqReason,
+      });
+  
+      // 성공한 경우 서버에서 응답 메시지 출력
+      alert(`${response.message}`);
+  
+      // 입력값 초기화
+      setInqType1("선택해주세요");
+      setInqType2("선택해주세요");
+      setInqTitle("");
+      setInqReason("");
+      setDDOpen1(false);
+      setDDOpen2(false);
+    } catch (error) {
+      console.error("문의 등록 실패:", error);
+      alert("문의 등록에 실패했습니다. 다시 시도해주세요.");
+    }
   };
+  
 
   return (
     <Container>
