@@ -6,7 +6,7 @@ function MyPage() {
     <MypageLayout>
       MyPage
     </MypageLayout>
-  )
+  );
 }
 
 export default MyPage;

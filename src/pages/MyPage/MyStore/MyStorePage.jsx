@@ -1,126 +1,88 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import MypageLayout from '../../../components/layout/MypageLayout';
-
-import { RiSettings4Fill } from "react-icons/ri";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import MypageLayout from "../../../components/layout/MypageLayout";
+import { IoMdSettings } from "react-icons/io";
 
 const MyStorePage = () => {
-  const [stores, setStores] = useState([]); // 매장 목록 상태
-  const [selectedStore, setSelectedStore] = useState(null);
-
-  // 매장 목록을 가져오는 함수(로드 시 실행)
-  const fetchStores = async () => {
-    const dummyData = {
-      stores: [
-        {
-          name: "파스쿠찌",
-          category: "카페",
-          address: "부산광역시 남구 부경로 123 1층",
-          ownerName: "홍길동",
-          contact: "010-1234-5678",
-          email: "owner1@example.com",
-          imageUrl: "https://search.pstatic.net/sunny/?src=http%3A%2F%2Ffile3.instiz.net%2Fdata%2Fcached_img%2Fupload%2F2021%2F07%2F09%2F12%2Feb8287345c0b95a83777c54065f13c04.jpg&type=sc960_832" 
-        },
-        {
-          name: "BHC",
-          category: "패스트푸드",
-          address: "서울특별시 강남구 테헤란로 456",
-          ownerName: "이순신",
-          contact: "02-3456-7890",
-          email: "owner2@example.com",
-          imageUrl: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTA2MTZfMjg3%2FMDAxNjIzODA2NDc3NjY5.ooK9MfX81XTOznDbUiJCgeg5zl30JbOAJtypG0id_zMg.TR1JrvWOQQXvTWdNrYriizVaP0PovnTy2sIsoXfw-mgg.JPEG.congha%2Fbhc1.jpg&type=a340" 
-        },
-        {
-          name: "할리스 커피",
-          category: "카페",
-          address: "인천광역시 연수구 송도동 123",
-          ownerName: "김유신",
-          contact: "032-987-6543",
-          email: "owner3@example.com",
-          imageUrl: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20160606_247%2Fppanppane_1465209346510ebnAl_PNG%2F%25C7%25D2%25B8%25AE%25BD%25BA_%25C4%25BF%25C7%25C7_%25B7%25CE%25B0%25ED_%25281%2529.png&type=sc960_832" 
-        }
-      ]
-    };
-
-    // 더미 데이터를 설정
-    setStores(dummyData.stores);
-    if (dummyData.stores.length > 0) {
-      setSelectedStore(dummyData.stores[0]); // 첫 번째 매장으로 초기화
-    }
-  };
-
-  useEffect(() => {
-    fetchStores();
-  }, []);
-
-  // 매장 클릭 시 해당 매장 정보로 변경
-  const handleStoreClick = (storeName) => {
-    const store = stores.find(s => s.name === storeName);
-    if (store) {
-      // console.log("Selected Store:", store); // 선택된 매장 확인
-      setSelectedStore(store); // 상태 업데이트
-    }
+  const navigate = useNavigate();
+  const storeData = [
+    {
+      id: 1,
+      name: "BHC",
+      image: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAzMDhfMTAw%2FMDAxNzA5OTA4ODc0OTUw.96xNUYTAMJGFIB2ihvdgtWmiwYaGgDrbBaO8kdc44xog.NCF8ntPp1xDdaqud9NLXuoMtxmQehVN5Rw8DgrBua8Ug.PNG%2FBHC.png&type=sc960_832", // 이미지 URL
+      address: "부산광역시 남구 부경로 123 1층",
+      owner: "김치킨",
+      contact: "010-1234-5678",
+      email: "hello@naver.com",
+    },
+    {
+      id: 2,
+      name: "맥도날드",
+      image: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDEyMTNfMjE2%2FMDAxNzM0MDQ5NDAxNzg0.Yk2qqTdXGk_UIdyc3ewKfXMXYJYxbqZgV5xfPIMillYg.X5lYnQ9t77bXgt1Ac3KK3pVF-6GxpC9cKars4bnwzaYg.JPEG%2FIMG_4214.JPG&type=sc960_832", // 이미지 URL
+      address: "부산광역시 중구 맥도날드로 45",
+      owner: "박버거",
+      contact: "010-9876-5432",
+      email: "burger@fastfood.com",
+    },
+    {
+      id: 3,
+      name: "스타벅스",
+      image: "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMzAzMDVfMjg2%2FMDAxNjc3OTkwMDM2MzU5.cmpe_4-YqNkPW23U7UNgxHZEw_yZBzz8fIrIOLFEFmAg.Egv2A4g8dbouMAt3SxR12TUUVNM3bquAB5dJSBS3WYIg.PNG.gisuggy%2F20230305_131920.jpg&type=sc960_832", // 이미지 URL
+      address: "부산광역시 해운대구 스타벅스로 89",
+      owner: "이카페",
+      contact: "010-5678-1234",
+      email: "coffee@starbucks.com",
+    },
+  ];
+  
+  const handleNavigation = (mode) => {
+    navigate("/mypage/mystore-form", { state: { modeType: mode } });
   };
 
   return (
     <MypageLayout>
       <Page>
-        <Top>
-          <Title>
-            <div></div>
-            <h2>나의 매장</h2>
-          </Title>
-          <AddButton>매장등록</AddButton>
-        </Top>
+        <Title>
+          나의 매장
+          <button onClick={() => handleNavigation("register")}>매장등록</button>
+        </Title>
 
-        <Content>
-          <StoreList>
-            {stores.map((store) => (
-              <StoreItem
-                key={store.name}
-                onClick={() => handleStoreClick(store.name)}
-                isSelected={selectedStore && selectedStore.name === store.name} // 선택된 매장에 따라 스타일 적용
-              >
-                {store.name}
-              </StoreItem>
-            ))}
-          </StoreList>
-          <StoreDetails isFirstStore={selectedStore && stores.indexOf(selectedStore) === 0}>
-            {selectedStore ? (
-              <>
-                <div className="top-section">
-                  <section>
-                  <StoreImg 
-                    src={selectedStore?.imageUrl || "https://via.placeholder.com/150"} 
-                    alt={selectedStore?.name || "Default Image"} 
-                  />
-                    <StoreNameSection>
-                      <h5>{selectedStore.category}</h5>
-                      <h3>{selectedStore.name}</h3>
-                    </StoreNameSection>
-                  </section>
-                  <SettingIcon />
+        <StoreList>
+          {storeData.map((store) => (
+            <StoreItem key={store.id}>
+              <img src={store.image} alt="가게 이미지" />
+
+              <div>
+                <div className="store-name">
+                  {store.name}
+                  <div className="edit-button" onClick={() => handleNavigation("edit")}>
+                    <IoMdSettings />
+                    매장 정보 수정
+                  </div>
                 </div>
-                <StoreInfo>
+
+                <div className="store-info">
                   <div>
                     <span>주소</span>
-                    <span>대표명</span>
-                    <span>연락처</span>
-                    <span>이메일</span>
+                    <p>{store.address}</p>
                   </div>
                   <div>
-                    <p>{selectedStore.address}</p>
-                    <p>{selectedStore.ownerName}</p>
-                    <p>{selectedStore.contact}</p>
-                    <p>{selectedStore.email}</p>
+                    <span>대표명</span>
+                    <p>{store.owner}</p>
                   </div>
-                </StoreInfo>
-              </>
-            ) : (
-              <p>매장 정보를 선택하세요.</p>
-            )}
-          </StoreDetails>
-        </Content>
+                  <div>
+                    <span>연락처</span>
+                    <p>{store.contact}</p>
+                  </div>
+                  <div>
+                    <span>이메일</span>
+                    <p>{store.email}</p>
+                  </div>
+                </div>
+              </div>
+            </StoreItem>
+          ))}
+        </StoreList>
       </Page>
     </MypageLayout>
   );
@@ -128,143 +90,107 @@ const MyStorePage = () => {
 
 export default MyStorePage;
 
-const Page = styled.div`
-  padding: 20px;
-`;
 
-const Top = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-`;
+const Page = styled.div`
+  padding: 20px 30px;
+  margin-top: -50px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  min-width: 1000px;
+  max-width: 1400px;
+  min-height: 750px;
+`
 
 const Title = styled.div`
   display: flex;
-  gap: 12px;
-
-  div {
-    width: 5px;
-    height: 35px;
-    background-color: #6E3C3B;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 24px;
-  }
-`;
-
-const AddButton = styled.button`
-  padding: 10px 20px;
-  background-color: #6E3C3B;
-
-  color: white;
-  font-size: 16px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 22px;
   font-weight: 600;
+  padding: 10px;
+  border-bottom: 1px solid #EAEAEA;
 
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &:hover {
+  button {
+    width: 105px;
+    height: 42px;
+    border-radius: 8px;
     background-color: #6E3C3B;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 14px;
   }
-`;
-
-const Content = styled.div`
-  display: flex;
-`;
+`
 
 const StoreList = styled.div`
-  width: 230px;
-  height: 320px;
-  overflow: auto;
-  -ms-overflow-style: none; /* IE 및 Edge에서 스크롤바 숨김 */
-  scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
-
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Edge에서 스크롤바 숨김 */
-  }
-`;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+`
 
 const StoreItem = styled.div`
   display: flex;
-  align-items: center;
+  gap: 30px;
+  width: 100%;
+  padding: 25px 22px 50px;
+  border: 1px solid #E4E4E4;
+  border-radius: 20px;
 
-  width: auto;
-  
-  cursor: pointer;
-  padding: 25px 35px;
-  background-color: ${(props) => (props.isSelected ? "#FAF4F2" : "white")};
-  color: ${(props) => (props.isSelected ? "#9C6B60" : "#BBBBBB")};
-  font-size: 16px;
-  font-weight: 700;
-  border-radius: 20px 0px 0px 20px;
-
-  &:hover {
-    background-color: ${(props) => (props.isSelected ? "#e9ecef" : "#f1f1f1")};
+  > div {
+    width: 100%;
   }
-`;
 
-const StoreDetails = styled.div`
-  padding: 25px 35px 40px;
-  flex-grow: 1;
-  background-color: #FAF4F2;
-  border-radius: ${(props) => (props.isFirstStore ? '0px 20px 20px 20px' : '20px')};
+  img {
+    min-width: 125px;
+    max-width: 125px;
+    height: 125px;
+    background-size: cover;
+    border-radius: 40px;
+    object-fit: cover; 
+    object-position: center;
+    background-color: #AAEAAA;
+  }
 
-  .top-section {
+  .store-name {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
   }
 
-  section {
+  .edit-button {
     display: flex;
     align-items: center;
-    height: auto;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #999999;
+    cursor: pointer;
   }
-`;
 
-const StoreImg = styled.img`
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 25px;
-  margin-right: 20px;
-`;
-
-const StoreNameSection = styled.div`
-  flex-grow: 1;
-  flex-direction: column;
-`;
-
-const SettingIcon = styled(RiSettings4Fill)`
-  font-size: 24px;
-  color: #5A5857;
-  cursor: pointer;
-`;
-
-const StoreInfo = styled.div`
-  display: flex;
-  gap: 30px;
-
-  margin-top: 30px;
-  margin-left: 20px;
-
-  div {
+  .store-info {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-  }
+    gap: 14px;
 
-  span {
-    color: #BFBFBF;
-    font-size: 16px;
-    font-weight: 700;
-  }
+    div {
+      display: flex;
+      gap: 25px;
+    }
 
-  p {
-    font-size: 16px;
-    font-weight: 500;
+    span {
+      min-width: 45px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #BFBFBF;
+    }
+
+    p {
+      font-size: 16px;
+      color: #000000;
+    }
   }
-`;
+`
