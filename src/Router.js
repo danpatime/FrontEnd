@@ -9,6 +9,7 @@ import MyStorePage from './pages/MyPage/MyStore/MyStorePage';
 import ResumePage from "./pages/ResumePage";
 import ChattingPage from "./pages/ChattingPage";
 import MyReviewPage from "./pages/MyPage/MyReviewPage";
+import ContactDetailPage from './pages/MyPage/ContactDetailPage';
 import SupportPage from './pages/Support/SupportPage';
 import Settings from './pages/MyPage/Settings';
 import SavedWorkers from './pages/MyPage/SavedWorkers';

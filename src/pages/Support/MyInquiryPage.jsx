@@ -46,10 +46,6 @@ export default MyInquiries;
 
 const Container = styled.div`
   padding-top: 40px;
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
   h3 {
     font-size: 16px;
     padding-left: 4px;
