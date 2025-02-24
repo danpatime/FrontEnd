@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import StarRating from "./StarRating";
+import request from "../../api/request.ts";
 import { useReviewInfo } from "../../contexts/useReviewInfo";
 
 const ReviewForm = ({ onClose, initialData }) => {
-  const isEditing=initialData;
-  const [reviewId,setReviewId]=useState(Date.now());
-  const [starPoint, setStarPoint] = useState(0);
-  const [content, setContent] = useState("");
-  const [reviewCount,setReviewCount]=useState(1);
-  const [reviewDate,setReviewDate]=useState(new Date());
+  const isEditing = initialData;
+  const [reviewId, setReviewId] = useState(Date.now());
+  const [reviewStarPoint, setReviewStarPoint] = useState(0);
+  const [reviewContent, setReviewContent] = useState("");
+  //const [reviewCount, setReviewCount] = useState(1);
+  const [contractStartTime, setContractStartTime] = useState("");
+  const [contractEndTime, setContractEndTime] = useState("");
   const [selectedStore, setSelectedStore] = useState("");
-  const [selectedStoreID,setSelectedStoreID]=useState("");
+  const [selectedStoreID, setSelectedStoreID] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedTag, setSelectedTag] = useState([]);
+  const [stores,setStores]=useState([]);
   const [reviewTag] = useState([
     "일을 잘해요", 
     "시간 엄수를 잘해요",
@@ -25,26 +28,34 @@ const ReviewForm = ({ onClose, initialData }) => {
     "또 같이 일하고 싶어요"
   ]);
 
-  const {addReview,editReview}=useReviewInfo();
+  const { addReview, editReview } = useReviewInfo();
 
-  // 더미 가게 및 알바 목록
-  const storeData = {
-    "크리스피 크림도넛 경성대점": ["홍길동", "유재석", "하하"],
-    "할리스커피 부경대점": ["김철수", "이영희", "신동엽"],
-    "GS25 대연점": ["박민수", "강호동"]
-  };  
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const response = await request.get("/api/v1/employer/businesses");  // 가게 목록 요청
+        setStores(response.data||[]);  // 받아온 데이터로 가게 목록 설정
+      } catch (error) {
+        console.error("가게 목록을 가져오는 데 실패했습니다.", error);
+        setStores([]);
+      }
+    };
+
+    fetchStores();  // 컴포넌트가 마운트될 때 가게 목록을 가져옵니다.
+  }, []);
 
   useEffect(() => {
     if (initialData) {
-      setReviewId(initialData.reviewId||Date.now());
-      setStarPoint(initialData.starPoint || 0);
-      setContent(initialData.content || "");
-      setReviewCount(initialData.reviewCount||1);
-      setReviewDate(initialData.date||"");
-      setSelectedStore(initialData.businessId || "");
-      setSelectedStoreID(initialData.businessID||"");
-      setSelectedAlba(initialData.albaID || "");
-      setSelectedTag(initialData.tags || []);
+      setReviewId(initialData.reviewId || Date.now());
+      setReviewStarPoint(initialData.reviewStarPoint || 0); 
+      setReviewContent(initialData.reviewContent || ""); 
+      //setReviewCount(initialData.reviewCount || 1);
+      setContractStartTime(initialData.contractStartTime || ""); 
+      setContractEndTime(initialData.contractEndTime || "");
+      setSelectedStore(initialData.businessName || ""); 
+      setSelectedStoreID(initialData.businessId || ""); 
+      //setSelectedAlba(initialData.workerId || ""); 
+      //setSelectedTag(initialData.tags || []);
     }
   }, [initialData]);
 
@@ -52,24 +63,24 @@ const ReviewForm = ({ onClose, initialData }) => {
     const newReview = {
       reviewId: reviewId,
       businessName: selectedStore,
-      businessId: selectedStoreID,
-      workerId: selectedAlba, // 없음
-      //contractStartTime: selectedSTime,
-      //contractEndTime: selectedETime,
-      reviewStarPoint: starPoint,
-      reviewCount: reviewCount, // 없음
-      date:reviewDate, // 없음
-      reviewContent: content,
-      tags: selectedTag, // 없음
+      businessId: selectedStoreID, 
+      //workerId: selectedAlba,
+      reviewStarPoint: reviewStarPoint,
+      //reviewCount: reviewCount,
+      contractStartTime: contractStartTime,
+      contractEndTime: contractEndTime,
+      reviewContent: reviewContent, 
+      //tags: selectedTag,
     };
 
-    if (!selectedStore || !selectedAlba || !starPoint || !content) {
+    //if (!selectedStore || !selectedAlba || !reviewStarPoint || !reviewContent)
+    if (!reviewStarPoint || !reviewContent){
       let missingFields = [];
       
-      if (!selectedStore) missingFields.push("가게");
-      if (!selectedAlba) missingFields.push("알바생");
-      if (!starPoint) missingFields.push("평점");
-      if (!content) missingFields.push("한줄평");
+      //if (!selectedStore) missingFields.push("가게");
+      //if (!selectedAlba) missingFields.push("알바생");
+      if (!reviewStarPoint) missingFields.push("평점");
+      if (!reviewContent) missingFields.push("한줄평");
   
       alert(`${missingFields.join(", ")}을(를) 입력해 주세요.`);
       return; // 입력 받지 않은 항목에 대해 alert 메시지
@@ -108,15 +119,11 @@ const ReviewForm = ({ onClose, initialData }) => {
         <FieldContainer>
           <Field>
             <Label>가게</Label>
-            <Select value={selectedStore}
-            onChange={handleStoreChange}
-            disabled={isEditing}>
-              <option value="" disabled>
-                선택하세요
-              </option>
-              {Object.keys(storeData).map((store) => (
-                <option key={store} value={store}>
-                  {store}
+            <Select value={selectedStore} onChange={handleStoreChange} disabled={isEditing}>
+              <option value="" disabled>선택하세요</option>
+              {stores.map((store) => (
+                <option key={store.businessId} value={store.businessId}>
+                  {store.businessName}
                 </option>
               ))}
             </Select>
@@ -127,14 +134,12 @@ const ReviewForm = ({ onClose, initialData }) => {
             <Select
               value={selectedAlba}
               onChange={(e) => setSelectedAlba(e.target.value)}
-              disabled={!selectedStore||isEditing}
+              disabled={!selectedStore || isEditing}
             >
-              <option value="" disabled>
-                선택하세요
-              </option>
+              <option value="" disabled>선택하세요</option>
               {selectedStore &&
-                storeData[selectedStore] &&
-                storeData[selectedStore].map((alba) => (
+                stores[selectedStore] &&
+                stores[selectedStore].map((alba) => (
                   <option key={alba} value={alba}>
                     {alba}
                   </option>
@@ -145,14 +150,14 @@ const ReviewForm = ({ onClose, initialData }) => {
 
         <Field>
           <Label>알바 후기 별점</Label>
-          <StarRating setRating={setStarPoint} starPoint={starPoint} />
+          <StarRating setRating={setReviewStarPoint} starPoint={reviewStarPoint} />
         </Field>
 
         <Field>
           <Label>한줄평을 작성해주세요</Label>
           <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={reviewContent}
+            onChange={(e) => setReviewContent(e.target.value)}
             placeholder=""
           />
         </Field>

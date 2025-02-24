@@ -16,7 +16,6 @@ const AlbaReviewPage = () => {
   // Context에서 상태와 함수 가져오기
   const { reviews, filteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
   
-  //const filteredReviews = getFilteredReviews(); // 필터링된 리뷰 데이터
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
   const currentReviews = filteredReviews.slice(
@@ -32,7 +31,7 @@ const AlbaReviewPage = () => {
   },[isAuthenticated,navigate]);
 
   useEffect(() => {
-    if (role === "EMPLOYEE") {
+    if (role&&role === "ROLE_EMPLOYEE") {
       alert("해당 페이지는 기업 회원에게만 제공되는 페이지입니다.\n회원님의 리뷰는 '마이페이지'-'리뷰 관리'에서 확인하실 수 있습니다.");
       navigate("/");
     }
@@ -63,7 +62,7 @@ const AlbaReviewPage = () => {
 
   return (
     <div>
-      {role!=="EMPLOYEE"&&(
+      {role&&role!=="ROLE_EMPLOYEE"&&(
       <Container>
         <HeaderSection>
           <h1>알바 리뷰</h1>
@@ -95,19 +94,22 @@ const AlbaReviewPage = () => {
         <ReviewList>
           <ReviewHeader>
             <HeaderCell>번호</HeaderCell>
-            <HeaderCell>알바생 닉네임</HeaderCell>
+            <HeaderCell>가게 이름</HeaderCell>
+            <HeaderCell>알바생 이름(닉네임)</HeaderCell>
             <HeaderCell>후기 수</HeaderCell>
             <HeaderCell>별점</HeaderCell>
             <HeaderCell>후기 작성일</HeaderCell>
           </ReviewHeader>
           {currentReviews.map((review, index) => (
-            <ReviewItem key={review.id} onClick={() => openModalForEdit(review)}>
-              <ReviewCell>{index + 1}</ReviewCell>
-              <ReviewCell>{review.albaID}</ReviewCell>
-              <ReviewCell>{review.reviewCount}</ReviewCell>
-              <ReviewCell>{review.starPoint}</ReviewCell>
-              <ReviewCell>{review.date.toLocaleDateString()}</ReviewCell>
-            </ReviewItem>
+            <ReviewItem key={review.reviewId} onClick={() => openModalForEdit(review)}>
+            <ReviewCell>{index + 1}</ReviewCell>
+            <ReviewCell>{review.businessName}</ReviewCell>
+            <ReviewCell>추가</ReviewCell>
+            <ReviewCell>{review.reviewContent.length}</ReviewCell>
+            <ReviewCell>{review.reviewStarPoint}</ReviewCell>
+            <ReviewCell>{new Date(review.contractStartTime).toLocaleDateString()}</ReviewCell>
+          </ReviewItem>
+
           ))}
         </ReviewList>
         <AddReviewButton onClick={openModal}>후기 작성</AddReviewButton>

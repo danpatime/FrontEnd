@@ -13,9 +13,8 @@ export const ReviewProvider = ({ children }) => {
   // 리뷰 요청
   const fetchReviews=async() => {
     try {
-      const fetchedReviews = await request.get('/api/v1/review'); 
+      const fetchedReviews = await request.get("/api/v1/review"); 
       setReviews(fetchedReviews);
-      //console.log(fetchedReviews);
     } catch (error) {
       console.error(error);
     }
@@ -24,31 +23,25 @@ export const ReviewProvider = ({ children }) => {
   // 필터링 및 정렬된 리뷰 반환
   const getFilteredReviews = () => {
     return reviews
-      .filter((review) => review.albaID.includes(searchQuery))
+      .filter((review) => review.businessName?.includes(searchQuery)) // 검색 쿼리로 필터링
       .sort((a, b) => {
         if (sortOption === "latest") {
-          return new Date(b.date) - new Date(a.date);
+          return new Date(b.contractStartTime) - new Date(a.contractStartTime); // 계약 시작 시간으로 정렬
         } else if (sortOption === "star") {
-          return b.starPoint - a.starPoint;
-        } else if (sortOption === "reviewCount") {
-          return b.reviewCount - a.reviewCount;
+          return b.reviewStarPoint - a.reviewStarPoint; // 별점으로 정렬
         }
         return 0;
       });
   };
 
   useEffect(() => {
-    const fetchAndFilterReviews = async () => {
-      await fetchReviews(); // 리뷰 데이터 요청
-    };
-  
-    fetchAndFilterReviews();
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
-  
+    fetchReviews(); // 컴포넌트가 마운트될 때 리뷰 데이터 요청
+  }, []);
+
   // reviews가 변경될 때마다 필터링 및 정렬 수행
   useEffect(() => {
     if (reviews.length > 0) {
-      setFilteredReviews(getFilteredReviews(reviews)); // 필터링된 리뷰 상태 업데이트
+      setFilteredReviews(getFilteredReviews()); // 필터링된 리뷰 상태 업데이트
     }
   }, [reviews, searchQuery, sortOption]);
 
@@ -97,13 +90,21 @@ export const ReviewProvider = ({ children }) => {
   };  
   
   // 리뷰 수정
-  const editReview = (updatedReview) => {
-    setReviews(prevReviews => 
-      prevReviews.map(review => 
-        review.id === updatedReview.id ? updatedReview : review
-      )
-    );
-    return reviews;
+  const editReview = async (updatedReview) => {
+    try {
+      const response = await request.post("/api/v1/contracts/review", {
+        contractId: updatedReview.contractId,
+        reviewScore: updatedReview.reviewStarPoint, 
+        reviewContent: updatedReview.reviewContent,
+      });
+  
+      if (response.status === 200) {
+        setReviews(response.data);
+        fetchReviews();
+      }
+    } catch (error) {
+      console.error("리뷰 수정 중 오류가 발생했습니다.", error);
+    }
   };
 
   // 리뷰 삭제
