@@ -1,7 +1,10 @@
 import axios, { AxiosInstance, AxiosHeaders  } from 'axios';
+import { AxiosError } from 'axios';
 
 class Request {
   private api: AxiosInstance;
+  private isRefreshing: boolean = false;
+  private refreshQueue: (() => void)[] = []; // 401 처리 중 다른 요청을 큐에 저장
 
   constructor() {
     this.api = axios.create({
@@ -17,6 +20,17 @@ class Request {
       });
       return config;
     });
+
+    // 응답 인터셉터: 401 에러 처리
+    this.api.interceptors.response.use(
+      (response) => response,
+      async (error: AxiosError) => {
+        if (error.response?.status === 401) {
+          return this.handle401Error(error);
+        }
+        return Promise.reject(this.handleError(error));
+      }
+    );
   }
 
   // 헤더에 토큰 추가
@@ -34,8 +48,36 @@ class Request {
     this.api.defaults.headers.Authorization = `Bearer ${newToken}`; // Axios 기본 헤더 업데이트
   }
 
+  // 401 에러 발생 시 토큰 재발급 처리
+  private async handle401Error(error: AxiosError) {
+    if (this.isRefreshing) {
+      // 토큰이 갱신되는 동안 대기 후 재요청
+      return new Promise((resolve) => {
+        this.refreshQueue.push(() => resolve(this.api.request(error.config!)));
+      });
+    }
+
+    this.isRefreshing = true;
+
+    try {
+      const { data } = await axios.post('/api/v1/auth/refresh');
+      const newToken = data.refreshToken;
+      this.updateToken(newToken);
+
+      // 대기 중인 요청들 재시도
+      this.refreshQueue.forEach((callback) => callback());
+      this.refreshQueue = [];
+
+      return this.api.request(error.config!); // 401이 발생했던 요청 다시 실행
+    } catch (refreshError) {
+      return Promise.reject(this.handleError(refreshError));
+    } finally {
+      this.isRefreshing = false;
+    }
+  }
+
   // 에러 핸들링
-  handleError(error) {
+  handleError(error: any) {
     if (error.response) {
       // 서버가 응답했으나 에러 상태 코드인 경우
       return new Error(error.response.data.message || 'API Error');
