@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AlbaProfileCard } from '../common/AlbaProfileCard';
 import styled from 'styled-components';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Import React Icons
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const dummyProfiles = [
   {
@@ -11,10 +11,10 @@ const dummyProfiles = [
     rating: 4.5,
     danpatTime: 3,
     danpatExperience: ['서빙', '배달'],
-    jobExperience: ['편의점', '카페'],
+    jobExperience: ['카페'],
     hopes: ['카페', '베이커리'],
     location: ['서울', '강남'],
-    profileImage: 'https://via.placeholder.com/100',
+    profileImage: null,
     isBookmarked: false,
   },
   {
@@ -24,10 +24,10 @@ const dummyProfiles = [
     rating: 4.7,
     danpatTime: 2,
     danpatExperience: ['서빙', '배달'],
-    jobExperience: ['카페', '레스토랑'],
+    jobExperience: [],
     hopes: ['베이커리'],
     location: ['서울', '홍대'],
-    profileImage: 'https://via.placeholder.com/100',
+    profileImage: null,
     isBookmarked: false,
   },
   {
@@ -40,7 +40,7 @@ const dummyProfiles = [
     jobExperience: ['레스토랑', '호텔'],
     hopes: ['레스토랑'],
     location: ['서울', '종로'],
-    profileImage: 'https://via.placeholder.com/100',
+    profileImage: null,
     isBookmarked: false,
   },
   {
@@ -53,7 +53,7 @@ const dummyProfiles = [
     jobExperience: ['편의점'],
     hopes: ['카페'],
     location: ['서울', '강남'],
-    profileImage: 'https://via.placeholder.com/100',
+    profileImage: null,
     isBookmarked: false,
   },
   {
@@ -66,7 +66,7 @@ const dummyProfiles = [
     jobExperience: ['카페', '베이커리'],
     hopes: ['베이커리'],
     location: ['서울', '을지로'],
-    profileImage: 'https://via.placeholder.com/100',
+    profileImage: null,
     isBookmarked: false,
   },
   {
@@ -79,7 +79,7 @@ const dummyProfiles = [
     jobExperience: ['카페', '음악카페'],
     hopes: ['음악카페'],
     location: ['서울', '합정'],
-    profileImage: 'https://via.placeholder.com/100',
+    profileImage: null,
     isBookmarked: false,
   },
 ];

@@ -42,7 +42,10 @@ const AlbaProfileCard = ({
   return (
     <Card direction={direction}>
       <Profile>
-        <ProfileImg src={profileImage} alt={`${name}님의 프로필`} />
+        <ProfileImg
+          src={profileImage || defaultProfileImage}
+          alt={`${name}님의 프로필`}
+        />
         <Info>
           <Name>{name}</Name>
           {gender} {age}세
@@ -255,18 +258,18 @@ const Experience = styled.div`
 `;
 
 const JobTag = styled.span`
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   padding: 4px 8px;
   border-radius: 12px;
   margin-right: 8px;
 
   &.danpat {
-    border: 1.5px solid var(--primary-color);
+    border: 1.2px solid var(--primary-color);
     color: var(--primary-color);
   }
 
   &.other {
-    border: 1.5px solid #848484;
+    border: 1.2px solid #848484;
     color: #848484;
   }
 `;

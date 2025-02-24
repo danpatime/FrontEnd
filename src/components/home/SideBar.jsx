@@ -1,21 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
+import defaultProfile from '../../assets/images/default-profile.jpg';
 
-const SideBar = ({
-  name = '사용자',
-  profileImage = 'https://via.placeholder.com/100',
-}) => {
-  const buttons = ['채팅방', '체결현황', '내 이력서']; // 기본 버튼 세 개
+const SideBar = ({ name, profileImage }) => {
+  const buttons = ['채팅방', '체결현황', '내 이력서'];
 
   return (
     <SidebarContainer>
-      {/* 프로필 영역 */}
       <ProfileSection>
-        <ProfileImg src={profileImage} alt={`${name}님의 프로필`} />
-        <UserName>{name}</UserName>
+        <ProfileImg src={profileImage || defaultProfile} alt={`프로필`} />
+        <UserName>{name} 님</UserName>
       </ProfileSection>
 
-      {/* 버튼 영역 */}
       <ButtonGrid>
         {buttons.map((button, index) => (
           <SidebarButton key={index}>{button}</SidebarButton>
@@ -24,15 +20,14 @@ const SideBar = ({
     </SidebarContainer>
   );
 };
-
-// 스타일 정의
 const SidebarContainer = styled.div`
   width: 250px;
-  background-color: #f5f5f5;
+  background-color: white;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px;
 `;
 
 const ProfileSection = styled.div`
@@ -59,7 +54,7 @@ const UserName = styled.div`
 const ButtonGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 12px;
+  gap: 8px;
   margin-top: 20px;
 `;
 

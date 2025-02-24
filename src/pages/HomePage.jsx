@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ReviewCell from '../components/common/ReviewCell';
 import SideBar from '../components/home/SideBar';
 import NewAlbaList from '../components/home/NewAlbaList';
-
+import danpatImage from '../assets/images/danpatImage.png';
 const HomePage = () => {
   const navigate = useNavigate();
 
@@ -33,31 +33,24 @@ const HomePage = () => {
       content: '매장 정보가 정확하고 빠른 알림 기능이 좋아요.',
       tags: ['정확함', '빠른알림'],
     },
-    {
-      albaID: 'A004',
-      storeID: 'Store04',
-      date: new Date(),
-      starPoint: 5,
-      content: '매장 정보가 정확하고 빠른 알림 기능이 좋아요.',
-      tags: ['정확함', '빠른알림'],
-    },
   ];
 
   return (
     <Container>
       <Banner>
-        지금 단팥을 이용하고 있는 <span>단팥러</span>는 <strong>900</strong>{' '}
+        지금 단팥을 이용하고 있는 <span>단팥러</span>는 <strong>900</strong>
         명이에요!
+        <DanpatImage src={danpatImage} alt="danpatIMG" />
       </Banner>
 
       <ContentWrapper>
         <div>
           <StatsContainer>
-            <StatBox onClick={() => navigate('/alba')}>
+            <StatBox onClick={() => navigate('/alba/search')}>
               <p>{'전체 알바생 >'}</p>
               <strong>1,807명</strong>
             </StatBox>
-            <StatBox onClick={() => navigate('/stores')}>
+            <StatBox onClick={() => navigate('/')}>
               <p>{'함께하는 매장 >'}</p>
               <strong>120개</strong>
             </StatBox>
@@ -67,7 +60,7 @@ const HomePage = () => {
             <Section>
               <SectionHeader>
                 <h2>최근 리뷰</h2>
-                <MoreButton onClick={() => navigate('/reviews')}>
+                <MoreButton onClick={() => navigate('/alba/review')}>
                   더보기
                 </MoreButton>
               </SectionHeader>
@@ -81,7 +74,7 @@ const HomePage = () => {
             <Section>
               <SectionHeader>
                 <h2>신규 등록 알바생</h2>
-                <MoreButton onClick={() => navigate('/workers')}>
+                <MoreButton onClick={() => navigate('/alba/search')}>
                   더보기
                 </MoreButton>
               </SectionHeader>
@@ -93,7 +86,7 @@ const HomePage = () => {
         <StickySidebar>
           <SideBar
             name="김철수"
-            profileImage="https://example.com/profile.jpg"
+            // profileImage="https://example.com/profile.jpg"
             buttons={['홈', '설정', '알림', '즐겨찾기', '문의하기', '로그아웃']}
           />
         </StickySidebar>
@@ -112,17 +105,19 @@ const ReviewRow = styled.div`
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
   margin: auto;
 `;
 
 const Banner = styled.div`
-  background-color: var(--primary-color);
+  background-color: var(--primary-color-dark);
   color: white;
-  text-align: center;
-  padding: 80px 20px;
+  padding: 80px;
   font-size: 18px;
   font-weight: bold;
+  border-radius: 0 0 30px 30px;
+  position: relative; /* 상대 위치 설정 */
+  display: flex;
+  align-items: center;
 
   span {
     font-weight: normal;
@@ -134,6 +129,14 @@ const Banner = styled.div`
   }
 `;
 
+const DanpatImage = styled.img`
+  width: 300px;
+  height: auto;
+  position: absolute;
+  right: 100px;
+  top: 80%;
+  transform: translateY(-50%);
+`;
 const StatsContainer = styled.div`
   display: flex;
   gap: 20px;
@@ -151,7 +154,7 @@ const StatBox = styled.div`
   border: 1px #eeeeee solid;
 
   &:hover {
-    background: #c3c3c3;
+    background: #e8e8e8;
   }
 
   p {
@@ -168,7 +171,8 @@ const StatBox = styled.div`
 const ContentWrapper = styled.div`
   display: flex;
   gap: 20px;
-  margin-top: 20px;
+  max-width: 1200px;
+  margin: 50px auto;
 `;
 
 const MainContent = styled.div`
@@ -194,7 +198,6 @@ const SectionHeader = styled.div`
 const MoreButton = styled.button`
   background: none;
   border: none;
-  color: #007bff;
   font-size: 14px;
   cursor: pointer;
 

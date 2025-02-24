@@ -15,11 +15,14 @@ const ReviewCell = ({
         <ProfilePic src={logo} alt="프로필" />
         <InfoContainer>
           <AlbaID>{review.albaID}</AlbaID>
-          <BoldText>매장</BoldText>
-          {review.storeID}
-          <BoldText>|</BoldText>
-          <BoldText>일한 날짜</BoldText>
-          {review.date.toLocaleDateString()}
+          <InfoText>
+            <BoldText>매장</BoldText>
+            {review.storeID}
+          </InfoText>
+          <InfoText>
+            <BoldText>일한 날짜</BoldText>
+            {review.date.toLocaleDateString()}
+          </InfoText>
         </InfoContainer>
       </Row>
 
@@ -87,6 +90,9 @@ const ReviewCellWrapper = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   position: relative;
+  &:hover {
+    border-color: var(--primary-color);
+  }
 `;
 
 const Row = styled.div`
@@ -96,20 +102,26 @@ const Row = styled.div`
 `;
 
 const InfoContainer = styled.div`
-  display: space-between;
   font-size: 15px;
+  display: flex;
   flex-direction: column;
   margin-left: 16px;
 `;
 
+const InfoText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
 const BoldText = styled.span`
-  margin: 10px;
   font-weight: bold;
 `;
 
 const AlbaID = styled.p`
   font-size: 17px;
   font-weight: bold;
+  margin-bottom: 5px;
 `;
 
 const Content = styled.p`
@@ -131,16 +143,16 @@ const Star = styled.span`
 const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
   margin-top: 10px;
 `;
 
 const Tag = styled.span`
   background-color: rgb(210, 185, 179);
   color: #5c3a32;
-  border-radius: 20px;
-  padding: 5px 10px;
-  font-size: 14px;
+  border-radius: 15px;
+  padding: 3px 8px;
+  font-size: 12px;
   font-weight: bold;
 `;
 
