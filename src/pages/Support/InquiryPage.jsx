@@ -1,5 +1,8 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import styled from "styled-components";
+import request from "../../api/request.ts";
+import { useNavigate } from "react-router-dom";
+import { useUserInfo } from "../../contexts/useUserInfo.js";
 import Dropdown from "../../components/common/DropDown";
 
 const Inquiry=()=>{
@@ -9,6 +12,8 @@ const Inquiry=()=>{
   const [inqType2, setInqType2] = useState("선택해주세요");
   const [inqTitle, setInqTitle] = useState("");
   const [inqReason, setInqReason] = useState("");
+  const navigate=useNavigate();
+  const {isAuthenticated}=useUserInfo();
 
   const options1=['회원정보','개인회원','기업회원','신고','제안/건의','기타']; 
   const options2 = {
@@ -19,6 +24,13 @@ const Inquiry=()=>{
     '제안/건의': ['불편사항 개선 요청', '건의사항'],
     '기타': ['서비스 오류','기타']
   };
+
+  useEffect(()=>{
+    if(!isAuthenticated){
+      alert("로그인 후 이용해주세요.");
+      navigate("/");
+    }
+  },[isAuthenticated,navigate]);
 
   const handleInq1Toggle = () => {
     setDDOpen1(!DDOpen1);
@@ -43,24 +55,39 @@ const Inquiry=()=>{
     setInqType2(option);
     setDDOpen2(false);
   };
-
+  
   // 문의 등록
-  const handleSendInq = () => {
+  const handleSendInq = async () => {
     if (inqType1 === "선택해주세요" || inqType2 === "선택해주세요" || !inqTitle || !inqReason) {
       alert("모든 항목을 입력해주세요.");
       return;
     }
 
-    alert(`카테고리: ${inqType1}-${inqType2}\n제목: ${inqTitle}\n내용: ${inqReason}\n문의가 접수되었습니다.`);
-
-    // 초기화
-    setInqType1("선택해주세요");
-    setInqType2("선택해주세요");
-    setInqTitle("");
-    setInqReason("");
-    setDDOpen1(false);
-    setDDOpen2(false);
+    try {
+      const response = await request.post("/api/v1/support/inquiry", {
+        inquiryType: inqType1,
+        subInquiryType: inqType2,
+        title: inqTitle,
+        content: inqReason,
+      });
+  
+      if (response.inquiryStatus === "WAITING") {
+        alert("문의가 성공적으로 접수되었습니다.");
+      }
+  
+      // 입력값 초기화
+      setInqType1("선택해주세요");
+      setInqType2("선택해주세요");
+      setInqTitle("");
+      setInqReason("");
+      setDDOpen1(false);
+      setDDOpen2(false);
+    } catch (error) {
+      console.error("문의 등록 실패:", error);
+      alert("문의 등록에 실패했습니다.\n다시 시도해주세요.");
+    }
   };
+  
 
   return (
     <Container>
