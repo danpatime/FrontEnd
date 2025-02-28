@@ -104,6 +104,29 @@ const MyStoreForm = () => {
     }).open();
   };
 
+  const handleValidation = async () => {
+    // 4개의 값이 비어있는지 확인
+    if (!businessRegistrationNumber || !businessName || !representationName || !businessOpenDate) {
+      alert('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    try {
+      await request.post('/api/v1/account/validation/business-number', {
+        businessRegistrationNumber,
+        businessName,
+        representationName,
+        businessOpenDate
+      });
+      
+      
+      alert('인증 되었습니다.');
+    } catch (error) {
+      console.error('인증 요청에 실패했습니다.', error);
+      alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
   const handleDetailAddressChange = (e) => {
     setDetailAddress(e.target.value);
   };
@@ -206,7 +229,7 @@ const MyStoreForm = () => {
               <label>사업자등록번호</label>
               <div className='button-input'>
                 <input type="text" value={businessRegistrationNumber} onChange={(e) => setBusinessRegistrationNumber(e.target.value)} />
-                <button>인증</button>
+                <button onClick={handleValidation}>인증</button>
               </div>
             </div>
 
