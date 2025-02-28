@@ -1,58 +1,82 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import { jobCategories } from "../../../assets/data/jobCategories";
 
 import MypageLayout from "../../../components/layout/MypageLayout"
-import DefaultProfile from "../../../assets/images/default-profile.jpg";
 import { IoIosArrowBack } from "react-icons/io";
-import EditIcon from "../../../assets/icons/ic_edit.png";
+import request from "../../../api/request.ts";
+// import DefaultProfile from "../../../assets/images/default-profile.jpg";
+// import EditIcon from "../../../assets/icons/ic_edit.png";
 
-const dummyData = {
-  profileImage: 'https://dummyimage.com/100x100/000/fff', // 더미 프로필 이미지 URL
-  name: '홍길동',
-  email: 'hong@domain.com',
-  phoneNumber: '010-1234-5678',
-  address: '서울특별시 강남구 테헤란로',
-  detailAddress: '123-45',
-  storeName: 'BHC',
-  number: '20394983',
-};
 
 const MyStoreForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const mode = location.state?.modeType || 'register';
-  const [isEditingEmail, setIsEditingEmail] = useState(mode === "register");
+  const businessId = location.state?.modeType === "edit" ? location.state.businessId : null;
+  const [storeData, setStoreData] = useState(null);
 
+  useEffect(() => {
+    const fetchStoreData = async () => {
+      try {
+        const response = await request.get(`/api/v1/business?businessId=${businessId}`);
+        const data = response;
 
-  const [storeImage, setStoreImage] = useState(mode === "edit" ? dummyData.storeImage : DefaultProfile);
-  const [storeName, setStoreName] = useState(mode === "edit" ? dummyData.storeName : '');
-  const [number, setNumber] = useState(mode === "edit" ? dummyData.number : '');
-  const [name, setName] = useState(mode === "edit" ? dummyData.name : '');
-  const [email, setEmail] = useState(mode === "edit" ? dummyData.email : '');
-  const [phoneNumber, setPhoneNumber] = useState(mode === "edit" ? dummyData.phoneNumber : '');
-  const [address, setAddress] = useState(mode === "edit" ? dummyData.address : '');
-  const [detailAddress, setDetailAddress] = useState(mode === "edit" ? dummyData.detailAddress : '');
-
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const fileExtension = file.name.split(".").pop().toLowerCase();
-      const allowedExtensions = ["png", "jpg", "jpeg"];
-
-      if (!allowedExtensions.includes(fileExtension)) {
-        alert("PNG 또는 JPG 파일만 업로드 가능합니다.");
-        return;
+        setStoreData(data);
+      } catch (error) {
+        console.error('가게 정보 조회에 실패했습니다.', error);
       }
+    };
+  
+    fetchStoreData();
+  }, []);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setStoreImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+
+  // const [storeImage, setStoreImage] = useState(mode === "edit" ? dummyData.storeImage : DefaultProfile);
+  const [businessName, setBusinessName] = useState(mode === "edit" ? storeData?.businessName : '');
+  const [businessRegistrationNumber, setBusinessRegistrationNumber] = useState(null);
+  const [representationName, setRepresentationName] = useState(mode === "edit" ? storeData?.owner?.name : '');
+  const [email, setEmail] = useState(mode === "edit" ? storeData?.email : '');
+  const [phoneNumber, setPhoneNumber] = useState(mode === "edit" ? storeData?.phoneNumber : '');
+  const [zipcode, setZipcode] = useState(mode === "edit" ? storeData?.location?.zipcode : '');
+  const [address, setAddress] = useState(mode === "edit" ? storeData?.location?.address : '');
+  const [detailAddress, setDetailAddress] = useState(mode === "edit" ? storeData?.location?.detailAddress : '');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [businessOpenDate, setBusinessOpenDate] = useState(null);
+
+  useEffect(() => {
+    if (storeData) {
+      setBusinessName(storeData?.businessName || '');
+      setRepresentationName(storeData?.owner?.name || '');
+      setEmail(storeData?.email || '');
+      setPhoneNumber(storeData?.phoneNumber || '');
+      setZipcode(storeData?.location?.zipcode || '');
+      setAddress(storeData?.location?.address || '');
+      setDetailAddress(storeData?.location?.detailAddress || '');
     }
-  };
+  }, [storeData]);
+
+
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const fileExtension = file.name.split(".").pop().toLowerCase();
+  //     const allowedExtensions = ["png", "jpg", "jpeg"];
+
+  //     if (!allowedExtensions.includes(fileExtension)) {
+  //       alert("PNG 또는 JPG 파일만 업로드 가능합니다.");
+  //       return;
+  //     }
+
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       setStoreImage(reader.result);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const handlePhoneNumberChange = (e) => {
     // 숫자만 필터링
@@ -70,33 +94,58 @@ const MyStoreForm = () => {
     setPhoneNumber(value); // 새로운 전화번호 값을 상태에 업데이트
   };
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const enableEmailEdit = () => {
-    setIsEditingEmail(true);
-  };
 
   const handleAddressSearch = () => {
-    // 다음 우편번호 API 호출
     new window.daum.Postcode({
       oncomplete: (data) => {
-        // 도로명 주소 또는 지번 주소 설정
         setAddress(data.address);
-
-        // 법정동명 설정 (data.bname에 동 이름 있어요)
-        // if (data.bname !== "") {
-        //   setBname(data.bname);
-        // } else {
-        //   setBname("");
-        // }
+        setZipcode(data.zonecode); 
       },
     }).open();
   };
 
   const handleDetailAddressChange = (e) => {
     setDetailAddress(e.target.value);
+  };
+
+  const handleCategoryChange = (event) => {
+    const selected = jobCategories.find(cat => cat.id === parseInt(event.target.value));
+    setSelectedCategory(selected);
+    setSelectedSubCategory(null); // 하위 카테고리 초기화
+  };
+
+  const handleSubmit = async () => {
+    const payload = {
+      subCategoryIds: selectedSubCategory ? [selectedSubCategory] : []
+    };
+
+    const submitData = {
+      businessName,
+      businessRegistrationNumber,
+      businessOpenDate,
+      location: {
+        zipcode,
+        address,
+        detailAddress,
+      },
+      subCategoryIds: payload.subCategoryIds,
+      representationName,
+      email,
+      phoneNumber,
+    }
+
+    try {
+      if (mode === 'register') {
+        await request.post("/api/v1/business", submitData);
+        alert("매장 정보가 등록되었습니다.");
+      } else if (mode === 'edit') {
+        await request.put("/api/v1/business", submitData);
+        alert("매장 정보가 수정되었습니다.");
+      }
+      navigate(-1);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const goBack = () => {
@@ -111,7 +160,7 @@ const MyStoreForm = () => {
           {mode === "edit" ? "매장정보 수정" : "매장 등록"}
         </Title>
 
-        <StoreImgUpload>
+        {/* <StoreImgUpload>
           <img id="upload" src={storeImage} alt="매장 사진" />
           <label htmlFor="file-upload">
             <img id="edit" src={EditIcon} alt="이미지 등록" />
@@ -122,14 +171,14 @@ const MyStoreForm = () => {
             accept="image/png, image/jpg, image/jpeg"
             onChange={handleFileChange}
           />
-        </StoreImgUpload>
+        </StoreImgUpload> */}
 
         <Section>
           <h3>매장정보</h3>
           <StoreInfo>
             <div className="storeinfo-items">
               <label>상호명</label>
-              <input type="text" value={storeName} readOnly={mode==="edit"} onChange={(e) => setStoreName(e.target.value)} />
+              <input type="text" value={businessName} readOnly={mode==="edit"} onChange={(e) => setBusinessName(e.target.value)} />
             </div>
 
             <div className='storeinfo-items item-grid'>
@@ -156,9 +205,38 @@ const MyStoreForm = () => {
             <div className='storeinfo-items'>
               <label>사업자등록번호</label>
               <div className='button-input'>
-                <input type="text" value={number} readOnly={mode==="edit"} onChange={(e) => setNumber(e.target.value)} />
+                <input type="text" value={businessRegistrationNumber} onChange={(e) => setBusinessRegistrationNumber(e.target.value)} />
                 <button>인증</button>
               </div>
+            </div>
+
+            <div className="storeinfo-items">
+              <label>사업시작일</label>
+              <input type="date" value={businessOpenDate} onChange={(e) => setBusinessOpenDate(e.target.value)}/>
+            </div>
+
+            <div className="storeinfo-items">
+              <label>직종 카테고리</label>
+              <SelectContainer>
+                {/* 1차 직종 */}
+                <Select onChange={handleCategoryChange}>
+                  <option value="">1차 직종</option>
+                  {jobCategories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </Select>
+        
+                {/* 2차 직종 */}
+                <Select 
+                  onChange={(e) => setSelectedSubCategory(Number(e.target.value))} 
+                  disabled={!selectedCategory} // 1차 직종 선택 전에는 비활성화
+                  >
+                  <option value="">2차 직종</option>
+                  {selectedCategory?.subCategories.map((sub) => (
+                    <option key={sub.id} value={sub.id}>{sub.name}</option>
+                  ))}
+                </Select>
+              </SelectContainer>
             </div>
           </StoreInfo>
         </Section>
@@ -168,15 +246,19 @@ const MyStoreForm = () => {
           <OwnerInfo>
             <div className='ownerinfo-items'>
               <label>이름</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+              <input type="text" value={representationName} onChange={(e) => setRepresentationName(e.target.value)} />
             </div>
-
             <div className='ownerinfo-items'>
               <label>연락처</label>
               <input type="text" value={phoneNumber} onChange={handlePhoneNumberChange} maxLength="13" placeholder="000-0000-0000"/>
             </div>
 
-            {mode === "register" || isEditingEmail ?  (
+            <div className='ownerinfo-items'>
+              <label>이메일</label>
+              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+
+            {/* {mode === "register" || isEditingEmail ?  (
               <div className="ownerinfo-items item-grid">
                 <div className="button-grid">
                   <label>이메일</label>
@@ -214,17 +296,17 @@ const MyStoreForm = () => {
                   <button onClick={enableEmailEdit}>변경하기</button>
                 </div>
               </div>
-            )}
+            )} */}
           </OwnerInfo>
         </Section>
         <ButtonContainer>
           {mode === "edit" ? (
             <div>
-              <button id="edit">수정</button>
-              <button id="delete">삭제</button>
+              <button id="edit" onClick={handleSubmit}>수정</button>
+              {/* <button id="delete" onClick={handleDelete}>삭제</button> */}
             </div>
           ) : (
-            <button>완료</button>
+            <button onClick={handleSubmit}>완료</button>
           )}
         </ButtonContainer>
       </Page>
@@ -261,32 +343,32 @@ const Title = styled.div`
   }
 `
 
-const StoreImgUpload = styled.div`
-  position: relative;
-  width: 160px;
-  height: 160px;
-  margin: 20px 10px;
+// const StoreImgUpload = styled.div`
+//   position: relative;
+//   width: 160px;
+//   height: 160px;
+//   margin: 20px 10px;
 
-  #upload {
-    width: 160px;
-    height: 160px;
-    border-radius: 50px;
-    object-fit: cover; 
-    object-position: center;
-  }
+//   #upload {
+//     width: 160px;
+//     height: 160px;
+//     border-radius: 50px;
+//     object-fit: cover; 
+//     object-position: center;
+//   }
 
-  #edit {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 40px;
-    cursor: pointer;
-  }
+//   #edit {
+//     position: absolute;
+//     bottom: 0;
+//     right: 0;
+//     width: 40px;
+//     cursor: pointer;
+//   }
 
-  input[type="file"] {
-    display: none;
-  }
-`
+//   input[type="file"] {
+//     display: none;
+//   }
+// `
 
 const Section = styled.div`
   margin: 40px 0 80px;
@@ -402,3 +484,19 @@ const ButtonContainer = styled.div`
     }
   }
 `
+
+const SelectContainer = styled.div`
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  width: 520px;
+`
+
+const Select = styled.select`
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 5px 10px;
+  width: 100%;
+  height: 42px;
+  outline: none;
+`;

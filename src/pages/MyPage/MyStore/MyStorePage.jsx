@@ -59,8 +59,8 @@ const MyStorePage = () => {
   //   },
   // ];
   
-  const handleNavigation = (mode) => {
-    navigate("/mypage/mystore-form", { state: { modeType: mode } });
+  const handleNavigation = (mode, businessId) => {
+    navigate("/mypage/mystore-form", { state: { modeType: mode, businessId: businessId } });
   };
 
   return (
@@ -80,7 +80,7 @@ const MyStorePage = () => {
                 <div>
                   <div className="store-name">
                     {store.businessName}
-                    <div className="edit-button" onClick={() => handleNavigation("edit")}>
+                    <div className="edit-button" onClick={() => handleNavigation("edit", store.businessId)}>
                       <IoMdSettings />
                       매장 정보 수정
                     </div>
