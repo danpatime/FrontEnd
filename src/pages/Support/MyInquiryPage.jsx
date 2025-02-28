@@ -1,29 +1,56 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
+import request from '../../api/request.ts';
 import styled from 'styled-components';
 import AccordionTable from '../../components/common/AccordionTable';
 
-// 테스트 데이터
-const testData = [
-  {
-    date: '2024.10.15',
-    type: '회원가입',
-    title: '계정을 여러 개 생성하고 싶은데 가능한가요?',
-    status: '처리중',
-    answerDate: '-',
-    response: null, // 답변 없음
-  },
-  {
-    date: '2024.10.15',
-    type: '리뷰',
-    title: '저에게 작성된 리뷰 중 삭제하고 싶은 게 있어요',
-    status: '답변완료',
-    answerDate: '2024.10.18',
-    response: '문의해주신 리뷰 삭제 요청은 처리 완료되었습니다. 추가 문의 사항이 있으시면 말씀해주세요.',
-  },
-];
-
 
 const MyInquiries = () => {
+  const [inquiriesData, setInquiriesData] = useState([]);
+
+  const testInquiriesData = [
+    {
+      inquiryId: 1,
+      inquiryType: "일반",
+      subInquiryType: "서비스 문제",
+      title: "서비스 관련 문제",
+      content: "서비스 기능에 문제가 발생했습니다.",
+      inquiryStatus: "대기 중",
+      answerDate: null,
+      createdBy: 123,
+    },
+    {
+      inquiryId: 2,
+      inquiryType: "기술",
+      subInquiryType: "버그 신고",
+      title: "애플리케이션 버그 신고",
+      content: "애플리케이션에서 치명적인 버그를 발견했습니다.",
+      inquiryStatus: "답변 완료",
+      answerDate: "2025-01-20T10:00:00",
+      createdBy: 123,
+    },
+  ];
+
+  useEffect(() => {
+    const fetchInquiriesData = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.id) {
+          const accountId = user.id;
+          const response = await request.get(`/api/v1/support/my-inquiries?accountId=${accountId}`);
+          
+          setInquiriesData(response.data);
+        }
+      } catch (error) {
+        console.error('문의 내역 조회에 실패했습니다.', error);
+      }
+    };
+
+    fetchInquiriesData();
+  }, []);
+
+  const inquiriesCount = Array.isArray(inquiriesData) ? inquiriesData.length : 0;
+
   return (
     <Container>
       <Title>나의 문의 내역</Title>
@@ -35,8 +62,12 @@ const MyInquiries = () => {
       </Description>
 
       <div id="inquiry-list">
-        <h3>총 {testData.length}건</h3>
-        <AccordionTable data={testData} />
+        <h3>총 {inquiriesCount}건</h3>
+        {inquiriesCount === 1 ? (
+          <p>조회된 문의 내역이 없습니다.</p>
+        ) : (
+          <AccordionTable data={testInquiriesData} />
+        )}
       </div>
     </Container>
   );
@@ -46,10 +77,6 @@ export default MyInquiries;
 
 const Container = styled.div`
   padding-top: 40px;
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
   h3 {
     font-size: 16px;
     padding-left: 4px;
