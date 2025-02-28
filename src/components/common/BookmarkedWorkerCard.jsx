@@ -5,6 +5,7 @@ import { BsBookmark, BsFillBookmarkFill } from "react-icons/bs";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdWork } from "react-icons/md";
 import { GiJellyBeans } from "react-icons/gi";
+import request from "../../api/request.ts";
 
 
 
@@ -12,24 +13,21 @@ function BookmarkedWorkerCard({ worker }) {
   const [isBookmarked, setIsBookmarked] = useState(true);
 
 
-  // 찜 상태 변경 핸들러
   const handleBookmarkToggle = async () => {
-    // try {
-    //   // 서버 요청 (찜 상태 변경)
-    //   if (isBookmarked) {
-    //     // 찜 해제 요청
-    //     await axios.post("/api/unbookmark", { userId: 1 }); // 적절한 API로 수정
-    //   } else {
-    //     // 찜 요청
-    //     await axios.post("/api/bookmark", { userId: 1 }); // 적절한 API로 수정
-    //   }
-
-      // 상태 업데이트
-      setIsBookmarked(!isBookmarked);
-    // } catch (error) {
-    //   console.error("서버 요청 실패:", error);
-    //   alert("찜 상태 변경에 실패했습니다. 다시 시도해주세요.");
-    // }
+    try {
+      const endpoint = `/api/v1/employer/favorites/employee/${worker.id}`;
+  
+      if (!isBookmarked) {
+        await request.put(endpoint);
+      } else {
+        await request.delete(endpoint);
+      }
+  
+      setIsBookmarked(!isBookmarked); 
+    } catch (error) {
+      console.error("서버 요청 실패:", error);
+      alert("찜 상태 변경에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
