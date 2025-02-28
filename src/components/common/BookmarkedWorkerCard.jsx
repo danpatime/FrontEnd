@@ -38,8 +38,8 @@ function BookmarkedWorkerCard({ worker }) {
         <div id="user-info">
           <img src={worker.profileImg || DefaultProfileImage} alt="프로필 사진" />
           <div>
-            <p>{worker.name}</p>
-            <span>{`${worker.gender} ${worker.age}세`}</span>
+            <p>{worker.nickname}</p>
+            <span>{`${worker.sex} ${worker.age}세`}</span>
           </div>
         </div>
         <BookmarkIcon onClick={handleBookmarkToggle}>
@@ -49,18 +49,17 @@ function BookmarkedWorkerCard({ worker }) {
 
       <WorkPreferences>
         <div>
-          <FaLocationDot /> <p>{worker.locations.join(", ")}</p>
+          <FaLocationDot /> <p>{worker.locations}</p>
         </div>
         <div>
-          <MdWork /> <p>{worker.categories.join(", ")}</p>
+          <MdWork /> <p>{worker.categories}</p>
         </div>
       </WorkPreferences>
 
       <WorkExperience>
         {worker.experience.map((exp, index) => (
           <div key={index} id={exp.type}>
-            {/* type이 'external'인 경우 아이콘 포함 */}
-            {exp.type === 'external' && <GiJellyBeans />}
+            {exp.type === 'internal' && <GiJellyBeans />}
             {exp.text}
           </div>
         ))}
@@ -143,7 +142,7 @@ const WorkExperience = styled.div`
     width: fit-content;
   }
 
-  #external {
+  #internal {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -152,7 +151,7 @@ const WorkExperience = styled.div`
     font-weight: 600;
   }
 
-  #internal {
+  #external {
     border: 1px solid #E0E0E0;
     color: #9C9C9C;
   }

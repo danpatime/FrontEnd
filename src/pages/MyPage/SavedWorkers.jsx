@@ -1,73 +1,74 @@
-import React from 'react';
+import { useEffect, useState } from "react";
 import styled from 'styled-components';
 import MypageLayout from '../../components/layout/MypageLayout';
 import BookmarkedWorkerCard from '../../components/common/BookmarkedWorkerCard';
+import request from "../../api/request.ts";
 
 const SavedWorkers = () => {
-  // 더미 데이터
-  const dummyData = [
-    {
-      id: 1,
-      profileImg: '', // 프로필 이미지가 없는 경우
-      name: '원두를 갈아버려',
-      age: 25,
-      gender: '남성',
-      locations: ['서울 전체', '강남구', '송파구'],
-      categories: ['서빙', '일반음식점', '커피전문점'],
-      experience: [
-        { type: 'external', text: '단팥 경력 10회' },
-        { type: 'internal', text: '일반음식점 2회' },
-      ],
-    },
-    {
-      id: 2,
-      profileImg: '', // 기본 이미지가 사용됨
-      name: '팥빙수 사주세요',
-      age: 22,
-      gender: '남성',
-      locations: ['부산 전체', '해운대', '수영구'],
-      categories: ['배달', '편의점', '주유소'],
-      experience: [
-        { type: 'external', text: '단팥 경력 15회' },
-        { type: 'internal', text: '주유소 3회' },
-      ],
-    },
-    {
-      id: 3,
-      profileImg: '', // 기본 이미지가 사용됨
-      name: '태어나서 일만함',
-      age: 27,
-      gender: '여성',
-      locations: ['대구 전체', '동구', '북구'],
-      categories: ['서빙', '카페', '레스토랑'],
-      experience: [
-        { type: 'external', text: '단팥 경력 8회' },
-        { type: 'internal', text: '카페 5회' },
-      ],
-    },
-    {
-      id: 4,
-      profileImg: '',
-      name: '은지지',
-      age: 20,
-      gender: '여성',
-      locations: ['광주 전체', '서구', '남구'],
-      categories: ['운전', '청소', '보조'],
-      experience: [
-        { type: 'external', text: '단팥 경력 5회' },
-        { type: 'internal', text: '보조 1회' },
-      ],
-    },
-  ];
+  const [workers, setWorkers] = useState([]);
+
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        const response = await request.get("/api/v1/employer/favorites/employees");
+        const formattedData = response.data.map((worker) => ({
+          id: worker.employeeId,
+          // profileImg: '', 
+          name: worker.name,
+          age: worker.age,
+          gender: worker.sex === '남' ? '남성' : '여성',
+          locations: formatLocations(worker.flavoredDistrictList),
+          categories: formatCategories(worker.flavoredCategoryList),
+          experience: [
+            // 내부 경력 처리
+            {
+              type: 'internal',
+              text: `단팥경력 ${worker.workCount}회`,
+            },
+            // 외부 경력 처리
+            ...worker.externalCareerList.map((career) => ({
+              type: 'external',
+              text: `${career.category.map((c) => c.categoryName).join(', ')} ${career.workCount}회`,
+            })),
+          ],
+        }));
+
+        setWorkers(formattedData);
+      } catch (error) {
+        console.error("⚠️ 관심 알바 목록 불러오기 실패:", error);
+      }
+    };
+
+    fetchWorkers();
+  }, []);
+
+
+  const formatLocations = (districts) => {
+    return districts.map(({ sido, sigugun, dong }) => {
+      if (dong) return `${dong}`;
+      if (sigugun) return `${sigugun} 전체`;
+      return `${sido} 전체`;
+    }).join(', ');
+  };
+
+  const formatCategories = (categories) => {
+    return categories.map(({ categoryName, subCategoryName }) => {
+      return subCategoryName === '전체' ? `${categoryName} 전체` : subCategoryName;
+    }).join(', ');
+  };
 
   return (
     <MypageLayout>
       <Page>
         <Title>관심알바</Title>
         <Grid>
-          {dummyData.map((worker) => (
-            <BookmarkedWorkerCard key={worker.id} worker={worker} />
-          ))}
+          {workers.length > 0 ? (
+            workers.map((worker) => (
+              <BookmarkedWorkerCard key={worker.employeeId} worker={worker} />
+            ))
+          ) : (
+            <p id="no-value">저장된 관심 알바가 없습니다.</p>
+          )}
         </Grid>
       </Page>
     </MypageLayout>
@@ -83,6 +84,7 @@ const Page = styled.div`
   border-radius: 20px;
   min-width: 1200px;
   max-width: 1430px;
+  min-height: 750px;
 `;
 
 const Title = styled.h1`
@@ -97,4 +99,8 @@ const Grid = styled.div`
   grid-template-columns: repeat(3, 1fr); 
   gap: 10px;
   margin-top: 30px;
+
+  #no-value {
+    margin-left: 10px;
+  }
 `;
