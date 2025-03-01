@@ -2,28 +2,30 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import {ReactComponent as Bookmark} from "../../assets/icons/bookmark.svg"
 import defaultProfileImage from "../../assets/images/default-profile.jpg"
+import PropTypes from 'prop-types';
 
 // AlbaProfileCard
 const AlbaProfileCard = ({
+  employeedId, //추가됨
   name = "",
   age = 0,
-  gender = "",
-  rating = 0,
-  danpatTime=0,
-  danpatExperience = 0,
-  jobExperience = [],
-  hopes = [],
-  location = [],
+  sex = "", //gender
+  starPoint = 0, //rating
+  workCount =0, //danpatTime
+  danpatExperience = 0, // 이거 일단 보류...
+  externalCareerList = [], //jobExperience
+  flavoredCategoryList = [], //hopes
+  flavoredDistrictList = [], //location
   profileImage = defaultProfileImage,
   isBookmarked = false, 
   onToggleBookmark,     
 }) => {
 
-const renderStars = (rating) => {
+const renderStars = (starPoint) => {
   const stars = [];
   for (let i = 0; i < 5; i++) {
-    const isFull = i < Math.floor(rating);
-    const isHalf = i < rating && i >= Math.floor(rating);
+    const isFull = i < Math.floor(starPoint);
+    const isHalf = i < starPoint && i >= Math.floor(starPoint);
 
     stars.push(
       <Star
@@ -39,7 +41,7 @@ const renderStars = (rating) => {
   return (
     <RatingSection>
       <StarContainer>{stars}</StarContainer>
-      <RatingText>{rating} / 5</RatingText>
+      <RatingText>{starPoint} / 5</RatingText>
     </RatingSection>
   );
 };
@@ -50,23 +52,23 @@ const renderStars = (rating) => {
         <ProfileImg src={profileImage} alt={`${name}님의 프로필`} />
         <Info>
           <Name>{name}</Name>
-          {gender} {age}세
+          {sex} {age}세
         </Info>
-        <RatingSection>{renderStars(rating)}</RatingSection>
+        <RatingSection>{renderStars(starPoint)}</RatingSection>
       </Profile>
 
       <Body>
         {/*단팥경력 & 외부경력*/}
         
-          {danpatTime > 0 && (
+          {workCount > 0 && (
             <DanpatlerTag>
-              단팥 경력 {danpatTime}회
+              단팥 경력 {workCount}회
             </DanpatlerTag>
         )}
 
         <Experience>
             <CardLabel>경력</CardLabel>
-            {[...danpatExperience, ...jobExperience].map((job, index) => (
+            {[...danpatExperience, ...externalCareerList].map((job, index) => (
             <JobTag
                 key={index}
                 className={danpatExperience.includes(job) ? 'danpat' : 'other'}
@@ -77,23 +79,27 @@ const renderStars = (rating) => {
         </Experience>
         
         {/*희망업종*/}
-      {hopes.length > 0 && (
+      {flavoredCategoryList.length > 0 && (
         <Hope>
           <CardLabel>희망</CardLabel>
-            {hopes.map((hope, index) => (<HopeTag key={index}>{hope}</HopeTag>))}
+            {flavoredCategoryList.map((category, index) => (<HopeTag key={index}>{category}</HopeTag>))}
         </Hope>)}
         
       {/*지역*/}
       <Location>
           <CardLabel>지역</CardLabel>
-            {location.map((loc, index) => (<LocationTag key={index}>{loc}</LocationTag>))}
+          {flavoredDistrictList.map((district, index) => (
+            <LocationTag key={index}>
+              {district.sido} {district.sigungu} {district.dong}
+            </LocationTag>
+          ))}
       </Location>
       </Body>
 
       {/* 북마크 버튼 */}
       <BookmarkButton
         isBookmarked={isBookmarked}
-        onClick={onToggleBookmark}
+        onClick={()=>onToggleBookmark(employeedId)}
       >
         <Bookmark />
       </BookmarkButton>
@@ -108,13 +114,13 @@ const AlbaProfileList = ({ profiles ,toggleBookmark}) => {
 
   const toggleDantpatler = () => {
     setFilterByDanpat(((prev) => !prev));
-  }
+  };
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
-  }
+  };
 
 const processedProfiles = [...profiles]
-    // 단팥러 필터 
+    // 단팥러 필터 (단팥러만 보기)
     .filter((profile) => (filterByDanpat ? profile.isDanpat : true))
     // 평점 높은 순 정렬 
     .sort((a, b) => {
@@ -150,24 +156,45 @@ const processedProfiles = [...profiles]
       </FilterSection>
 
       
-      {processedProfiles.map((profile, index) => (
+      {processedProfiles.map((profile) => (
         <AlbaProfileCard
-          key={index}
+          key={profile.employeedId}
+          employeedId={profile.employeedId}
     name={profile.name}
     age={profile.age}
-    gender={profile.gender}
-    rating={profile.rating}
-    danpatTime={profile.danpatTime}
+    sex={profile.sex}
+    starPoint={profile.starPoint}
+    workCount={profile.workCount}
     danpatExperience={profile.danpatExperience}
-    jobExperience={profile.jobExperience}
-    hopes={profile.hopes}
-    location={profile.location}
+    externalCareerList={profile.externalCareerList}
+    flavoredCategoryList={profile.flavoredCategoryList}
+    flavoredDistrictList={profile.flavoredDistrictList}
     isBookmarked={profile.isBookmarked}
-    onToggleBookmark={() => toggleBookmark(index)}
+    onToggleBookmark={toggleBookmark}
         />
       ))}
     </AppWrapper>
   );
+};
+
+AlbaProfileCard.propTypes = {
+  employeedId: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number.isRequired,
+  sex: PropTypes.string.isRequired,
+  starPoint: PropTypes.number,
+  workCount: PropTypes.number,
+  danpatExperience: PropTypes.number,
+  externalCareerList: PropTypes.array,
+  flavoredCategoryList: PropTypes.array,
+  flavoredDistrictList: PropTypes.array,
+  profileImage: PropTypes.string,
+  isBookmarked: PropTypes.bool,
+  onToggleBookmark: PropTypes.func.isRequired,
+};
+AlbaProfileList.propTypes = {
+  profiles: PropTypes.array.isRequired,
+  toggleBookmark: PropTypes.func.isRequired,
 };
 
 

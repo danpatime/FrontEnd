@@ -124,8 +124,5 @@ const Description = styled.div`
 
 const QnAList = styled.div`
   margin-top: 20px;
-<<<<<<< HEAD
 `;
-=======
-`;
->>>>>>> develop
+
