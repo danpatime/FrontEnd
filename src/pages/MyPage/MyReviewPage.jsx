@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useReviewInfo } from '../../contexts/useReviewInfo';
-// import { useUserInfo } from '../../contexts/useUserInfo'; 나중에 여기에서 userType 받아옴
 import styled from "styled-components";
 import logo from "../../assets/images/logo.png";
 import ReviewForm from '../../components/common/ReviewForm';
 import MypageLayout from '../../components/layout/MypageLayout';
 
 const MyReviewPage = () => {
-  const { reviews,editReview,deleteReview,reportReview,getReviewsByName } = useReviewInfo();
+  const { reviews,role,editReview,deleteReview,reportReview,myStores } = useReviewInfo();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setReportModalOpen] = useState(false);
@@ -17,19 +16,10 @@ const MyReviewPage = () => {
   const [deletingReview, setDeletingReview] = useState(null);
   const [reportingReview, setReportingReview] = useState(null);
   const [reportReason, setReportReason] = useState('');
-  const userType='owner'; // 페이지 구분을 위한 임의 타입 설정(alba/owner)
-  const userName='홍길동'; // 페이지 구분 테스트를 위한 임의 알바 이름
 
-  const filteredReviews = selectedStore
-    ? reviews.filter((review) => review.storeID === selectedStore)
+  const filteredReviews = selectedStore 
+    ? reviews.filter(review => review.businessId === parseInt(selectedStore,10)) 
     : reviews;
-
-  const sortedReviews = filteredReviews.sort((a, b) => {
-    if (selectedSort === 'latest') return b.date - a.date;
-    if (selectedSort === 'starAsc') return a.starPoint - b.starPoint;
-    if (selectedSort === 'starDesc') return b.starPoint - a.starPoint;
-    return 0;
-  });
 
   const openModalForEdit = (review) => {
     setModalOpen(true);
@@ -60,9 +50,9 @@ const MyReviewPage = () => {
     closeModal();
   };
 
+  // 서버에 신고 전송
   const handleReport = () => {
-    reportReview(reportingReview.id,reportReason);
-    // 서버에 신고 전송
+    reportReview(reportingReview.reviewId,reportReason);
     closeModal();
   };
 
@@ -71,59 +61,59 @@ const MyReviewPage = () => {
       <h1>리뷰 관리</h1>
       <Container>
         <SelectContainer>
-          <SelectCell>
+          {selectedSort &&(<SelectCell>
             <select onChange={(e) => setSelectedSort(e.target.value)}>
               <option value="latest">최신순</option>
               <option value="starAsc">별점 낮은 순</option>
               <option value="starDesc">별점 높은 순</option>
             </select>
-          </SelectCell>
-          {userType==='owner'&&(
+          </SelectCell>)}
+          {role==='ROLE_EMPLOYER'&&(
           <SelectCell>
-          <select onChange={(e) => setSelectedStore(e.target.value)}>
-            <option value="">전체 리뷰</option>
-            <option value="크리스피 크림도넛 경성대점">크리스피 크림도넛 경성대점</option>
-            <option value="할리스커피 부경대점">할리스커피 부경대점</option>
-            <option value="GS25 대연점">GS25 대연점</option>
-          </select>
-        </SelectCell>
+            <select onChange={(e) => setSelectedStore(e.target.value)}>
+              <option value="">전체 리뷰</option>
+              {myStores.map((store) => (
+                <option key={store.businessId} value={store.businessId}>{store.businessName}</option>
+              ))}
+            </select>
+          </SelectCell>
         )}
         </SelectContainer>
 
-        {(userType === 'alba' 
-          ? getReviewsByName(userName)
-          : sortedReviews
-        ).map((review) => (
-          <ReviewCell key={review.id}>
+        {filteredReviews.map((review) => (
+          <ReviewCell key={review.reviewId}>
             <Row>
               <ProfilePic src={logo} alt="프로필" />
               <InfoContainer>
-                <AlbaID>{review.albaID}</AlbaID>
-                <BoldText>매장</BoldText>{review.storeID}
-                <BoldText>|</BoldText>
-                <BoldText>일한 날짜</BoldText>{review.date.toLocaleDateString()}
+                <AlbaID>{review.employeeNickname || "\u00A0"}</AlbaID>
+                <BoldText>매장</BoldText>{review.businessName}<br />
+                <BoldText>계약 체결 날짜</BoldText>
+                <PlainText>{`${new Date(review.contractStartTime).toLocaleDateString()} ${new Date(review.contractStartTime).toLocaleTimeString()}`}</PlainText>
+                <BoldText>계약 종료 날짜</BoldText>
+                <PlainText>{`${new Date(review.contractEndTime).toLocaleDateString()} ${new Date(review.contractEndTime).toLocaleTimeString()}`}</PlainText>
               </InfoContainer>
             </Row>
 
             <StarRating>
               {Array.from({ length: 5 }, (_, index) => (
-                <Star key={index} filled={index < review.starPoint}>★</Star>
+                <Star key={index} filled={index < review.reviewStarPoint}>★</Star>
               ))}
-              <Content>{review.starPoint}/5</Content>
+              <Content>{review.reviewStarPoint}/5</Content>
             </StarRating>
-            <Content>{review.content}</Content>
+            <Content>{review.reviewContent}</Content>
 
-            <TagContainer>
+{/*            <TagContainer>
               {review.tags?.map((tag, index) => (
                 <Tag key={index}>#{tag}</Tag>
               ))}
             </TagContainer>
+*/}
             
-            {userType==='owner' ? (
+            {role==='ROLE_EMPLOYER' ? (
               // 사장
             <ActionButtons>
               <Button onClick={(e) => { e.stopPropagation(); openModalForEdit(review); }}>수정</Button>
-              <Button onClick={(e) => { e.stopPropagation(); openModalForDel(review.id); }}>삭제</Button>
+              <Button onClick={(e) => { e.stopPropagation(); openModalForDel(review.reviewIyd); }}>삭제</Button>
             </ActionButtons>
             ):(
               // 알바
@@ -189,7 +179,7 @@ const Star = styled.span`
   font-size: 25px;
   color: ${({ filled }) => (filled ? "#F7B32B" : "#E0E0E0")};
 `;
-
+/*
 const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -205,7 +195,7 @@ const Tag = styled.span`
   font-size: 14px;
   font-weight: bold;
 `;
-
+*/
 const Container = styled.div`
   background-color: white;
   border-radius: 8px;
@@ -242,6 +232,10 @@ const InfoContainer = styled.div`
 const BoldText = styled.span`
   margin:10px;
   font-weight: bold;
+`;
+
+const PlainText=styled.p`
+  margin-left:10px;
 `;
 
 const AlbaID = styled.p`
@@ -330,15 +324,12 @@ const ButtonContainer = styled.div`
 `;
 
 const CancelButton = styled.button`
-<<<<<<< HEAD
-  color:white;
-=======
->>>>>>> develop
   background-color: #5c3a32;
   padding: 5px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  color:white;
 
   &:hover {
     background-color: #F7B32B;

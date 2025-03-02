@@ -8,16 +8,15 @@ import { useNavigate } from "react-router-dom";
 const AlbaReviewPage = () => {
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열림/닫힘 상태
   const [editingReview, setEditingReview] = useState(null); // 수정할 리뷰 데이터
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const {user,isAuthenticated}=useUserInfo(); // 유저 정보가 사장인 경우에만 페이지를 렌더링링
   const role=user?.role; // 사용자 타입
   const navigate=useNavigate();
 
   // Context에서 상태와 함수 가져오기
-  const { reviews, filteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
+  const { handlePageChange, currentPage,reviews, sortOption, setSortOption, searchQuery, setSearchQuery,filteredReviews } = useReviewInfo();
   
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
-  const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
   const currentReviews = filteredReviews.slice(
     (currentPage - 1) * reviewsPerPage,
     currentPage * reviewsPerPage
@@ -62,7 +61,7 @@ const AlbaReviewPage = () => {
 
   return (
     <div>
-      {role&&role!=="ROLE_EMPLOYEE"&&(
+      {role&&role==="ROLE_EMPLOYER"&&(
       <Container>
         <HeaderSection>
           <h1>알바 리뷰</h1>
@@ -74,8 +73,8 @@ const AlbaReviewPage = () => {
         </HeaderSection>
         <TopBar>
           <InfoSection>
-            <span>리뷰 수: {filteredReviews.length}개</span>
-            <span>단팥 수: {new Set(reviews.map((r) => r.albaID)).size}명</span>
+            <span>리뷰 수: {reviews.length}개</span>
+            <span>단팥 수: {new Set(reviews.map((r) => r.employeeId)).size}명</span>
           </InfoSection>
           <FilterSection>
             <SearchInput
@@ -86,7 +85,8 @@ const AlbaReviewPage = () => {
             />
             <SortSelect value={sortOption} onChange={handleSortChange}>
               <option value="latest">최신순</option>
-              <option value="star">별점순</option>
+              <option value="starDesc">별점 내림차순</option>
+              <option value="starAsc">별점 오름차순</option>
             </SortSelect>
           </FilterSection>
         </TopBar>
@@ -95,8 +95,8 @@ const AlbaReviewPage = () => {
             <HeaderCell>번호</HeaderCell>
             <HeaderCell>가게 이름</HeaderCell>
             <HeaderCell>알바생 닉네임</HeaderCell>
-            <HeaderCell>근무 시작 시각</HeaderCell>
-            <HeaderCell>근무 종료 시각</HeaderCell>
+            <HeaderCell>계약 체결 시각</HeaderCell>
+            <HeaderCell>계약 종료 시각</HeaderCell>
             <HeaderCell>별점</HeaderCell>
           </ReviewHeader>
           {currentReviews.map((review, index) => (
@@ -116,7 +116,7 @@ const AlbaReviewPage = () => {
           {Array.from({ length: totalPages }, (_, index) => (
             <PageNumber
               key={index + 1}
-              onClick={() => setCurrentPage(index + 1)}
+              onClick={() => handlePageChange(index + 1)}
               active={currentPage === index + 1}
             >
               {index + 1}

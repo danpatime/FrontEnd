@@ -17,7 +17,7 @@ const ReviewForm = ({ onClose, initialData }) => {
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedAlbaID, setSelectedAlbaID] = useState("");
   const [hasAlerted, setHasAlerted] = useState(false); // 쓸 수 있는 리뷰가 없을 때 경고
-  const [selectedTag, setSelectedTag] = useState([]);
+  /*const [selectedTag, setSelectedTag] = useState([]);
   const [reviewTag] = useState([
     "일을 잘해요", 
     "시간 엄수를 잘해요",
@@ -27,7 +27,7 @@ const ReviewForm = ({ onClose, initialData }) => {
     "꼼꼼해요",
     "신뢰가 가요", 
     "또 같이 일하고 싶어요"
-  ]);
+  ]);*/
   /*eslint-disable*/
   const [currentPage,setCurrentPage]=useState(1);
 
@@ -90,13 +90,13 @@ const ReviewForm = ({ onClose, initialData }) => {
     setSelectedAlba(albaName);
   };
 
-  const toggleTagSelection = (tag) => {
+  /*const toggleTagSelection = (tag) => {
     if (selectedTag.includes(tag)) {
       setSelectedTag((prev) => prev.filter((t) => t !== tag));
     } else {
       setSelectedTag((prev) => [...prev, tag]);
     }
-  };
+  };*/
   
   const handleSubmit = () => {
     const newReview = {
@@ -180,6 +180,16 @@ const ReviewForm = ({ onClose, initialData }) => {
         </FieldContainer>
 
         <Field>
+          <Label>계약 체결 시각</Label>
+          <ScheduleArea>{`${new Date(contractStartTime).toLocaleDateString()} ${new Date(contractStartTime).toLocaleTimeString()}`}</ScheduleArea>
+        </Field>
+
+        <Field>
+          <Label>계약 종료 시각</Label>
+          <ScheduleArea>{`${new Date(contractEndTime).toLocaleDateString()} ${new Date(contractEndTime).toLocaleTimeString()}`}</ScheduleArea>
+        </Field>
+
+        <Field>
           <Label>알바 후기 별점</Label>
           <StarRating setRating={setReviewStarPoint} starPoint={reviewStarPoint} />
         </Field>
@@ -193,7 +203,7 @@ const ReviewForm = ({ onClose, initialData }) => {
           />
         </Field>
 
-        <Field>
+{/*        <Field>
           <Label>평가 태그</Label>
           <TagContainer>
             {reviewTag.map((tag) => (
@@ -207,6 +217,7 @@ const ReviewForm = ({ onClose, initialData }) => {
             ))}
           </TagContainer>
         </Field>
+*/}
 
         <SubmitButton onClick={handleSubmit}>제출</SubmitButton>
       </FormContainer>
@@ -254,8 +265,13 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 15pt;
+  font-size: 17pt;
   margin: 0;
+`;
+
+const ScheduleArea=styled.p`
+  font-size:12pt;
+  margin-left:10px;
 `;
 
 const FieldContainer = styled.div`
@@ -272,6 +288,7 @@ const Field = styled.div`
 `;
 
 const Label = styled.label`
+  font-size:11pt;
   margin: 10px; 
   font-weight: bold;
 `;
@@ -291,6 +308,8 @@ const Textarea = styled.textarea`
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin-bottom:30px;
+  resize:none;
 `;
 
 const SubmitButton = styled.button`
@@ -309,7 +328,7 @@ const SubmitButton = styled.button`
   }
 `;
 
-const TagContainer = styled.div`
+/*const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -331,3 +350,4 @@ const Tag = styled.div`
       props.isSelected ? "rgb(140, 96, 88)" : "rgb(230, 230, 230)"};
   }
 `;
+*/
