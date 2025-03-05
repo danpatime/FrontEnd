@@ -1,11 +1,26 @@
 import MypageSubMenu from "../common/MypageSubMenu";
+import { useState, useEffect } from 'react';
 import Layout from "./Layout";
 
 import styled from "styled-components";
 
 const MypageLayout = ({ children }) => {
 
-  const owner = 'worker';
+  const [owner, setOwner] = useState('');
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user'); // 로컬스토리지에서 user 데이터를 가져옴
+    if (userData) {
+      const parsedUser = JSON.parse(userData); // JSON 문자열을 객체로 변환
+      const role = parsedUser.role;
+
+      if (role === 'ROLE_EMPLOYEE') {
+        setOwner('worker');
+      } else if (role === 'ROLE_EMPLOYER') {
+        setOwner('owner');
+      }
+    }
+  }, []);
 
   return (
     <Layout>

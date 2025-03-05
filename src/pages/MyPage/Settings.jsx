@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MypageLayout from "../../components/layout/MypageLayout";
@@ -53,14 +51,12 @@ const Settings = () => {
     try {
       setSelectedOption((prev) => ({ ...prev, [section]: value }));
   
-      const response = await request.post("/api/v1/setting/email-consent", {
+      await request.post("/api/v1/setting/email-consent", {
         emailReceivable: value === "yes", 
       });
         
-      console.log("✅ 이메일 수신 동의 변경 성공:", response);
       alert("변경사항이 적용되었습니다.");
     } catch (error) {
-      console.error("⚠️ 이메일 수신 동의 변경 실패:", error.message);
       alert("변경에 실패했습니다. 다시 시도해주세요.");
     }
   };

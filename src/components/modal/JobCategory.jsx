@@ -20,12 +20,17 @@ const CategoryModal = ({ onClose }) => {
       return;
     }
 
+    // 선택된 1차 직종과 2차 직종을 찾기
+    const selectedSub = selectedCategory.subCategories.find(sub => sub.name === selectedSubCategory);
+
+    if (!selectedSub) return;
+
     const keyword =
       selectedSubCategory === "전체"
         ? `${selectedCategory.name} 전체`
-        : `${selectedSubCategory}`;
+        : `${selectedSub.name}`;
 
-    onClose(keyword);
+    onClose(keyword, { categoryId: selectedCategory.id, categoryName: selectedCategory.name, subCategoryIdm: selectedSub.id, subCategoryName: selectedSub.name });
   };
 
   return (
