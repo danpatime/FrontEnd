@@ -1,96 +1,106 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import danpatImage from "../../assets/images/danpatImage.png";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import danpatImage from "../../assets/images/danpatImage.png"
+import styled from 'styled-components';
 
-const CurrentAlba = () => {
+const CurrentAlba = ({ totalAlba, danpatAlba }) => {
+  return (
+    <Container>
+      <DanpatImage src={danpatImage} alt="danpatIMG" />
+          <CurrentAlbaSection>
+              <Text>
+                  원하는 알바생을 찾아보세요!
+              </Text>
+        <AlbaContainer>
+          <AlbaArticle>
+            <Title>전체 알바생</Title>
+            <Number>{totalAlba}</Number>
+          </AlbaArticle>
+          <AlbaArticle>
+            <Title>우리 단팥러</Title>
+            <Number color="var(--secondary-color)">{danpatAlba}</Number>
+          </AlbaArticle>
+        </AlbaContainer>
+      </CurrentAlbaSection>
+    </Container>
+  );
+};
+
+const CurrentAlbaHandler = () => {
   const [totalAlba, setTotalAlba] = useState(0);
   const [danpatAlba, setDanpatAlba] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("/api/alba") // 추후에 API 엔드포인트 수정 가능
-      .then((response) => {
+    axios.get('/api/alba') // 추후에 api 변경
+      .then(response => {
         setTotalAlba(response.data.totalAlba);
         setDanpatAlba(response.data.danpatAlba);
       })
-      .catch((error) => console.error("API 호출 오류:", error));
+      .catch(error => console.error('API 호출 오류:', error));
   }, []);
 
   return (
-    <Main>
-      <DanpatImage src={danpatImage} alt="danpatIMG" />
-      <Section>
-        <Title>원하는 알바생을 찾아보세요!</Title>
-        <AlbaContainer>
-          <AlbaCard>
-            <CardTitle>전체 알바생</CardTitle>
-            <CardCount>{totalAlba}</CardCount>
-          </AlbaCard>
-          <AlbaCard>
-            <CardTitle>우리 단팥러</CardTitle>
-            <CardCount secondary>{danpatAlba}</CardCount>
-          </AlbaCard>
-        </AlbaContainer>
-      </Section>
-    </Main>
+    <CurrentAlba totalAlba={totalAlba} danpatAlba={danpatAlba} />
   );
 };
 
-export default CurrentAlba;
+export default CurrentAlbaHandler;
 
-const Main = styled.main`
-  position: relative;
-  padding: 20px;
-  margin: 0 auto;
-  background-color: var(--primary-color-dark);
-  color: white;
+const Container = styled.main`
   border-radius: 0 0 20px 20px;
+    box-sizing: border-box;
+    padding: 20px;
+    margin: 0 auto;
+    background-color: var(--primary-color-dark);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    height: 250px;
 `;
 
 const DanpatImage = styled.img`
-  width: 350px;
-  height: auto;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 20px;
+  position: relative;
+  left: 70%;
+`;
+
+const CurrentAlbaSection = styled.section`
+  text-align: center;
   position: absolute;
-  top: 10px;
-  right: 130px;
-  z-index: 1;
+  margin-top: 40px;
+  left: 10%;
+
 `;
 
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: relative;
-`;
-
-const Title = styled.h1`
-  position: relative;
-  top: 10px;
-  left: 100px;
-  padding: 5px;
+const Text = styled.h1`
+    
 `;
 
 const AlbaContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 40px;
-  position: relative;
-  left: 100px;
+  justify-content: center;
+  margin-top: 30px;
 `;
 
-const AlbaCard = styled.article`
+const AlbaArticle = styled.article`
+  margin: 0 20px;
   text-align: center;
-  padding: 10px;
+  position: relative;
+  right: 35px;
 `;
 
-const CardTitle = styled.h5`
-  padding: 5px;
+const Title = styled.h5`
+  font-size: 18px;
+  font-weight: 300;
+  color: white;
 `;
 
-const CardCount = styled.h2`
-  font-size: 35px;
-  padding: 5px;
-  color: ${(props) => (props.secondary ? "var(--secondary-color)" : "white")};
+const Number = styled.h2`
+  font-size: 30px;
+  font-weight: bold;
+  color: ${({ color }) => color || "white"};
 `;
