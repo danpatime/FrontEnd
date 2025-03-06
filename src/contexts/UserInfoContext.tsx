@@ -14,7 +14,7 @@ export const UserInfoProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));  // 로컬스토리지에서 user 정보를 불러와서 상태 설정
+      setUser(JSON.parse(storedUser)); // 로컬스토리지에서 user 정보를 불러와서 상태 설정
     }
   }, []);
 
@@ -22,14 +22,14 @@ export const UserInfoProvider = ({ children }: { children: ReactNode }) => {
   const updateUser = (userData) => {
     setUser(userData);
     // user 정보를 로컬스토리지에 저장
-    localStorage.setItem('user', JSON.stringify(userData));  // 로그인 후 user를 로컬스토리지에 저장
+    localStorage.setItem('user', JSON.stringify(userData)); // 로그인 후 user를 로컬스토리지에 저장
   };
 
   // 로그아웃 함수
   const logoutUser = async () => {
     try {
       await request.post('/api/v1/auth/logout', {}); // 서버로 로그아웃 요청 보내기
-      
+
       // 성공하면 로컬스토리지에서 user 정보 & 토큰 삭제
       setUser(null);
       localStorage.removeItem('user');
@@ -48,7 +48,9 @@ export const UserInfoProvider = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = !!user;
 
   return (
-    <UserInfoContext.Provider value={{ user, isAuthenticated, updateUser, logoutUser }}>
+    <UserInfoContext.Provider
+      value={{ user, isAuthenticated, updateUser, logoutUser }}
+    >
       {children}
     </UserInfoContext.Provider>
   );
