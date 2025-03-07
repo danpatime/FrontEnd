@@ -61,7 +61,7 @@ const AlbaReviewPage = () => {
 
   return (
     <div>
-      {role&&role==="ROLE_EMPLOYER"&&(
+      {role&&role!=="ROLE_EMPLOYEE"&&(
       <Container>
         <HeaderSection>
           <h1>알바 리뷰</h1>
@@ -95,8 +95,8 @@ const AlbaReviewPage = () => {
             <HeaderCell>번호</HeaderCell>
             <HeaderCell>가게 이름</HeaderCell>
             <HeaderCell>알바생 닉네임</HeaderCell>
-            <HeaderCell>계약 체결 시각</HeaderCell>
-            <HeaderCell>계약 종료 시각</HeaderCell>
+            <HeaderCell>근무 시작 시각</HeaderCell>
+            <HeaderCell>근무 종료 시각</HeaderCell>
             <HeaderCell>별점</HeaderCell>
           </ReviewHeader>
           {currentReviews.map((review, index) => (
@@ -127,7 +127,7 @@ const AlbaReviewPage = () => {
           <Modal>
             <ReviewForm
               onClose={closeModal}
-              initialData={editingReview} // 부모 페이지에서 받은 데이터
+              initialData={editingReview}
             />
           </Modal>
         )}

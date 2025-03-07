@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useUserInfo } from './useUserInfo';
 import request from '../api/request.ts';
-
+/*eslint-disable*/
 
 const ReviewInfoContext = createContext();
 
@@ -13,7 +13,7 @@ export const ReviewProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState(""); // 검색어
   const [filteredReviews, setFilteredReviews] = useState([]); // 필터링된 리뷰 상태
   const [myStores, setMyStores] = useState([]); // 가게 데이터
-  const [curContractId, setCurContractId] = useState(5);
+  const [curReviewId, setCurReviewId] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -79,15 +79,27 @@ export const ReviewProvider = ({ children }) => {
     }
   }, [reviews, searchQuery, sortOption]);
 
-  // 리뷰 추가 (사장만 가능)
+  // 리뷰 작성 (사장만 가능)
   const addReview = async (newReview) => {
-    if (role !== "ROLE_EMPLOYER") return;
+    if (role === "ROLE_EMPLOYEE") return;
+
     try {
-      const contractId = parseInt(curContractId,10);
+      const contractId = newReview.contractId; // 이거 추가해야 됨
       const businessId = parseInt(newReview.businessId,10);
       const employeeId = parseInt(newReview.employeeId,10);
-      const reviewScore = parseInt(newReview.reviewStarPoint,10);
+      const reviewScore = newReview.reviewStarPoint;
       const reviewContent = newReview.reviewContent;
+    
+      console.log("reviewId:", newReview.reviewId);
+      console.log("reviewId:", newReview.contractId);
+      console.log("businessName:", newReview.businessName);
+      console.log("businessId:", newReview.businessId);
+      console.log("employeeNickname:", newReview.employeeNickname);
+      console.log("employeeId:", newReview.employeeId);
+      console.log("reviewStarPoint:", newReview.reviewStarPoint);
+      console.log("contractStartTime:", newReview.contractStartTime);
+      console.log("contractEndTime:", newReview.contractEndTime);
+      console.log("reviewContent:", newReview.reviewContent);
 
       if (!contractId || !businessId || !employeeId || !reviewScore || !reviewContent) {
         return;
@@ -110,8 +122,8 @@ export const ReviewProvider = ({ children }) => {
         });
 
         if (completeResult.status === 200) {
-          setReviews((prevReviews) => [...prevReviews, newReview]);
-          setCurContractId((prevId) => prevId + 1);
+          fetchReviews();
+          setCurReviewId((prevId) => prevId + 1);
         } else {
           console.error("계약 종료 요청에서 오류 발생:", completeResult.data);
         }
@@ -125,8 +137,7 @@ export const ReviewProvider = ({ children }) => {
 
   // 리뷰 수정 (사장만 가능)
   const editReview = async (updatedReview) => {
-    if (role !== "ROLE_EMPLOYER") return;
-    /*eslint-disable*/
+    if (role === "ROLE_EMPLOYEE") return;
     console.log(
       updatedReview.reviewId,
       updatedReview.businessId,
@@ -134,10 +145,8 @@ export const ReviewProvider = ({ children }) => {
       updatedReview.reviewStarPoint,
       updatedReview.reviewContent);
     try {
-      const response = await request.post("/api/v1/contracts/review", {
-        contractId:updatedReview.reviewId,
-        businessId:updatedReview.businessId,
-        employeeId:updatedReview.employeeId,
+      const response = await request.put("/api/v1/contracts/review/modify", {
+        reviewId:updatedReview.reviewId,
         reviewScore:updatedReview.reviewStarPoint,
         reviewContent:updatedReview.reviewContent,
       });
@@ -151,15 +160,22 @@ export const ReviewProvider = ({ children }) => {
   };
 
   // 리뷰 삭제 (사장만 가능)
-  const deleteReview = (reviewId) => {
+  const deleteReview = async (reviewId) => {
     if (role === "ROLE_EMPLOYEE") return;
-    setReviews(reviews.filter((review) => review.reviewId !== reviewId));
+    try {
+      const response = await request.delete(`/api/v1/contracts/review/delete?reviewId=${parseInt(reviewId, 10)}`);
+
+      if (response.status === 200) {
+        fetchReviews();
+      }
+    } catch (error) {
+      console.error("리뷰 삭제 중 오류가 발생했습니다.", error);
+    }
   };
 
   // 리뷰 신고 (알바만 가능)
   const reportReview = async (reviewId, reportReason) => {
     if (role === "ROLE_EMPLOYER") return;
-    console.log(reviewId,reportReason);
     try{
       const response=await request.post(`/api/v1/info/my/reviews/${reviewId}/report`,{
         reason:reportReason,
@@ -183,6 +199,7 @@ export const ReviewProvider = ({ children }) => {
         filteredReviews,
         handlePageChange,
         currentPage,
+        curReviewId,
         myStores,
         sortOption,
         setSortOption,

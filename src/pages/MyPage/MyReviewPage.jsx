@@ -6,20 +6,19 @@ import ReviewForm from '../../components/common/ReviewForm';
 import MypageLayout from '../../components/layout/MypageLayout';
 
 const MyReviewPage = () => {
-  const { reviews,role,editReview,deleteReview,reportReview,myStores } = useReviewInfo();
+  const { role,editReview,deleteReview,reportReview,myStores,sortOption,setSortOption,filteredReviews } = useReviewInfo();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState('');
-  const [selectedSort, setSelectedSort] = useState('latest');
   const [editingReview, setEditingReview] = useState(null);
   const [deletingReview, setDeletingReview] = useState(null);
   const [reportingReview, setReportingReview] = useState(null);
   const [reportReason, setReportReason] = useState('');
 
-  const filteredReviews = selectedStore 
-    ? reviews.filter(review => review.businessId === parseInt(selectedStore,10)) 
-    : reviews;
+  const filteredReviewsForStore = selectedStore 
+    ? filteredReviews.filter(review => review.businessId === parseInt(selectedStore,10)) 
+    : filteredReviews;
 
   const openModalForEdit = (review) => {
     setModalOpen(true);
@@ -27,13 +26,13 @@ const MyReviewPage = () => {
   };
 
   const openModalForDel = (reviewId) => {
-    setDeletingReview(reviewId);
     setDeleteModalOpen(true)
+    setDeletingReview(reviewId);
   };
 
   const openModalForRep=(review)=>{
-    setReportingReview(review);
     setReportModalOpen(true);
+    setReportingReview(review);
   };
 
   const closeModal = () => {
@@ -43,6 +42,10 @@ const MyReviewPage = () => {
     setDeletingReview(null);
     setEditingReview(null);
     setReportReason('');
+  };
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
   };
 
   const handleDeleteReview = () => {
@@ -61,13 +64,11 @@ const MyReviewPage = () => {
       <h1>리뷰 관리</h1>
       <Container>
         <SelectContainer>
-          {selectedSort &&(<SelectCell>
-            <select onChange={(e) => setSelectedSort(e.target.value)}>
+          <SortSelect value={sortOption} onChange={handleSortChange}>
               <option value="latest">최신순</option>
-              <option value="starAsc">별점 낮은 순</option>
-              <option value="starDesc">별점 높은 순</option>
-            </select>
-          </SelectCell>)}
+              <option value="starDesc">별점 내림차순</option>
+              <option value="starAsc">별점 오름차순</option>
+          </SortSelect>
           {role==='ROLE_EMPLOYER'&&(
           <SelectCell>
             <select onChange={(e) => setSelectedStore(e.target.value)}>
@@ -80,16 +81,16 @@ const MyReviewPage = () => {
         )}
         </SelectContainer>
 
-        {filteredReviews.map((review) => (
+        {filteredReviewsForStore.map((review) => (
           <ReviewCell key={review.reviewId}>
             <Row>
               <ProfilePic src={logo} alt="프로필" />
               <InfoContainer>
                 <AlbaID>{review.employeeNickname || "\u00A0"}</AlbaID>
                 <BoldText>매장</BoldText>{review.businessName}<br />
-                <BoldText>계약 체결 날짜</BoldText>
+                <BoldText>근무 시작 시각</BoldText>
                 <PlainText>{`${new Date(review.contractStartTime).toLocaleDateString()} ${new Date(review.contractStartTime).toLocaleTimeString()}`}</PlainText>
-                <BoldText>계약 종료 날짜</BoldText>
+                <BoldText>근무 종료 시각</BoldText>
                 <PlainText>{`${new Date(review.contractEndTime).toLocaleDateString()} ${new Date(review.contractEndTime).toLocaleTimeString()}`}</PlainText>
               </InfoContainer>
             </Row>
@@ -113,7 +114,7 @@ const MyReviewPage = () => {
               // 사장
             <ActionButtons>
               <Button onClick={(e) => { e.stopPropagation(); openModalForEdit(review); }}>수정</Button>
-              <Button onClick={(e) => { e.stopPropagation(); openModalForDel(review.reviewIyd); }}>삭제</Button>
+              <Button onClick={(e) => { e.stopPropagation(); openModalForDel(review.reviewId); }}>삭제</Button>
             </ActionButtons>
             ):(
               // 알바
@@ -202,7 +203,7 @@ const Container = styled.div`
   padding: 20px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  width:70%; //얼마나 길게 해야될지 모르겠어서
+  width:70%;
 `;
 
 const ReviewCell = styled.div`
@@ -249,6 +250,13 @@ const Content = styled.p`
 `;
 
 const SelectCell = styled.div`
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 20px;
+  margin:5px;
+`;
+
+const SortSelect = styled.select`
   padding: 8px;
   border: 1px solid black;
   border-radius: 20px;

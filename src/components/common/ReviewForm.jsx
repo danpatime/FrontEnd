@@ -7,7 +7,7 @@ import { useReviewInfo } from "../../contexts/useReviewInfo";
 const ReviewForm = ({ onClose, initialData }) => {
   const isEditing = initialData;
   const [workedAlbaList,setWorkedAlbaList]=useState([]); // 가게에 맞는 알바생 목록
-  const [reviewId, setReviewId] = useState(Date.now());
+  const [completedContracts, setCompletedContracts] = useState([]); // 체결된 상태의 계약
   const [reviewStarPoint, setReviewStarPoint] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
   const [contractStartTime, setContractStartTime] = useState("");
@@ -28,14 +28,13 @@ const ReviewForm = ({ onClose, initialData }) => {
     "신뢰가 가요", 
     "또 같이 일하고 싶어요"
   ]);*/
-  /*eslint-disable*/
-  const [currentPage,setCurrentPage]=useState(1);
 
-  const { myStores,addReview, editReview } = useReviewInfo();
+  const { myStores,addReview, editReview,currentPage,curReviewId } = useReviewInfo();
+  const [reviewId, setReviewId] = useState(curReviewId);
 
   useEffect(() => {
     if (initialData) {
-      setReviewId(initialData.reviewId || Date.now());
+      setReviewId(initialData.reviewId || 0);
       setReviewStarPoint(initialData.reviewStarPoint || 0); 
       setReviewContent(initialData.reviewContent || ""); 
       setContractStartTime(initialData.contractStartTime || ""); 
@@ -49,8 +48,8 @@ const ReviewForm = ({ onClose, initialData }) => {
  
   const handleStoreChange =  (e) => {
     const storeId = e.target.value;
-    const storeName = myStores.find((store) => store.businessId === storeId)?.businessName || "";
-  
+    const storeName = myStores.find((store) => store.businessId === parseInt(storeId,10))?.businessName || "";
+
     setSelectedStoreID(storeId);
     setSelectedStore(storeName);
     setSelectedAlbaID(""); 
@@ -84,11 +83,84 @@ const ReviewForm = ({ onClose, initialData }) => {
   
   const handleAlbaChange = async (e) => {
     const albaId = e.target.value;
-    const albaName = workedAlbaList.find((alba) => alba.employeeId === albaId)?.employeeName || "";
+    const albaName = workedAlbaList.find((alba) => alba.employeeId === parseInt(albaId,10))?.employeeName || "";
   
     setSelectedAlbaID(albaId);
     setSelectedAlba(albaName);
   };
+
+  const parseWorkTime = (workTime) => {
+    if (!workTime) return { contractStartDate: null, contractEndDate: null };
+  
+    const [start, end] = workTime.split("~").map(str => str.trim());
+  
+    // 시작 날짜와 시간 파싱
+    const startMatch = start.match(/(\d{4})\.(\d{2})\.(\d{2}) (\d{2}):(\d{2})/);
+    if (!startMatch) return { contractStartDate: null, contractEndDate: null };
+  
+    const [, year, month, day, startHour, startMinute] = startMatch;
+    const startDate = `${year}-${month}-${day}T${startHour}:${startMinute}:00`;
+  
+    let endDate = null;
+  
+    // 끝 시간 확인
+    if (/^\d{4}\.\d{2}\.\d{2}/.test(end)) {
+      // 끝 시간이 YYYY.MM.DD HH:mm 형식인 경우
+      const endMatch = end.match(/(\d{4})\.(\d{2})\.(\d{2}) (\d{2}):(\d{2})/);
+      if (endMatch) {
+        const [, eYear, eMonth, eDay, eHour, eMinute] = endMatch;
+        endDate = `${eYear}-${eMonth}-${eDay}T${eHour}:${eMinute}:00`;
+      }
+    } else {
+      // 끝 시간이 HH:mm 형식인 경우, 시작 날짜를 붙여줌
+      const timeMatch = end.match(/(\d{2}):(\d{2})/);
+      if (timeMatch) {
+        const [, eHour, eMinute] = timeMatch;
+        endDate = `${year}-${month}-${day}T${eHour}:${eMinute}:00`;
+      }
+    }
+  
+    return { contractStartDate: startDate, contractEndDate: endDate };
+  };
+  
+
+  // 가게에 맞는 체결 현황 받아오기
+  const fetchCompletedContracts = async () => {
+    try {
+      const response = await request.get(`/api/v1/employment-suggests/status/${parseInt(selectedStoreID, 10)}`);
+  
+      if (response.status === 200) {
+        // 체결된 계약만 필터링
+        const completed = response.data.filter((contract) => contract.status === "COMPLETED");
+        
+        // 선택한 알바 이름에 맞는 계약만 필터링
+        const filteredCompleted = completed.filter((contract) => contract.employeeName === selectedAlba);
+  
+        // workTime을 변환하여 새로운 객체 배열 생성
+        const transformedContracts = filteredCompleted.map(contract => ({
+          ...contract,
+          ...parseWorkTime(contract.workTime), // contractStartDate & contractEndDate 추가
+        }));
+  
+        setCompletedContracts(transformedContracts);
+  
+        if (completedContracts.length === 0 && !hasAlerted) {
+          alert("현재 선택하신 가게에서 작성할 수 있는 체결 현황이 없습니다.");
+          setHasAlerted(true);
+        }
+      } 
+    } catch (error) {
+      console.error("체결 현황을 가져오는 데 실패했습니다.", error);
+      setCompletedContracts([]);
+    }
+  };
+  
+
+  useEffect(() => {
+    if (selectedStoreID) {
+      fetchCompletedContracts();
+    }
+  }, [selectedStoreID,selectedAlba]);
 
   /*const toggleTagSelection = (tag) => {
     if (selectedTag.includes(tag)) {
@@ -99,6 +171,9 @@ const ReviewForm = ({ onClose, initialData }) => {
   };*/
   
   const handleSubmit = () => {
+    if(!initialData){
+      setReviewId(curReviewId);
+    }
     const newReview = {
       reviewId: reviewId,
       businessName: selectedStore,
@@ -109,8 +184,8 @@ const ReviewForm = ({ onClose, initialData }) => {
       contractStartTime: contractStartTime,
       contractEndTime: contractEndTime,
       reviewContent: reviewContent, 
-
     };
+
 
     if (!selectedStoreID || !selectedAlbaID || !reviewStarPoint || !reviewContent){
       let missingFields = [];
@@ -180,12 +255,12 @@ const ReviewForm = ({ onClose, initialData }) => {
         </FieldContainer>
 
         <Field>
-          <Label>계약 체결 시각</Label>
+          <Label>근무 시작 시각</Label>
           <ScheduleArea>{`${new Date(contractStartTime).toLocaleDateString()} ${new Date(contractStartTime).toLocaleTimeString()}`}</ScheduleArea>
         </Field>
 
         <Field>
-          <Label>계약 종료 시각</Label>
+          <Label>근무 종료 시각</Label>
           <ScheduleArea>{`${new Date(contractEndTime).toLocaleDateString()} ${new Date(contractEndTime).toLocaleTimeString()}`}</ScheduleArea>
         </Field>
 
