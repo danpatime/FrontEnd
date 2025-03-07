@@ -20,12 +20,18 @@ function CallTimeInput({ onClose, onSave, initialStartTime, initialEndTime }) {
 
   // 저장 버튼 클릭 시 처리
   const handleSave = () => {
-    if (startTime && endTime) {
-      onSave(startTime, endTime); // 부모에게 시간 정보를 전달
-      onClose(); // 모달 닫기
-    } else {
+    if (!startTime || !endTime) {
       alert("시간을 모두 선택해주세요.");
+      return;
     }
+
+    if (startTime >= endTime) {
+      alert("종료 시간은 시작 시간보다 늦어야 합니다.");
+      return;
+    }
+
+    onSave(startTime, endTime);
+    onClose(); 
   };
 
   return (

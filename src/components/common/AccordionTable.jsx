@@ -6,7 +6,7 @@ const AccordionTable = ({ data }) => {
 
   const toggleAccordion = (index) => {
     const selectedItem = data[index];
-    if (!selectedItem.response) {
+    if (!selectedItem.answerDate) {
       // 답변이 없는 경우 alert 창 표시
       alert('문의 답변은 2-3일 정도 소요됩니다. 조금만 기다려 주세요!');
       return;
@@ -15,13 +15,23 @@ const AccordionTable = ({ data }) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const formatDate = (date) => {
+    if (!date) return '-';  
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0'); 
+
+    return `${year}-${month}-${day}`; 
+  };
+
   return (
     <TableContainer>
       <Table>
         <thead>
           <tr>
-            <th>문의일</th>
             <th>문의 유형</th>
+            <th>세부 유형</th>
             <th>문의 제목</th>
             <th>처리 상태</th>
             <th>답변일</th>
@@ -31,16 +41,16 @@ const AccordionTable = ({ data }) => {
           {data.map((item, index) => (
             <React.Fragment key={index}>
               <tr onClick={() => toggleAccordion(index)}>
-                <td>{item.date}</td>
-                <td>{item.type}</td>
+                <td>{item.inquiryType}</td>
+                <td>{item.subInquiryType}</td>
                 <td>{item.title}</td>
-                <td>{item.status}</td>
-                <td>{item.answerDate !== '-' ? item.answerDate : '-'}</td>
+                <td>{item.inquiryStatus}</td>
+                <td>{formatDate(item.answerDate)}</td>
               </tr>
               {openIndex === index && (
                 <tr>
                   <td colSpan="5">
-                    <AccordionContent>{item.response}</AccordionContent>
+                    <AccordionContent>{item.content}</AccordionContent>
                   </td>
                 </tr>
               )}

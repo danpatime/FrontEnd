@@ -11,6 +11,7 @@ import ChattingPage from './pages/ChattingPage';
 import MyReviewPage from './pages/MyPage/MyReviewPage';
 import SupportPage from './pages/Support/SupportPage';
 import Settings from './pages/MyPage/Settings';
+import ResumeForm from './pages/MyResume/ResumeForm';
 import SavedWorkers from './pages/MyPage/SavedWorkers';
 import AlbaReviewPage from './pages/AlbaReviewPage';
 import MyResume from './pages/MyResume/MyResume';

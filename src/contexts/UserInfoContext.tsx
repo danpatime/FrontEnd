@@ -1,11 +1,13 @@
-import React, { createContext, useState, useEffect } from 'react';
+// Provider와 Context 정의 (사용자 정보 관련)
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import request from '../api/request.ts';
 
-const UserInfoContext = createContext();
 
-export const UserInfoProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+const UserInfoContext = createContext({} as any);
+
+export const UserInfoProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<any | null>(null);
   const navigate = useNavigate();
 
   // 페이지 새로고침 시 로컬스토리지에서 user 정보 불러오기
@@ -32,13 +34,15 @@ export const UserInfoProvider = ({ children }) => {
       setUser(null);
       localStorage.removeItem('user');
       localStorage.removeItem('authToken');
-
+      localStorage.removeItem("refreshToken");
+      
       navigate('/'); // 홈으로 이동
     } catch (error) {
       console.error('로그아웃 실패:', error.message);
       alert('로그아웃에 실패했습니다. 다시 시도해주세요.'); // 에러 알림
     }
   };
+    
 
   // 로그인 여부 체크 (user 값이 있으면 로그인 상태)
   const isAuthenticated = !!user;
@@ -52,4 +56,5 @@ export const UserInfoProvider = ({ children }) => {
   );
 };
 
-export default UserInfoContext;
+
+export { UserInfoContext };
