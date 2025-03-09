@@ -13,25 +13,56 @@ export const ReviewProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState(""); // 검색어
   const [filteredReviews, setFilteredReviews] = useState([]); // 필터링된 리뷰 상태
   const [myStores, setMyStores] = useState([]); // 가게 데이터
+  const [employmentStatusList,setEmploymentStatusList]=useState([]);
   const [curReviewId, setCurReviewId] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 가게 목록 받아오기 (사장만 가능)
-  const fetchStores = async () => {
+  // 가게 목록과 체결 현황 가져오기(사장만 가능)
+  const fetchStoresAndContacts = async () => {
     if (role === "ROLE_EMPLOYEE") return;
+
     try {
+      // 가게 목록 가져오기
       const response = await request.get("/api/v1/employer/businesses");
-      setMyStores(response || []);
+      const stores = response || [];
+      setMyStores(stores);
+
+      // 각 가게의 체결 현황 요청
+      const employmentStatusList = await Promise.all(
+        stores.map(async (store) => {
+          try {
+            const statusResponse = await request.get(
+              `/api/v1/employment-suggests/status/${parseInt(store.businessId)}`
+            );
+            return {
+              businessId: store.businessId,
+              status: statusResponse?.status || [],
+            };
+          } catch (error) {
+            console.error(
+              `체결 현황 가져오기 실패 - 가게 ID: ${store.businessId}`,
+              error
+            );
+            return { businessId: store.businessId, status: [] };
+          }
+        })
+      );
+
+      // 체결 현황 저장
+      setEmploymentStatusList(employmentStatusList);
     } catch (error) {
-      console.error("가게 목록을 가져오는 데 실패했습니다.", error);
-      setMyStores([]);
+      console.error("가게 목록 또는 체결 현황 가져오는 데 실패했습니다.", error);
+      setEmploymentStatusList([]);
     }
   };
 
+
   useEffect(() => {
-    fetchStores();
+    if(role)
+      fetchStoresAndContacts();
   }, [role]); // 로그인 시 역할에 따라 리뷰 불러오기
+
 
   // 기존 리뷰 데이터 요청
   const fetchReviews = async () => {
@@ -54,7 +85,8 @@ export const ReviewProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchReviews(); // 컴포넌트 값이 변화할 때마다 데이터를 요청
+    if(role) // 새로고침 시 대응
+      fetchReviews(); // 컴포넌트 값이 변화할 때마다 데이터를 요청
   }, [currentPage,role]);
 
   // 필터링 및 정렬된 리뷰 반환
@@ -84,14 +116,16 @@ export const ReviewProvider = ({ children }) => {
     if (role === "ROLE_EMPLOYEE") return;
 
     try {
+      setIsLoading(true); // 로딩 시작
+
       const contractId = newReview.contractId; // 이거 추가해야 됨
-      const businessId = parseInt(newReview.businessId,10);
-      const employeeId = parseInt(newReview.employeeId,10);
+      const businessId = parseInt(newReview.businessId, 10);
+      const employeeId = parseInt(newReview.employeeId, 10);
       const reviewScore = newReview.reviewStarPoint;
       const reviewContent = newReview.reviewContent;
-    
+
       console.log("reviewId:", newReview.reviewId);
-      console.log("reviewId:", newReview.contractId);
+      console.log("suggestId:", newReview.contractId);
       console.log("businessName:", newReview.businessName);
       console.log("businessId:", newReview.businessId);
       console.log("employeeNickname:", newReview.employeeNickname);
@@ -107,21 +141,21 @@ export const ReviewProvider = ({ children }) => {
 
       // 첫 번째 요청 실행
       const reviewResult = await request.post("/api/v1/contracts/review", {
-        contractId:contractId,
-        businessId:businessId,
-        employeeId:employeeId,
-        reviewScore:reviewScore,
-        reviewContent:reviewContent,
+        contractId: contractId,
+        businessId: businessId,
+        employeeId: employeeId,
+        reviewScore: reviewScore,
+        reviewContent: reviewContent,
       });
 
       // 첫 번째 요청이 성공하면 두 번째 요청 실행
-      if (reviewResult.status === 200) {
+      if (reviewResult) {
         const completeResult = await request.post("/api/v1/offeremployment/complete", {
           suggestId: contractId,
-          employeeId:employeeId,
+          employeeId: employeeId,
         });
 
-        if (completeResult.status === 200) {
+        if (completeResult) {
           fetchReviews();
           setCurReviewId((prevId) => prevId + 1);
         } else {
@@ -132,30 +166,31 @@ export const ReviewProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("리뷰 작성 실패:", error.response ? error.response.data : error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
+
 
   // 리뷰 수정 (사장만 가능)
   const editReview = async (updatedReview) => {
     if (role === "ROLE_EMPLOYEE") return;
-    console.log(
-      updatedReview.reviewId,
-      updatedReview.businessId,
-      updatedReview.employeeId,
-      updatedReview.reviewStarPoint,
-      updatedReview.reviewContent);
+
     try {
+      setIsLoading(true);
       const response = await request.put("/api/v1/contracts/review/modify", {
         reviewId:updatedReview.reviewId,
         reviewScore:updatedReview.reviewStarPoint,
         reviewContent:updatedReview.reviewContent,
       });
 
-      if (response.status === 200) {
-        fetchReviews();
+      if (response) {
+        await fetchReviews();
       }
     } catch (error) {
       console.error("리뷰 수정 중 오류가 발생했습니다.", error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -163,13 +198,16 @@ export const ReviewProvider = ({ children }) => {
   const deleteReview = async (reviewId) => {
     if (role === "ROLE_EMPLOYEE") return;
     try {
+      setIsLoading(true);
       const response = await request.delete(`/api/v1/contracts/review/delete?reviewId=${parseInt(reviewId, 10)}`);
-
-      if (response.status === 200) {
-        fetchReviews();
+      
+      if (response) {
+        await fetchReviews();
       }
     } catch (error) {
       console.error("리뷰 삭제 중 오류가 발생했습니다.", error);
+    }finally {
+      setIsLoading(false); 
     }
   };
 
@@ -198,6 +236,7 @@ export const ReviewProvider = ({ children }) => {
         reportReview,
         filteredReviews,
         handlePageChange,
+        employmentStatusList,
         currentPage,
         curReviewId,
         myStores,

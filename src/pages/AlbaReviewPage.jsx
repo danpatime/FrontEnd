@@ -13,7 +13,7 @@ const AlbaReviewPage = () => {
   const navigate=useNavigate();
 
   // Context에서 상태와 함수 가져오기
-  const { handlePageChange, currentPage,reviews, sortOption, setSortOption, searchQuery, setSearchQuery,filteredReviews } = useReviewInfo();
+  const { isLoading,handlePageChange, currentPage,reviews, sortOption, setSortOption, searchQuery, setSearchQuery,filteredReviews } = useReviewInfo();
   
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
   const totalPages = Math.ceil(reviews.length / reviewsPerPage);
@@ -90,6 +90,10 @@ const AlbaReviewPage = () => {
             </SortSelect>
           </FilterSection>
         </TopBar>
+        {role&&isLoading ? (
+      <p>리뷰를 불러오는 중...</p>  // 로딩 메시지
+      ) : (
+      <>
         <ReviewList>
           <ReviewHeader>
             <HeaderCell>번호</HeaderCell>
@@ -111,6 +115,8 @@ const AlbaReviewPage = () => {
 
           ))}
         </ReviewList>
+        </>
+      )}
         <AddReviewButton onClick={openModal}>후기 작성</AddReviewButton>
         <Pagination>
           {Array.from({ length: totalPages }, (_, index) => (
