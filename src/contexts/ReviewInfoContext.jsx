@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useUserInfo } from './useUserInfo';
 import request from '../api/request.ts';
-/*eslint-disable*/
 
 const ReviewInfoContext = createContext();
 
@@ -13,14 +12,36 @@ export const ReviewProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState(""); // 검색어
   const [filteredReviews, setFilteredReviews] = useState([]); // 필터링된 리뷰 상태
   const [myStores, setMyStores] = useState([]); // 가게 데이터
-  const [employmentStatusList,setEmploymentStatusList]=useState([]);
-  const [curReviewId, setCurReviewId] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [employmentStatusList,setEmploymentStatusList]=useState([]); // 가게 체결 현황
+  const [curReviewId, setCurReviewId] = useState(100);
   const [isLoading, setIsLoading] = useState(true);
 
   // 가게 목록과 체결 현황 가져오기(사장만 가능)
   const fetchStoresAndContacts = async () => {
     if (role === "ROLE_EMPLOYEE") return;
+
+    const parseWorkTime = (workTime) => {
+      // workTime 문자열을 분리
+      const timeParts = workTime.match(/(\d{4}\.\d{2}\.\d{2}) (\d{2}:\d{2})~(\d{2}:\d{2})/);
+      
+      if (!timeParts) {
+          throw new Error("올바른 형식의 workTime 문자열이 아닙니다.");
+      }
+  
+      // 날짜와 시간 분리
+      const [, date, startTime, endTime] = timeParts;
+  
+      // 문자열로 반환
+      const startDate = `${date.replace(/\./g, '-')} ${startTime}`;
+      const endDate = `${date.replace(/\./g, '-')} ${endTime}`;
+  
+      // 로컬 형식으로 출력
+      return {
+          start: startDate,
+          end: endDate
+      };
+  };
+  
 
     try {
       // 가게 목록 가져오기
@@ -35,22 +56,34 @@ export const ReviewProvider = ({ children }) => {
             const statusResponse = await request.get(
               `/api/v1/employment-suggests/status/${parseInt(store.businessId)}`
             );
-            return {
+
+            // COMPLETED 상태인 계약만 필터링
+            const completedResponses = statusResponse.filter(item => item.status === "COMPLETED");
+
+            return completedResponses.map(item => ({
               businessId: store.businessId,
-              status: statusResponse?.status || [],
-            };
+              status: item.status,
+              name: item.name || "UNKNOWN",
+              businessName: store.businessName || "UNKNOWN",
+              workTimeStart: parseWorkTime(item.workTime).start || null,
+              workTimeEnd: parseWorkTime(item.workTime).end || null,
+              contractId: item.contractId || null,
+            }));
           } catch (error) {
             console.error(
               `체결 현황 가져오기 실패 - 가게 ID: ${store.businessId}`,
               error
             );
-            return { businessId: store.businessId, status: [] };
+            return [];
           }
         })
       );
 
+      const flattenedEmploymentStatusList = employmentStatusList.flat();
+
       // 체결 현황 저장
-      setEmploymentStatusList(employmentStatusList);
+      setEmploymentStatusList(flattenedEmploymentStatusList);
+
     } catch (error) {
       console.error("가게 목록 또는 체결 현황 가져오는 데 실패했습니다.", error);
       setEmploymentStatusList([]);
@@ -66,28 +99,36 @@ export const ReviewProvider = ({ children }) => {
 
   // 기존 리뷰 데이터 요청
   const fetchReviews = async () => {
+    let moreDataToLoad=true;
+    let page=1;
+    let allReviews=[];
+
     try {
       setIsLoading(true); // 로딩 시작
       const endpoint = role === "ROLE_EMPLOYER" ? "/api/v1/contracts/review/my/employer" : "/api/v1/review/my/employee";
-      const fetchedReviews = await request.get(`${endpoint}?page=${currentPage}`);
-      setReviews(fetchedReviews);
-      setFilteredReviews(fetchedReviews);
+      while(moreDataToLoad){
+        const response = await request.get(`${endpoint}?page=${page}`);
+        
+        if(response.length>0){
+          allReviews=[...allReviews,...response];
+          page++;
+        } else{
+          moreDataToLoad=false;
+        }
+    }
+      setReviews(allReviews);
+      setFilteredReviews(allReviews);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false); // 로딩 종료
     }
   };
-  
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
 
   useEffect(() => {
     if(role) // 새로고침 시 대응
       fetchReviews(); // 컴포넌트 값이 변화할 때마다 데이터를 요청
-  }, [currentPage,role]);
+  }, [role]);
 
   // 필터링 및 정렬된 리뷰 반환
   const getFilteredReviews = () => {
@@ -118,22 +159,11 @@ export const ReviewProvider = ({ children }) => {
     try {
       setIsLoading(true); // 로딩 시작
 
-      const contractId = newReview.contractId; // 이거 추가해야 됨
+      const contractId = parseInt(newReview.contractId);
       const businessId = parseInt(newReview.businessId, 10);
       const employeeId = parseInt(newReview.employeeId, 10);
       const reviewScore = newReview.reviewStarPoint;
       const reviewContent = newReview.reviewContent;
-
-      console.log("reviewId:", newReview.reviewId);
-      console.log("suggestId:", newReview.contractId);
-      console.log("businessName:", newReview.businessName);
-      console.log("businessId:", newReview.businessId);
-      console.log("employeeNickname:", newReview.employeeNickname);
-      console.log("employeeId:", newReview.employeeId);
-      console.log("reviewStarPoint:", newReview.reviewStarPoint);
-      console.log("contractStartTime:", newReview.contractStartTime);
-      console.log("contractEndTime:", newReview.contractEndTime);
-      console.log("reviewContent:", newReview.reviewContent);
 
       if (!contractId || !businessId || !employeeId || !reviewScore || !reviewContent) {
         return;
@@ -215,11 +245,12 @@ export const ReviewProvider = ({ children }) => {
   const reportReview = async (reviewId, reportReason) => {
     if (role === "ROLE_EMPLOYER") return;
     try{
-      const response=await request.post(`/api/v1/info/my/reviews/${reviewId}/report`,{
+      const response=await request.post(`/api/v1/info/my/reviews/${parseInt(reviewId,10)}/report`,{
         reason:reportReason,
       });
-      if(response.status===200){
-        alert(response.data.message);
+
+      if(response){
+        alert(response.message);
       }
     } catch (error) {
       console.error("리뷰 신고 중 오류가 발생했습니다.", error);
@@ -235,9 +266,7 @@ export const ReviewProvider = ({ children }) => {
         deleteReview,
         reportReview,
         filteredReviews,
-        handlePageChange,
         employmentStatusList,
-        currentPage,
         curReviewId,
         myStores,
         sortOption,

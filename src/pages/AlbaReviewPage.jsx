@@ -8,12 +8,13 @@ import { useNavigate } from "react-router-dom";
 const AlbaReviewPage = () => {
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열림/닫힘 상태
   const [editingReview, setEditingReview] = useState(null); // 수정할 리뷰 데이터
-  const {user,isAuthenticated}=useUserInfo(); // 유저 정보가 사장인 경우에만 페이지를 렌더링링
+  const {user,isAuthenticated}=useUserInfo(); // 유저 정보가 사장인 경우에만 페이지를 렌더링
+  const [currentPage, setCurrentPage] = useState(1);
   const role=user?.role; // 사용자 타입
   const navigate=useNavigate();
 
   // Context에서 상태와 함수 가져오기
-  const { isLoading,handlePageChange, currentPage,reviews, sortOption, setSortOption, searchQuery, setSearchQuery,filteredReviews } = useReviewInfo();
+  const { isLoading,reviews, sortOption, setSortOption, searchQuery, setSearchQuery,filteredReviews } = useReviewInfo();
   
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
   const totalPages = Math.ceil(reviews.length / reviewsPerPage);
@@ -21,6 +22,10 @@ const AlbaReviewPage = () => {
     (currentPage - 1) * reviewsPerPage,
     currentPage * reviewsPerPage
   );
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   useEffect(()=>{
     if(!isAuthenticated){
@@ -84,7 +89,7 @@ const AlbaReviewPage = () => {
               onChange={handleSearch}
             />
             <SortSelect value={sortOption} onChange={handleSortChange}>
-              <option value="latest">최신순</option>
+              <option value="latest">최신계약순</option>
               <option value="starDesc">별점 내림차순</option>
               <option value="starAsc">별점 오름차순</option>
             </SortSelect>
@@ -104,7 +109,7 @@ const AlbaReviewPage = () => {
             <HeaderCell>별점</HeaderCell>
           </ReviewHeader>
           {currentReviews.map((review, index) => (
-            <ReviewItem key={review.reviewId} onClick={() => openModalForEdit(review)}>
+            <ReviewItem key={`${review.reviewId}-${index+1}`} onClick={() => openModalForEdit(review)}>
             <ReviewCell>{index + 1}</ReviewCell>
             <ReviewCell>{review.businessName}</ReviewCell>
             <ReviewCell>{review.employeeNickname}</ReviewCell>
@@ -123,7 +128,7 @@ const AlbaReviewPage = () => {
             <PageNumber
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
-              active={currentPage === index + 1}
+              active={currentPage === index + 1 ? "active":""}
             >
               {index + 1}
             </PageNumber>

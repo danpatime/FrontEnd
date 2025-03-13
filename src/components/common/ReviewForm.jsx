@@ -15,8 +15,9 @@ const ReviewForm = ({ onClose, initialData }) => {
   const [selectedStoreID, setSelectedStoreID] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
   const [selectedAlbaID, setSelectedAlbaID] = useState("");
+  const [selectedcontractID,setSelectedContractID]=useState("");
   const [hasAlerted, setHasAlerted] = useState(false); // 쓸 수 있는 리뷰가 없을 때 경고
-  
+
   /*const [selectedTag, setSelectedTag] = useState([]);
   const [reviewTag] = useState([
     "일을 잘해요", 
@@ -29,20 +30,20 @@ const ReviewForm = ({ onClose, initialData }) => {
     "또 같이 일하고 싶어요"
   ]);*/
 
-  const { myStores,addReview, editReview,currentPage,curReviewId } = useReviewInfo();
+  const { employmentStatusList,myStores,addReview, editReview,curReviewId } = useReviewInfo();
   const [reviewId, setReviewId] = useState(curReviewId);
 
   useEffect(() => {
-    if (initialData) {
-      setReviewId(initialData.reviewId || 0);
-      setReviewStarPoint(initialData.reviewStarPoint || 0); 
-      setReviewContent(initialData.reviewContent || ""); 
-      setContractStartTime(initialData.contractStartTime || ""); 
-      setContractEndTime(initialData.contractEndTime || "");
-      setSelectedStore(initialData.businessName || ""); 
-      setSelectedStoreID(initialData.businessId || ""); 
-      setSelectedAlba(initialData.employeeNickname || ""); 
-      setSelectedAlbaID(initialData.employeeId || ""); 
+    if (initialData) { // 리뷰를 수정하는 경우
+      setReviewId(initialData.reviewId);
+      setReviewStarPoint(initialData.reviewStarPoint); 
+      setReviewContent(initialData.reviewContent); 
+      setContractStartTime(initialData.contractStartTime); 
+      setContractEndTime(initialData.contractEndTime);
+      setSelectedStore(initialData.businessName); 
+      setSelectedStoreID(initialData.businessId); 
+      setSelectedAlba(initialData.employeeNickname); 
+      setSelectedAlbaID(initialData.employeeId); 
     }
   }, [initialData]);
  
@@ -59,34 +60,67 @@ const ReviewForm = ({ onClose, initialData }) => {
 
   // 가게에 맞는 알바생 목록 받아오기
   const fetchAlbaList = async () => {
+    let moreDataToLoad = true;
+    let page = 1;
+    let allAlbaList = [];
+
     try {
-      const response = await request.get(`/api/v1/review/available?businessId=${parseInt(selectedStoreID, 10)}&page=${parseInt(currentPage, 10)}`);
-      if (response.length !== workedAlbaList.length || !response.every((item, index) => item.employeeId === workedAlbaList[index]?.employeeId)) {
-        setWorkedAlbaList(response || []);
+      while (moreDataToLoad) {
+      const response = await request.get(
+        `/api/v1/review/available?businessId=${parseInt(selectedStoreID, 10)}&page=${page}`
+      );
+
+      if (response.length > 0) {
+        allAlbaList = [...allAlbaList, ...response]; // 받은 데이터를 모두 합쳐서 저장
+        page++; // 페이지 번호 증가
+      } else {
+        moreDataToLoad = false; // 더 이상 받을 데이터가 없으면 종료
       }
-      if (response.length === 0 && !hasAlerted) {
-        alert("현재 선택하신 가게에서 작성할 수 있는 리뷰가 없습니다.");
-        setHasAlerted(true);
+      }
+  
+     // 알바생 목록 갱신
+     setWorkedAlbaList(allAlbaList);
+  
+
+     if (allAlbaList.length === 0 && !hasAlerted) {
+       alert("현재 선택하신 가게에서 작성할 수 있는 리뷰가 없습니다.");
+       setHasAlerted(true);
       }
     } catch (error) {
       console.error("알바생 목록을 가져오는 데 실패했습니다.", error);
       setWorkedAlbaList([]);
     }
   };
+  
 
   useEffect(() => {
     if(selectedStoreID && !isEditing) {
        fetchAlbaList();
     }
-  }, [selectedStoreID,currentPage]);
+  }, [selectedStoreID]);
 
-  
   const handleAlbaChange = async (e) => {
     const albaId = e.target.value;
-    const albaName = workedAlbaList.find((alba) => alba.employeeId === parseInt(albaId,10))?.employeeName || "";
-  
+    const albaContractId = workedAlbaList.find((alba) => alba.employeeId === parseInt(albaId, 10))?.contractId || "";
+    const albaName = workedAlbaList.find((alba) => alba.employeeId === parseInt(albaId, 10) && alba.contractId === albaContractId)?.employeeName || "";
+    
     setSelectedAlbaID(albaId);
     setSelectedAlba(albaName);
+    setSelectedContractID(albaContractId);
+
+    // employmentStatusList에서 선택된 알바의 근무 정보 가져오기
+    const matchingEmployment = employmentStatusList.find(
+      (employment) =>
+        employment.businessId === parseInt(selectedStoreID, 10) && employment.contractId === parseInt(albaContractId,10)
+    );
+  
+    if (matchingEmployment) {
+      setContractStartTime(matchingEmployment.workTimeStart || "");
+      setContractEndTime(matchingEmployment.workTimeEnd || "");
+    } else {
+      setContractStartTime(""); // 정보가 없을 경우 초기화
+      setContractEndTime("");
+    }
   };
 
 
@@ -102,7 +136,15 @@ const ReviewForm = ({ onClose, initialData }) => {
     if(!initialData){
       setReviewId(curReviewId);
     }
+
+    const matchingEmployment = employmentStatusList.find(
+      (employment) =>
+        employment.businessId === parseInt(selectedStoreID, 10) &&
+        employment.contractId === selectedcontractID
+    );
+
     const newReview = {
+      contractId:matchingEmployment?.contractId,
       reviewId: reviewId,
       businessName: selectedStore,
       businessId: selectedStoreID, 
@@ -113,6 +155,12 @@ const ReviewForm = ({ onClose, initialData }) => {
       contractEndTime: contractEndTime,
       reviewContent: reviewContent, 
     };
+
+    const updatedReview = {
+      reviewId: reviewId,
+      reviewStarPoint: reviewStarPoint,
+      reviewContent: reviewContent,
+  };
 
 
     if (!selectedStoreID || !selectedAlbaID || !reviewStarPoint || !reviewContent){
@@ -128,7 +176,7 @@ const ReviewForm = ({ onClose, initialData }) => {
     }
 
     if (initialData) {
-      editReview(newReview);
+      editReview(updatedReview);
     } else {
       addReview(newReview);
     }

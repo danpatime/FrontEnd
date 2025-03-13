@@ -65,7 +65,7 @@ const MyReviewPage = () => {
       <Container>
         <SelectContainer>
           <SortSelect value={sortOption} onChange={handleSortChange}>
-              <option value="latest">최신순</option>
+              <option value="latest">최신계약순</option>
               <option value="starDesc">별점 내림차순</option>
               <option value="starAsc">별점 오름차순</option>
           </SortSelect>
