@@ -1,53 +1,121 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import MypageLayout from "../../components/layout/MypageLayout"
 import AddKeyword from '../../components/common/AddKeyword';
 import ScheduleCalendar from '../../components/common/ScheduleCalendar';
 import CallTimeInput from "../../components/modal/CallTimeInput";
+import request from "../../api/request.ts";
+import useResumeData from "../../hooks/useResumeData";
 
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import DefaultProfile from "../../assets/images/default-profile.jpg";
 import EditIcon from "../../assets/icons/ic_edit.png";
 
-// 더미 데이터 (수정 모드에서만 사용)
-const dummyData = {
-  profileImage: 'https://dummyimage.com/100x100/000/fff', // 더미 프로필 이미지 URL
-  name: '홍길동',
-  birthdate: { year: '1990', month: '01', day: '01' },
-  email: 'hong@domain.com',
-  phoneNumber: '010-1234-5678',
-  address: '서울특별시 강남구 테헤란로',
-  detailAddress: '123-45',
-  gender: 'male',
-  callTime: '9:00 AM - 6:00 PM',
-  addressSearch: '서울특별시 강남구 테헤란로', // 주소 검색할 때 사용
-};
-
 const ResumeForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const resumeData = useResumeData();
   const mode = location.state?.modeType || 'register';
-  const [isEditingEmail, setIsEditingEmail] = useState(mode === "register");
+  const BASE_URL = "https://danpat.s3.ap-northeast-2.amazonaws.com"; 
+  // const [isEditingEmail, setIsEditingEmail] = useState(mode === "register");
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   // const [bname, setBname] = useState(""); // 동 이름 (법정동명)
 
+  const [name, setName] = useState('');
+  const [birthdate, setBirthdate] = useState({ year: '', month: '', day: '' });
+  const [sex, setSex] = useState('남');
+  const [zipcode, setZipcode] = useState('');
+  const [address, setAddress] = useState('');
+  const [detailAddress, setDetailAddress] = useState('');
+  const [sido, setSido] = useState('');
+  const [sigugun, setSigugun] = useState('');
+  const [dong, setDong] = useState('');
+  const [profileImage, setProfileImage] = useState(DefaultProfile);
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [callTime, setCallTime] = useState('00:00 ~ 00:00');
+  const [introduction, setIntroduction] = useState("");
+  const [workLocations, setWorkLocations] = useState([]);
+  const [desiredJobs, setDesiredJobs] = useState([]);
+  const [possibleTimes, setPossibleTimes] = useState([]);
+  const [externalCareer, setExternalCareer] = useState([]);
 
-  // 상태 초기화 (등록 모드일 경우 빈 값, 수정 모드일 경우 더미 데이터)
-  const [profileImage, setProfileImage] = useState(mode === "edit" ? dummyData.profileImage : DefaultProfile);
-  const [name, setName] = useState(mode === "edit" ? dummyData.name : '');
-  const [birthdate, setBirthdate] = useState(mode === "edit" ? dummyData.birthdate : { year: '', month: '', day: '' });
-  const [email, setEmail] = useState(mode === "edit" ? dummyData.email : '');
-  const [phoneNumber, setPhoneNumber] = useState(mode === "edit" ? dummyData.phoneNumber : '');
-  const [address, setAddress] = useState(mode === "edit" ? dummyData.address : '');
-  const [detailAddress, setDetailAddress] = useState(mode === "edit" ? dummyData.detailAddress : '');
-  // const [gender, setGender] = useState(mode === "edit" ? dummyData.gender : '');
-  const [callTime, setCallTime] = useState(mode === "edit" ? dummyData.callTime : '');
-  // const [addressSearch, setAddressSearch] = useState(mode === "edit" ? dummyData.addressSearch : '');
+  useEffect(() => {
+    if (resumeData) {
+      setName(resumeData?.name || '');
+      setSex(resumeData?.gender || '남');
+      setZipcode(resumeData?.zipcode || '');
+      setAddress(resumeData?.address || '');
+      setDetailAddress(resumeData?.detailAddress || '');
+      setSido(resumeData?.sido || '');
+      setSigugun(resumeData?.sigugun || '');
+      setDong(resumeData?.dong || '');
+      setEmail(resumeData?.email || '');
+      setPhoneNumber(resumeData?.phoneNumber || '');
+      setCallTime(resumeData?.availableTime || '00:00 ~ 00:00');
+      setIntroduction(resumeData?.introduction || '');
+      setWorkLocations(resumeData?.districts || []);
+      setDesiredJobs(resumeData?.preferenceCategory || []);
+      setExternalCareer(resumeData?.externalCareer || []);
+      setPossibleTimes(resumeData?.workHours || []);
+      
+      const profileImageUrl = resumeData?.profileImage
+        ? `${BASE_URL}/${resumeData.profileImage}`
+        : DefaultProfile;
+      setProfileImage(profileImageUrl);
 
-  
+      const rawBirthdate = resumeData?.birthDate || ""; 
+      console.error(rawBirthdate);
 
-  const handleFileChange = (e) => {
+      if (rawBirthdate.includes(".")) {
+        const [year, month, day] = rawBirthdate.split(".").map((val) => val.trim());
+        console.error(year);
+        setBirthdate({ 
+          year: year || "", 
+          month: month || "", 
+          day: day || "" 
+        });
+      } else {
+        setBirthdate({ year: "", month: "", day: "" });
+      }
+    }
+  }, [resumeData]);
+
+
+  const handleSubmit = async () => {
+    const formattedBirthdate= `${birthdate.year}.${birthdate.month}.${birthdate.day}`;
+
+    const profileData = {
+      name,
+      age: new Date().getFullYear() - parseInt(birthdate.year, 10),
+      sex,
+      email,
+      phoneNumber,
+      birthdate: formattedBirthdate,
+      callTime,
+      location: {
+        zipcode,
+        address,
+        detailAddress,
+        sido,
+        sigugun,
+        dong,
+      },
+    };
+
+    try {
+      await request.post("/api/v1/possible-board/personal-info", profileData);
+      await request.post("/api/v1/possible-board/introduction", { introduction });
+
+      alert("이력서가 성공적으로 등록되었습니다.");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error fetching resume data:", error);
+    }
+  };
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const fileExtension = file.name.split(".").pop().toLowerCase();
@@ -64,15 +132,20 @@ const ResumeForm = () => {
       };
       reader.readAsDataURL(file);
     }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      await request.post("/api/v1/upload/profile", formData);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
   };
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const enableEmailEdit = () => {
-    setIsEditingEmail(true);
-  };
+  // const enableEmailEdit = () => {
+  //   setIsEditingEmail(true);
+  // };
 
   // 전화번호 입력을 처리하는 함수
   const handlePhoneNumberChange = (e) => {
@@ -107,24 +180,16 @@ const ResumeForm = () => {
   };
 
   const handleAddressSearch = () => {
-    // 다음 우편번호 API 호출
     new window.daum.Postcode({
       oncomplete: (data) => {
         // 도로명 주소 또는 지번 주소 설정
         setAddress(data.address);
-
-        // 법정동명 설정 (data.bname에 동 이름 있어요)
-        // if (data.bname !== "") {
-        //   setBname(data.bname);
-        // } else {
-        //   setBname("");
-        // }
+        setZipcode(data.zonecode); // 우편번호 설정
+        setSido(data.sido); // 시/도 설정
+        setSigugun(data.sigungu); // 시/군/구 설정
+        setDong(data.bname); // 동 설정
       },
     }).open();
-  };
-
-  const handleDetailAddressChange = (e) => {
-    setDetailAddress(e.target.value);
   };
 
   const goBack = () => {
@@ -173,7 +238,16 @@ const ResumeForm = () => {
               </div>
             </div>
 
-            {mode === "register" || isEditingEmail ?  (
+            <div className='userinfo-items'>
+              <label>이메일</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            {/* {mode === "register" || isEditingEmail ?  (
               <div className="userinfo-items item-grid">
                 <div className="button-grid">
                   <label>이메일</label>
@@ -181,7 +255,7 @@ const ResumeForm = () => {
                     <input
                       type="email"
                       value={email}
-                      onChange={handleEmailChange}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="이메일을 입력하세요"
                     />
                     <button>인증번호</button>
@@ -206,12 +280,12 @@ const ResumeForm = () => {
                     type="email"
                     value={email}
                     readOnly={mode === "edit"}
-                    onChange={handleEmailChange}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   <button onClick={enableEmailEdit}>변경하기</button>
                 </div>
               </div>
-            )}
+            )} */}
 
             <div className='userinfo-items item-grid'>
               <div className="phone-number">
@@ -257,13 +331,11 @@ const ResumeForm = () => {
                   <input
                     type="text"
                     value={detailAddress}
-                    onChange={handleDetailAddressChange}
+                    onChange={(e) => setDetailAddress(e.target.value)}
                     placeholder="상세주소를 입력해주세요"
                   />
                 </div>
               )}
-              
-              {/* {bname && ( <div> <span>동 이름: {bname}</span> </div> )} */}
             </div>
 
             
@@ -272,11 +344,11 @@ const ResumeForm = () => {
               <label>성별</label>
               <div id="ismale">
                 <div>
-                  <input type="radio" id="male" name="gender" value="male" />
+                  <input type="radio" name="gender" value="남" checked={sex === "남"} onChange={() => setSex("남")} />
                   <label htmlFor="male">남성</label>
                 </div>
                 <div>
-                  <input type="radio" id="female" name="gender" value="female" />
+                  <input type="radio" name="gender" value="여" checked={sex === "여"} onChange={() => setSex("여")} />                  
                   <label htmlFor="female">여성</label>
                 </div>
               </div>
@@ -286,18 +358,22 @@ const ResumeForm = () => {
 
         <Section>
           <h3>자기소개서</h3>
-          <textarea></textarea>
+          <textarea 
+            value={introduction} 
+            onChange={(e) => setIntroduction(e.target.value)} 
+            placeholder="자기소개서를 입력하세요"
+          />
         </Section>
 
         <Section>
           <h3>희망근무조건<span>(최대 5개)</span></h3>
-          <AddKeyword title="근무지" />
-          <AddKeyword title="희망업직종" />
+          <AddKeyword title="근무지" initialKeywords={workLocations} />
+          <AddKeyword title="희망업직종" initialKeywords={desiredJobs} />
         </Section>
 
         <Section>
           <h3>근무가능시간</h3>
-          <ScheduleCalendar />
+          <ScheduleCalendar events={possibleTimes}/>
         </Section>
 
         <Section>
@@ -309,11 +385,11 @@ const ResumeForm = () => {
               <li>작성 시 모든 내용은 사실에 근거해 정확히 입력해 주세요.</li>
             </ul>
           </div>
-          <AddKeyword title="외부경력"/>
+          <AddKeyword title="외부 경력" initialKeywords={externalCareer} />
         </Section>
 
         <ButtonContainer>
-          <button>완료</button>
+          <button onClick={handleSubmit}>완료</button>
         </ButtonContainer>
         {isCallModalOpen && (
            <CallTimeInput

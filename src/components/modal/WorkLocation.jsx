@@ -32,18 +32,22 @@ function WorkLocation({onClose}) {
 
   const handleAdd = () => {
     let newLocationText = "";
+    let locationData = { sido: val1Text, sigugun: val2Text, dong: val3Text };
 
     if (val1Text === "전체") {
       newLocationText = "전체";
+      locationData = { sido: "전체", sigugun: "", dong: "" };
     } else if (val2Text === "전체") {
       newLocationText = `${val1Text} 전체`;
+      locationData = { sido: val1Text, sigugun: "", dong: "" };
     } else if (val3Text === "전체") {
       newLocationText = `${val2Text} 전체`;
+      locationData = { sido: val1Text, sigugun: val2Text, dong: "" };
     } else {
       newLocationText = val3Text;
     }
 
-    onClose(newLocationText); // 텍스트 값 전달
+    onClose(newLocationText, locationData);
   };
 
   return (

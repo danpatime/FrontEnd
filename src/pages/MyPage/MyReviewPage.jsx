@@ -136,7 +136,7 @@ const MyReviewPage = () => {
         </Modal>
       )}
 
-      {isDeleteModalOpen &&  (
+      {isDeleteModalOpen && (
         <Modal>
           <DeleteContent>
             <h3>정말로 리뷰를 삭제하시겠습니까?</h3>
@@ -148,7 +148,8 @@ const MyReviewPage = () => {
           </DeleteContent>
         </Modal>
       )}
-      {isReportModalOpen &&  (
+
+      {isReportModalOpen && (
         <Modal>
           <ReportContent>
             <h3>리뷰 신고</h3>
@@ -253,7 +254,7 @@ const SelectCell = styled.div`
   padding: 8px;
   border: 1px solid black;
   border-radius: 20px;
-  margin:5px;
+  margin: 5px;
 `;
 
 const SortSelect = styled.select`
@@ -280,14 +281,15 @@ const ActionButtons = styled.div`
   top: 10px;
   right: 10px;
   display: flex;
-  gap: 15px;
-  font-size: 14px;
+  justify-content: flex-start;
+  margin-bottom: 20px;
 `;
 
 const Button = styled.button`
   background-color: white;
   cursor: pointer;
   color:black;
+  margin:10px;
 
   &:hover {
     background-color: white;
@@ -300,7 +302,7 @@ const DeleteContent = styled.div`
   padding: 30px;
   border-radius: 8px;
   width: 400px;
-  height:150px;
+  height: 150px;
   text-align: center;
 `;
 
@@ -309,13 +311,13 @@ const ReportContent = styled.div`
   padding: 30px;
   border-radius: 8px;
   width: 500px;
-  height:300px;
+  height: 300px;
   text-align: center;
 `;
 
 const ReportTextarea = styled.textarea`
   width: 100%;
-  margin-top:30px;
+  margin-top: 30px;
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
@@ -340,7 +342,7 @@ const CancelButton = styled.button`
   color:white;
 
   &:hover {
-    background-color: #F7B32B;
+    background-color: #f7b32b;
   }
 `;
 
@@ -353,7 +355,7 @@ const ConfirmButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #F7B32B;
+    background-color: #f7b32b;
   }
 `;
 

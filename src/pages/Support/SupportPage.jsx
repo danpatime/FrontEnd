@@ -10,9 +10,24 @@ const SupportPage = () => {
   return (
     <Container>
       <NavbarContainer>
-        <NavItem active={currentPage === '문의'} onClick={() => setCurrentPage('문의')}>문의</NavItem>
-        <NavItem active={currentPage === '나의 문의 내역'} onClick={() => setCurrentPage('나의 문의 내역')}>나의 문의 내역</NavItem>
-        <NavItem active={currentPage === 'Q&A'} onClick={() => setCurrentPage('Q&A')}>Q&A</NavItem>
+        <NavItem
+          active={currentPage === '문의'}
+          onClick={() => setCurrentPage('문의')}
+        >
+          문의
+        </NavItem>
+        <NavItem
+          active={currentPage === '나의 문의 내역'}
+          onClick={() => setCurrentPage('나의 문의 내역')}
+        >
+          나의 문의 내역
+        </NavItem>
+        <NavItem
+          active={currentPage === 'Q&A'}
+          onClick={() => setCurrentPage('Q&A')}
+        >
+          Q&A
+        </NavItem>
       </NavbarContainer>
 
       <Content>
@@ -28,11 +43,11 @@ export default SupportPage;
 
 const Container = styled.div`
   height: 100vh;
-`
+`;
 
 const NavbarContainer = styled.div`
   display: flex;
-  border-bottom: 1px solid #DFDFDF;
+  border-bottom: 1px solid #dfdfdf;
   padding-left: 150px;
 `;
 
@@ -40,7 +55,9 @@ const NavItem = styled.div`
   padding: 15px 20px 10px;
   cursor: pointer;
   transition: background-color 0.3s;
-  ${(props) => props.active && `
+  ${(props) =>
+    props.active &&
+    `
     border-bottom: 2px solid #7B4B42;
     font-weight: bold;
     background-color: #f0f0f0;
@@ -55,5 +72,9 @@ const Content = styled.div`
   background-color: #ffffff;
   height: 100vh;
   padding: 20px 150px;
+<<<<<<< HEAD
   border-top: 1px solid #DFDFDF;
+=======
+  border-top: 1px solid #dfdfdf;
+>>>>>>> 902017f3a4e372c69393011f5a6028f1328ec487
 `;

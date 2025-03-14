@@ -40,7 +40,17 @@ function ExternalExperience({ onClose }) {
 
     const experienceText = `${secondaryCategory} ${experienceCount}회`;
 
-    onClose(experienceText);
+    const selectedSub = primaryCategory.subCategories.find(sub => sub.name === secondaryCategory);
+
+    const experienceData = {
+      subCategory: {
+        subCategoryId: selectedSub.id,
+        subCategoryName: selectedSub.name
+      },
+      workCount: parseInt(experienceCount) // 숫자로 변환
+    };
+
+    onClose(experienceText, experienceData);
   };
 
   return (
@@ -73,7 +83,14 @@ function ExternalExperience({ onClose }) {
         <input
           type="number"
           value={experienceCount}
-          onChange={(e) => setExperienceCount(e.target.value)}
+          onChange={(e) => {
+            const value = parseInt(e.target.value, 10);
+            if (!isNaN(value) && value >= 0) {
+              setExperienceCount(value);
+            } else if (e.target.value === "") {
+              setExperienceCount(""); // 빈 값 허용
+            }
+          }}
           disabled={!secondaryCategory} // 2차 직종이 선택되지 않으면 입력 비활성화
           placeholder="횟수를 입력하세요"
         />

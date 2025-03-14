@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from 'styled-components';
 import request from "../api/request.ts";
 import { useUserInfo } from '../contexts/useUserInfo';
+import { useNavigate } from 'react-router-dom';
 import Modal from "../components/common/Modal";
 
 import IcNaver from '../assets/icons/ic-naver.png';
@@ -13,6 +14,7 @@ function LoginModal({ onClose }) {
   const [loginId, setLoginId] = useState(""); 
   const [password, setPassword] = useState("");
   const { updateUser } = useUserInfo();
+  const navigate = useNavigate();
 
   // 로그인 버튼 클릭 핸들러
   const handleLogin = async () => {
@@ -29,14 +31,15 @@ function LoginModal({ onClose }) {
     try {
       const response = await request.post("/api/v1/auth/login", requestData);
 
-      const { accessToken, userId, userRole, name, profile } = response;
+      const { accessToken, userId, userRole, name, profile, nickname } = response;
 
       // 사용자 정보 업데이트 (나중에 이름 추가)
-      updateUser({ id: userId, role: userRole, name: name, profileImage: profile });
+      updateUser({ id: userId, role: userRole, name: name, profileImage: profile, nickname: nickname });
 
       // 토큰 저장 및 Axios 헤더 업데이트
       request.updateToken(accessToken);
 
+      navigate('/');
       onClose(); // 로그인 후 모달 닫기
       } catch (error) {
       alert("오류가 발생했습니다. 다시 시도해주세요.");

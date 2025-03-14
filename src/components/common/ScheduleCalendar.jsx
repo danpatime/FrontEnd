@@ -1,40 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // 월별 보기
 import interactionPlugin from "@fullcalendar/interaction"; // 클릭 및 드래그 이벤트
 import styled from "styled-components";
 import koLocale from "@fullcalendar/core/locales/ko"; // 한글 로케일
 import ScheduleAdd from "../modal/ScheduleAdd";
+import request from "../../api/request.ts";
 
-const ScheduleCalendar = ({ isClickEnabled = true }) => {
-  const [events, setEvents] = useState([
-    {
-      id: "1",
-      title: "회의\n10:00 ~ 12:00", 
-      start: "2025-01-13T10:00:00",
-      end: "2025-01-13T12:00:00",
-      status: "completed", // 체결된 일정
-    },
-    {
-      id: "2",
-      title: "프로젝트 마감일\n14:00 ~ 16:00", 
-      start: "2025-01-15T14:00:00",
-      end: "2025-01-15T16:00:00",
-      status: "completed",
-    },
-    {
-      id: "3",
-      title: "09:00 ~ 11:00", 
-      start: "2025-01-16T09:00:00",
-      end: "2025-01-16T11:00:00",
-      status: "available", // 체결 가능한 시간
-    },
-  ]);
-
+const ScheduleCalendar = ({ isClickEnabled = true,  events = [] }) => {
+  const [newEvents, setNewEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  useEffect(() => {
+    setNewEvents(events);
+    console.error('처음에 받음', events);
+  }, [events]);
+  
+  const syncWithServer = async (updatedEvents) => {
+    const formattedData = {
+      possibleTimes: updatedEvents.map((event) => ({
+        startTime: event.start,
+        endTime: event.end,
+      })),
+    };
+
+    try {
+      const response = await request.post("/api/v1/possible-board/work-hours", formattedData);
+
+      setNewEvents(response.map((event) => ({
+        id: event.id.toString(),
+        title: `${event.startTime.split("T")[1]?.slice(0, 5)} ~ ${event.endTime.split("T")[1]?.slice(0, 5)}`,
+        start: event.startTime,
+        end: event.endTime,
+        status: event.status,
+      })));
+
+    } catch (error) {
+      console.error("서버 동기화 실패:", error);
+    }
+  };
 
   const handleDateClick = (info) => {
     if (!isClickEnabled) return; // isClickEnabled가 false이면 날짜 클릭 비활성화
@@ -46,7 +53,7 @@ const ScheduleCalendar = ({ isClickEnabled = true }) => {
 
   const handleEventClick = (info) => {
     if (!isClickEnabled) return; // isClickEnabled가 false이면 일정 클릭 비활성화
-    const event = events.find((e) => e.id === info.event.id);
+    const event = newEvents.find((e) => e.id === info.event.id);
     setSelectedEvent(event);
     setSelectedDate(event.start.split("T")[0]);
     setIsEditMode(true);
@@ -73,39 +80,62 @@ const ScheduleCalendar = ({ isClickEnabled = true }) => {
 
   const handleAddSchedule = (startTime, endTime) => {
     if (!validateTimes(startTime, endTime)) return;
+    console.error(newEvents);
 
     const newEvent = {
       id: String(Date.now()),
       title: `${startTime} ~ ${endTime}`, 
       start: `${selectedDate}T${startTime}`,
       end: `${selectedDate}T${endTime}`,
-      status: "available", // 체결 가능한 시간
+      status: "AVAILABLE", // 체결 가능한 시간
     };
-    setEvents([...events, newEvent]);
+    const updatedEvents = [...newEvents, newEvent];
+    setNewEvents(updatedEvents);
+    syncWithServer(updatedEvents); 
     closeModal();
   };
 
   const handleEditSchedule = (startTime, endTime) => {
-    if (!validateTimes(startTime, endTime)) return;
+    if (!validateTimes(startTime, endTime) || !selectedEvent) return;
 
-    const updatedEvents = events.map((event) =>
-      event.id === selectedEvent.id
-        ? {
-            ...event,
-            title: `${event.title.split("\n")[0]}\n${startTime} ~ ${endTime}`, // 일정 이름 + 시간대 (줄바꿈)
-            start: `${selectedDate}T${startTime}`,
-            end: `${selectedDate}T${endTime}`,
-          }
-        : event
-    );
 
-    setEvents(updatedEvents);
+    setNewEvents((prevEvents) => {
+      const updatedEvents = prevEvents.filter((event) => event.id !== selectedEvent.id);
+      syncWithServer(updatedEvents);
+      return updatedEvents;
+    });
+
     closeModal();
   };
 
-  const handleDeleteSchedule = () => {
-    const filteredEvents = events.filter((event) => event.id !== selectedEvent.id);
-    setEvents(filteredEvents);
+  const handleDeleteSchedule = async () => {
+    if (!selectedEvent) return;
+
+    const formattedData = {
+      possibleTimes: [
+          {
+              startTime: selectedEvent.start,
+              endTime: selectedEvent.end
+          },
+      ]
+    };
+
+    console.error('format', formattedData);
+
+    try {
+        const response = await request.post("/api/v1/possible-board/work-hours/delete", formattedData);
+
+        setNewEvents(response.map((event) => ({
+          id: event.id.toString(),
+          title: `${event.startTime.split("T")[1]?.slice(0, 5)} ~ ${event.endTime.split("T")[1]?.slice(0, 5)}`,
+          start: event.startTime,
+          end: event.endTime,
+          status: event.status,
+        })));
+    } catch (error) {
+        console.error("삭제 실패:", error);
+    }
+
     closeModal();
   };
 
@@ -132,10 +162,10 @@ const ScheduleCalendar = ({ isClickEnabled = true }) => {
   return (
     <Container>
       <FullCalendar
-        key={JSON.stringify(events)}
+        key={JSON.stringify(newEvents)}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
-        events={events}
+        events={newEvents}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         eventContent={eventContent}
@@ -258,4 +288,9 @@ const Container = styled.div`
   .fc .fc-toolbar.fc-header-toolbar {
     margin-bottom: 5px;
   }
+
+  .fc-event {
+  background-color: transparent !important; /* 배경색 제거 */
+  border-color: transparent !important; /* 테두리 색 제거 */
+}
 `;
