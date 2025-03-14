@@ -14,6 +14,7 @@ const ReviewForm = ({ onClose, initialData }) => {
   const [selectedStore, setSelectedStore] = useState("");
   const [selectedStoreID, setSelectedStoreID] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
+  const [selectedAlbaName,setSelectedAlbaName]=useState("");
   const [selectedAlbaID, setSelectedAlbaID] = useState("");
   const [selectedcontractID,setSelectedContractID]=useState("");
   const [hasAlerted, setHasAlerted] = useState(false); // 쓸 수 있는 리뷰가 없을 때 경고
@@ -30,8 +31,8 @@ const ReviewForm = ({ onClose, initialData }) => {
     "또 같이 일하고 싶어요"
   ]);*/
 
-  const { employmentStatusList,myStores,addReview, editReview,curReviewId } = useReviewInfo();
-  const [reviewId, setReviewId] = useState(curReviewId);
+  const { employmentStatusList,myStores,addReview, editReview } = useReviewInfo();
+  const [reviewId, setReviewId] = useState(null);
 
   useEffect(() => {
     if (initialData) { // 리뷰를 수정하는 경우
@@ -42,6 +43,7 @@ const ReviewForm = ({ onClose, initialData }) => {
       setContractEndTime(initialData.contractEndTime);
       setSelectedStore(initialData.businessName); 
       setSelectedStoreID(initialData.businessId); 
+      setSelectedAlbaName(initialData.employeeName);
       setSelectedAlba(initialData.employeeNickname); 
       setSelectedAlbaID(initialData.employeeId); 
     }
@@ -53,6 +55,7 @@ const ReviewForm = ({ onClose, initialData }) => {
 
     setSelectedStoreID(storeId);
     setSelectedStore(storeName);
+    setSelectedAlbaName("");
     setSelectedAlbaID(""); 
     setWorkedAlbaList([]);
     setHasAlerted(false);
@@ -133,9 +136,6 @@ const ReviewForm = ({ onClose, initialData }) => {
   };*/
   
   const handleSubmit = () => {
-    if(!initialData){
-      setReviewId(curReviewId);
-    }
 
     const matchingEmployment = employmentStatusList.find(
       (employment) =>
@@ -145,7 +145,6 @@ const ReviewForm = ({ onClose, initialData }) => {
 
     const newReview = {
       contractId:matchingEmployment?.contractId,
-      reviewId: reviewId,
       businessName: selectedStore,
       businessId: selectedStoreID, 
       employeeNickname: selectedAlba,
@@ -213,13 +212,13 @@ const ReviewForm = ({ onClose, initialData }) => {
             <option value="" disabled>선택하세요</option>
             {isEditing ? (
               <option value={selectedAlbaID} disabled selected>
-              {selectedAlba}
+              {selectedAlbaName} ({selectedAlba})
               </option>
             ) : (
               selectedStoreID && workedAlbaList && workedAlbaList.length > 0 ? (
                 workedAlbaList.map((list) => (
                   <option key={list.employeeId} value={list.employeeId}>
-                    {list.employeeName}
+                    {list.employeeName} ({list.employeeNickname})
                   </option>
                 ))
               ) : (

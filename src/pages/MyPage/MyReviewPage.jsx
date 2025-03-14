@@ -86,7 +86,7 @@ const MyReviewPage = () => {
             <Row>
               <ProfilePic src={logo} alt="프로필" />
               <InfoContainer>
-                <AlbaID>{review.employeeNickname || "\u00A0"}</AlbaID>
+                <AlbaID>{review.employeeName} ({review.employeeNickname})</AlbaID>
                 <BoldText>매장</BoldText>{review.businessName}<br />
                 <BoldText>근무 시작 시각</BoldText>
                 <PlainText>{`${new Date(review.contractStartTime).toLocaleDateString()} ${new Date(review.contractStartTime).toLocaleTimeString()}`}</PlainText>

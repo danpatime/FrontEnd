@@ -103,7 +103,7 @@ const AlbaReviewPage = () => {
           <ReviewHeader>
             <HeaderCell>번호</HeaderCell>
             <HeaderCell>가게 이름</HeaderCell>
-            <HeaderCell>알바생 닉네임</HeaderCell>
+            <HeaderCell>알바생 이름(닉네임)</HeaderCell>
             <HeaderCell>근무 시작 시각</HeaderCell>
             <HeaderCell>근무 종료 시각</HeaderCell>
             <HeaderCell>별점</HeaderCell>
@@ -112,7 +112,7 @@ const AlbaReviewPage = () => {
             <ReviewItem key={`${review.reviewId}-${index+1}`} onClick={() => openModalForEdit(review)}>
             <ReviewCell>{index + 1}</ReviewCell>
             <ReviewCell>{review.businessName}</ReviewCell>
-            <ReviewCell>{review.employeeNickname}</ReviewCell>
+            <ReviewCell>{review.employeeName} ({review.employeeNickname})</ReviewCell>
             <ReviewCell>{`${new Date(review.contractStartTime).toLocaleDateString()}`}<br/>{`${new Date(review.contractStartTime).toLocaleTimeString()}`}</ReviewCell>
             <ReviewCell>{`${new Date(review.contractEndTime).toLocaleDateString()}`}<br/>{`${new Date(review.contractEndTime).toLocaleTimeString()}`}</ReviewCell>
             <ReviewCell>{review.reviewStarPoint}</ReviewCell>

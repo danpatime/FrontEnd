@@ -13,7 +13,6 @@ export const ReviewProvider = ({ children }) => {
   const [filteredReviews, setFilteredReviews] = useState([]); // 필터링된 리뷰 상태
   const [myStores, setMyStores] = useState([]); // 가게 데이터
   const [employmentStatusList,setEmploymentStatusList]=useState([]); // 가게 체결 현황
-  const [curReviewId, setCurReviewId] = useState(100);
   const [isLoading, setIsLoading] = useState(true);
 
   // 가게 목록과 체결 현황 가져오기(사장만 가능)
@@ -187,7 +186,6 @@ export const ReviewProvider = ({ children }) => {
 
         if (completeResult) {
           fetchReviews();
-          setCurReviewId((prevId) => prevId + 1);
         } else {
           console.error("계약 종료 요청에서 오류 발생:", completeResult.data);
         }
@@ -213,7 +211,7 @@ export const ReviewProvider = ({ children }) => {
         reviewScore:updatedReview.reviewStarPoint,
         reviewContent:updatedReview.reviewContent,
       });
-
+      
       if (response) {
         await fetchReviews();
       }
@@ -267,7 +265,6 @@ export const ReviewProvider = ({ children }) => {
         reportReview,
         filteredReviews,
         employmentStatusList,
-        curReviewId,
         myStores,
         sortOption,
         setSortOption,
