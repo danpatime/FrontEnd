@@ -3,7 +3,6 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import request from '../api/request.ts';
 
-
 const UserInfoContext = createContext({} as any);
 
 export const UserInfoProvider = ({ children }: { children: ReactNode }) => {

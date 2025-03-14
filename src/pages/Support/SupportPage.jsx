@@ -72,5 +72,9 @@ const Content = styled.div`
   background-color: #ffffff;
   height: 100vh;
   padding: 20px 150px;
+<<<<<<< HEAD
+  border-top: 1px solid #DFDFDF;
+=======
   border-top: 1px solid #dfdfdf;
+>>>>>>> 902017f3a4e372c69393011f5a6028f1328ec487
 `;

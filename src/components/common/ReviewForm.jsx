@@ -6,17 +6,20 @@ import { useReviewInfo } from "../../contexts/useReviewInfo";
 
 const ReviewForm = ({ onClose, initialData }) => {
   const isEditing = initialData;
-  const [reviewId, setReviewId] = useState(Date.now());
+  const [workedAlbaList,setWorkedAlbaList]=useState([]); // 가게에 맞는 알바생 목록
   const [reviewStarPoint, setReviewStarPoint] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
-  //const [reviewCount, setReviewCount] = useState(1);
   const [contractStartTime, setContractStartTime] = useState("");
   const [contractEndTime, setContractEndTime] = useState("");
   const [selectedStore, setSelectedStore] = useState("");
   const [selectedStoreID, setSelectedStoreID] = useState("");
   const [selectedAlba, setSelectedAlba] = useState("");
-  const [selectedTag, setSelectedTag] = useState([]);
-  const [stores,setStores]=useState([]);
+  const [selectedAlbaName,setSelectedAlbaName]=useState("");
+  const [selectedAlbaID, setSelectedAlbaID] = useState("");
+  const [selectedcontractID,setSelectedContractID]=useState("");
+  const [hasAlerted, setHasAlerted] = useState(false); // 쓸 수 있는 리뷰가 없을 때 경고
+
+  /*const [selectedTag, setSelectedTag] = useState([]);
   const [reviewTag] = useState([
     "일을 잘해요", 
     "시간 엄수를 잘해요",
@@ -26,59 +29,144 @@ const ReviewForm = ({ onClose, initialData }) => {
     "꼼꼼해요",
     "신뢰가 가요", 
     "또 같이 일하고 싶어요"
-  ]);
+  ]);*/
 
-  const { addReview, editReview } = useReviewInfo();
-
-  useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        const response = await request.get("/api/v1/employer/businesses");  // 가게 목록 요청
-        setStores(response.data||[]);  // 받아온 데이터로 가게 목록 설정
-      } catch (error) {
-        console.error("가게 목록을 가져오는 데 실패했습니다.", error);
-        setStores([]);
-      }
-    };
-
-    fetchStores();  // 컴포넌트가 마운트될 때 가게 목록을 가져옵니다.
-  }, []);
+  const { employmentStatusList,myStores,addReview, editReview } = useReviewInfo();
+  const [reviewId, setReviewId] = useState(null);
 
   useEffect(() => {
-    if (initialData) {
-      setReviewId(initialData.reviewId || Date.now());
-      setReviewStarPoint(initialData.reviewStarPoint || 0); 
-      setReviewContent(initialData.reviewContent || ""); 
-      //setReviewCount(initialData.reviewCount || 1);
-      setContractStartTime(initialData.contractStartTime || ""); 
-      setContractEndTime(initialData.contractEndTime || "");
-      setSelectedStore(initialData.businessName || ""); 
-      setSelectedStoreID(initialData.businessId || ""); 
-      //setSelectedAlba(initialData.workerId || ""); 
-      //setSelectedTag(initialData.tags || []);
+    if (initialData) { // 리뷰를 수정하는 경우
+      setReviewId(initialData.reviewId);
+      setReviewStarPoint(initialData.reviewStarPoint); 
+      setReviewContent(initialData.reviewContent); 
+      setContractStartTime(initialData.contractStartTime); 
+      setContractEndTime(initialData.contractEndTime);
+      setSelectedStore(initialData.businessName); 
+      setSelectedStoreID(initialData.businessId); 
+      setSelectedAlbaName(initialData.employeeName);
+      setSelectedAlba(initialData.employeeNickname); 
+      setSelectedAlbaID(initialData.employeeId); 
     }
   }, [initialData]);
+ 
+  const handleStoreChange =  (e) => {
+    const storeId = e.target.value;
+    const storeName = myStores.find((store) => store.businessId === parseInt(storeId,10))?.businessName || "";
 
+    setSelectedStoreID(storeId);
+    setSelectedStore(storeName);
+    setSelectedAlbaName("");
+    setSelectedAlbaID(""); 
+    setWorkedAlbaList([]);
+    setHasAlerted(false);
+  };
+
+  // 가게에 맞는 알바생 목록 받아오기
+  const fetchAlbaList = async () => {
+    let moreDataToLoad = true;
+    let page = 1;
+    let allAlbaList = [];
+
+    try {
+      while (moreDataToLoad) {
+      const response = await request.get(
+        `/api/v1/review/available?businessId=${parseInt(selectedStoreID, 10)}&page=${page}`
+      );
+
+      if (response.length > 0) {
+        allAlbaList = [...allAlbaList, ...response]; // 받은 데이터를 모두 합쳐서 저장
+        page++; // 페이지 번호 증가
+      } else {
+        moreDataToLoad = false; // 더 이상 받을 데이터가 없으면 종료
+      }
+      }
+  
+     // 알바생 목록 갱신
+     setWorkedAlbaList(allAlbaList);
+  
+
+     if (allAlbaList.length === 0 && !hasAlerted) {
+       alert("현재 선택하신 가게에서 작성할 수 있는 리뷰가 없습니다.");
+       setHasAlerted(true);
+      }
+    } catch (error) {
+      console.error("알바생 목록을 가져오는 데 실패했습니다.", error);
+      setWorkedAlbaList([]);
+    }
+  };
+  
+
+  useEffect(() => {
+    if(selectedStoreID && !isEditing) {
+       fetchAlbaList();
+    }
+  }, [selectedStoreID]);
+
+  const handleAlbaChange = async (e) => {
+    const albaId = e.target.value;
+    const albaContractId = workedAlbaList.find((alba) => alba.employeeId === parseInt(albaId, 10))?.contractId || "";
+    const albaName = workedAlbaList.find((alba) => alba.employeeId === parseInt(albaId, 10) && alba.contractId === albaContractId)?.employeeName || "";
+    
+    setSelectedAlbaID(albaId);
+    setSelectedAlba(albaName);
+    setSelectedContractID(albaContractId);
+
+    // employmentStatusList에서 선택된 알바의 근무 정보 가져오기
+    const matchingEmployment = employmentStatusList.find(
+      (employment) =>
+        employment.businessId === parseInt(selectedStoreID, 10) && employment.contractId === parseInt(albaContractId,10)
+    );
+  
+    if (matchingEmployment) {
+      setContractStartTime(matchingEmployment.workTimeStart || "");
+      setContractEndTime(matchingEmployment.workTimeEnd || "");
+    } else {
+      setContractStartTime(""); // 정보가 없을 경우 초기화
+      setContractEndTime("");
+    }
+  };
+
+
+  /*const toggleTagSelection = (tag) => {
+    if (selectedTag.includes(tag)) {
+      setSelectedTag((prev) => prev.filter((t) => t !== tag));
+    } else {
+      setSelectedTag((prev) => [...prev, tag]);
+    }
+  };*/
+  
   const handleSubmit = () => {
+
+    const matchingEmployment = employmentStatusList.find(
+      (employment) =>
+        employment.businessId === parseInt(selectedStoreID, 10) &&
+        employment.contractId === selectedcontractID
+    );
+
     const newReview = {
-      reviewId: reviewId,
+      contractId:matchingEmployment?.contractId,
       businessName: selectedStore,
       businessId: selectedStoreID, 
-      //workerId: selectedAlba,
+      employeeNickname: selectedAlba,
+      employeeId: selectedAlbaID,
       reviewStarPoint: reviewStarPoint,
-      //reviewCount: reviewCount,
       contractStartTime: contractStartTime,
       contractEndTime: contractEndTime,
       reviewContent: reviewContent, 
-      //tags: selectedTag,
     };
 
-    //if (!selectedStore || !selectedAlba || !reviewStarPoint || !reviewContent)
-    if (!reviewStarPoint || !reviewContent){
+    const updatedReview = {
+      reviewId: reviewId,
+      reviewStarPoint: reviewStarPoint,
+      reviewContent: reviewContent,
+  };
+
+
+    if (!selectedStoreID || !selectedAlbaID || !reviewStarPoint || !reviewContent){
       let missingFields = [];
       
-      //if (!selectedStore) missingFields.push("가게");
-      //if (!selectedAlba) missingFields.push("알바생");
+      if (!selectedStoreID) missingFields.push("가게");
+      if (!selectedAlbaID) missingFields.push("알바생");
       if (!reviewStarPoint) missingFields.push("평점");
       if (!reviewContent) missingFields.push("한줄평");
   
@@ -87,28 +175,14 @@ const ReviewForm = ({ onClose, initialData }) => {
     }
 
     if (initialData) {
-      editReview(newReview);
+      editReview(updatedReview);
     } else {
       addReview(newReview);
     }
 
     onClose();
   };
-
-  const toggleTagSelection = (tag) => {
-    if (selectedTag.includes(tag)) {
-      setSelectedTag((prev) => prev.filter((t) => t !== tag));
-    } else {
-      setSelectedTag((prev) => [...prev, tag]);
-    }
-  };
-
-  const handleStoreChange = (e) => {
-    const store = e.target.value;
-    setSelectedStore(store);
-    setSelectedAlba(""); // 가게 변경 시 알바 리스트 새로 불러오기
-  };
-
+  
   return (
     <Overlay>
       <FormContainer>
@@ -119,9 +193,9 @@ const ReviewForm = ({ onClose, initialData }) => {
         <FieldContainer>
           <Field>
             <Label>가게</Label>
-            <Select value={selectedStore} onChange={handleStoreChange} disabled={isEditing}>
+            <Select value={selectedStoreID} onChange={handleStoreChange} disabled={isEditing}>
               <option value="" disabled>선택하세요</option>
-              {stores.map((store) => (
+              {myStores?.map((store) => (
                 <option key={store.businessId} value={store.businessId}>
                   {store.businessName}
                 </option>
@@ -132,21 +206,38 @@ const ReviewForm = ({ onClose, initialData }) => {
           <Field>
             <Label>알바생</Label>
             <Select
-              value={selectedAlba}
-              onChange={(e) => setSelectedAlba(e.target.value)}
-              disabled={!selectedStore || isEditing}
+              value={selectedAlbaID} onChange={handleAlbaChange}
+              disabled={!selectedStoreID || isEditing}
             >
-              <option value="" disabled>선택하세요</option>
-              {selectedStore &&
-                stores[selectedStore] &&
-                stores[selectedStore].map((alba) => (
-                  <option key={alba} value={alba}>
-                    {alba}
+            <option value="" disabled>선택하세요</option>
+            {isEditing ? (
+              <option value={selectedAlbaID} disabled selected>
+              {selectedAlbaName} ({selectedAlba})
+              </option>
+            ) : (
+              selectedStoreID && workedAlbaList && workedAlbaList.length > 0 ? (
+                workedAlbaList.map((list) => (
+                  <option key={list.employeeId} value={list.employeeId}>
+                    {list.employeeName} ({list.employeeNickname})
                   </option>
-                ))}
+                ))
+              ) : (
+                <option value="" disabled>X</option>
+              )
+            )}
             </Select>
           </Field>
         </FieldContainer>
+
+        <Field>
+          <Label>근무 시작 시각</Label>
+          <ScheduleArea>{`${new Date(contractStartTime).toLocaleDateString()} ${new Date(contractStartTime).toLocaleTimeString()}`}</ScheduleArea>
+        </Field>
+
+        <Field>
+          <Label>근무 종료 시각</Label>
+          <ScheduleArea>{`${new Date(contractEndTime).toLocaleDateString()} ${new Date(contractEndTime).toLocaleTimeString()}`}</ScheduleArea>
+        </Field>
 
         <Field>
           <Label>알바 후기 별점</Label>
@@ -162,7 +253,7 @@ const ReviewForm = ({ onClose, initialData }) => {
           />
         </Field>
 
-        <Field>
+{/*        <Field>
           <Label>평가 태그</Label>
           <TagContainer>
             {reviewTag.map((tag) => (
@@ -176,6 +267,7 @@ const ReviewForm = ({ onClose, initialData }) => {
             ))}
           </TagContainer>
         </Field>
+*/}
 
         <SubmitButton onClick={handleSubmit}>제출</SubmitButton>
       </FormContainer>
@@ -223,8 +315,13 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 15pt;
+  font-size: 17pt;
   margin: 0;
+`;
+
+const ScheduleArea=styled.p`
+  font-size:12pt;
+  margin-left:10px;
 `;
 
 const FieldContainer = styled.div`
@@ -241,6 +338,7 @@ const Field = styled.div`
 `;
 
 const Label = styled.label`
+  font-size:11pt;
   margin: 10px; 
   font-weight: bold;
 `;
@@ -260,6 +358,8 @@ const Textarea = styled.textarea`
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin-bottom:30px;
+  resize:none;
 `;
 
 const SubmitButton = styled.button`
@@ -278,7 +378,7 @@ const SubmitButton = styled.button`
   }
 `;
 
-const TagContainer = styled.div`
+/*const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -300,3 +400,4 @@ const Tag = styled.div`
       props.isSelected ? "rgb(140, 96, 88)" : "rgb(230, 230, 230)"};
   }
 `;
+*/

@@ -1,7 +1,8 @@
-import { Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import AlbaSearchPage from './pages/AlbaSearchPage';
-import MyPage from './pages/MyPage/MyPage';
+import { Routes, Route } from "react-router-dom";
+import React from 'react';
+import HomePage from "./pages/HomePage";
+import AlbaSearchPage from "./pages/AlbaSearchPage";
+import MyPage from "./pages/MyPage/MyPage";
 import MyStatusPage from './pages/MyPage/MyStatusPage';
 import SignUpPage from './pages/SignUpPage';
 import ContactDetailPage from './pages/MyPage/ContactDetailPage';
@@ -15,7 +16,6 @@ import ResumeForm from './pages/MyResume/ResumeForm';
 import SavedWorkers from './pages/MyPage/SavedWorkers';
 import AlbaReviewPage from './pages/AlbaReviewPage';
 import MyResume from './pages/MyResume/MyResume';
-import ResumeForm from './pages/MyResume/ResumeForm';
 import MyStoreForm from './pages/MyPage/MyStore/MyStoreForm';
 
 const AppRouter = () => {

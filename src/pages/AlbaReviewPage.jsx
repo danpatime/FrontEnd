@@ -8,20 +8,24 @@ import { useNavigate } from "react-router-dom";
 const AlbaReviewPage = () => {
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열림/닫힘 상태
   const [editingReview, setEditingReview] = useState(null); // 수정할 리뷰 데이터
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
-  const {user,isAuthenticated}=useUserInfo(); // 유저 정보가 사장인 경우에만 페이지를 렌더링링
+  const {user,isAuthenticated}=useUserInfo(); // 유저 정보가 사장인 경우에만 페이지를 렌더링
+  const [currentPage, setCurrentPage] = useState(1);
   const role=user?.role; // 사용자 타입
   const navigate=useNavigate();
 
   // Context에서 상태와 함수 가져오기
-  const { reviews, filteredReviews, sortOption, setSortOption, searchQuery, setSearchQuery } = useReviewInfo();
+  const { isLoading,reviews, sortOption, setSortOption, searchQuery, setSearchQuery,filteredReviews } = useReviewInfo();
   
   const reviewsPerPage = 15; // 한 페이지에 보여줄 리뷰 수
-  const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
   const currentReviews = filteredReviews.slice(
     (currentPage - 1) * reviewsPerPage,
     currentPage * reviewsPerPage
   );
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   useEffect(()=>{
     if(!isAuthenticated){
@@ -74,8 +78,8 @@ const AlbaReviewPage = () => {
         </HeaderSection>
         <TopBar>
           <InfoSection>
-            <span>리뷰 수: {filteredReviews.length}개</span>
-            <span>단팥 수: {new Set(reviews.map((r) => r.albaID)).size}명</span>
+            <span>리뷰 수: {reviews.length}개</span>
+            <span>단팥 수: {new Set(reviews.map((r) => r.employeeId)).size}명</span>
           </InfoSection>
           <FilterSection>
             <SearchInput
@@ -85,40 +89,46 @@ const AlbaReviewPage = () => {
               onChange={handleSearch}
             />
             <SortSelect value={sortOption} onChange={handleSortChange}>
-              <option value="latest">최신순</option>
-              <option value="star">별점순</option>
-              <option value="reviewCount">리뷰 개수순</option>
+              <option value="latest">최신계약순</option>
+              <option value="starDesc">별점 내림차순</option>
+              <option value="starAsc">별점 오름차순</option>
             </SortSelect>
           </FilterSection>
         </TopBar>
+        {role&&isLoading ? (
+      <p>리뷰를 불러오는 중...</p>  // 로딩 메시지
+      ) : (
+      <>
         <ReviewList>
           <ReviewHeader>
             <HeaderCell>번호</HeaderCell>
             <HeaderCell>가게 이름</HeaderCell>
             <HeaderCell>알바생 이름(닉네임)</HeaderCell>
-            <HeaderCell>후기 수</HeaderCell>
+            <HeaderCell>근무 시작 시각</HeaderCell>
+            <HeaderCell>근무 종료 시각</HeaderCell>
             <HeaderCell>별점</HeaderCell>
-            <HeaderCell>후기 작성일</HeaderCell>
           </ReviewHeader>
           {currentReviews.map((review, index) => (
-            <ReviewItem key={review.reviewId} onClick={() => openModalForEdit(review)}>
+            <ReviewItem key={`${review.reviewId}-${index+1}`} onClick={() => openModalForEdit(review)}>
             <ReviewCell>{index + 1}</ReviewCell>
             <ReviewCell>{review.businessName}</ReviewCell>
-            <ReviewCell>추가</ReviewCell>
-            <ReviewCell>{review.reviewContent.length}</ReviewCell>
+            <ReviewCell>{review.employeeName} ({review.employeeNickname})</ReviewCell>
+            <ReviewCell>{`${new Date(review.contractStartTime).toLocaleDateString()}`}<br/>{`${new Date(review.contractStartTime).toLocaleTimeString()}`}</ReviewCell>
+            <ReviewCell>{`${new Date(review.contractEndTime).toLocaleDateString()}`}<br/>{`${new Date(review.contractEndTime).toLocaleTimeString()}`}</ReviewCell>
             <ReviewCell>{review.reviewStarPoint}</ReviewCell>
-            <ReviewCell>{new Date(review.contractStartTime).toLocaleDateString()}</ReviewCell>
           </ReviewItem>
 
           ))}
         </ReviewList>
+        </>
+      )}
         <AddReviewButton onClick={openModal}>후기 작성</AddReviewButton>
         <Pagination>
           {Array.from({ length: totalPages }, (_, index) => (
             <PageNumber
               key={index + 1}
-              onClick={() => setCurrentPage(index + 1)}
-              active={currentPage === index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              active={currentPage === index + 1 ? "active":""}
             >
               {index + 1}
             </PageNumber>
@@ -128,7 +138,7 @@ const AlbaReviewPage = () => {
           <Modal>
             <ReviewForm
               onClose={closeModal}
-              initialData={editingReview} // 부모 페이지에서 받은 데이터
+              initialData={editingReview}
             />
           </Modal>
         )}
