@@ -1,43 +1,85 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import ChatBubble from "../components/chat/ChatBubble";
-import chatData from "../assets/data/chatDummy.json";
-import { FaChevronLeft } from "react-icons/fa";
-import { ReactComponent as NewBadge } from "../assets/icons/new_badge.svg";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import ChatBubble from '../components/chat/ChatBubble';
+import { FaChevronLeft } from 'react-icons/fa';
+import { ReactComponent as NewBadge } from '../assets/icons/new_badge.svg';
+import request from '../api/request.ts';
 
 const ChattingPage = () => {
-  const rooms = chatData.rooms;
+  // const ws = useRef(null); // 웹소켓 인스턴스 저장
 
-  const [selectedRoom, setSelectedRoom] = useState(rooms[0].id);
-  const [chatHistory, setChatHistory] = useState(rooms[0].chatHistory);
-  const [currentChat, setCurrentChat] = useState("");
+  const [roomData, setRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(roomData[0]?.roomId);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [currentChat, setCurrentChat] = useState('');
   const [isRoomListOpen, setIsRoomListOpen] = useState(true);
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const summaryResponse = await request.get(`/chat/summaries/${userId}`);
+        console.log('채팅방 목록:', summaryResponse);
+
+        setRooms(summaryResponse.chatSummaries);
+
+        if (summaryResponse.chatSummaries.length > 0) {
+          const firstRoomId = summaryResponse.chatSummaries[0].roomId;
+          setSelectedRoom(firstRoomId);
+        }
+      } catch (error) {
+        console.error('채팅방 목록을 가져오는 데 실패했습니다.', error);
+      }
+    };
+
+    fetchReviews();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      if (!selectedRoom) return;
+
+      try {
+        const chatsResponse = await request.get(
+          `/chat/room/${selectedRoom}/chats`,
+        );
+        console.log(`채팅 내역 (${selectedRoom}번 방):`, chatsResponse);
+        setChatHistory(chatsResponse);
+      } catch (error) {
+        console.error('채팅 내역을 가져오는 데 실패했습니다.', error);
+      }
+    };
+
+    fetchChatHistory();
+  }, [selectedRoom]);
 
   const handleInputChange = (e) => {
     setCurrentChat(e.target.value);
   };
   const handleKeyUp = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSend();
     }
   };
 
   const handleSend = () => {
-    if (currentChat.trim() === "") return;
+    if (currentChat.trim() === '') return;
 
     const newMessage = {
       id: chatHistory.length + 1,
-      sender: "Me",
+      sender: 'Me',
       message: currentChat,
       isSender: true,
     };
 
     setChatHistory([...chatHistory, newMessage]);
-    setCurrentChat("");
+    setCurrentChat('');
   };
 
   const handleRoomClick = (roomId) => {
-    const selectedRoomData = rooms.find((room) => room.id === roomId);
+    const selectedRoomData = roomData?.find((room) => room.roomId === roomId);
     setSelectedRoom(roomId);
     setChatHistory(selectedRoomData.chatHistory);
   };
@@ -52,17 +94,19 @@ const ChattingPage = () => {
         <RoomListContainer isRoomListOpen={isRoomListOpen}>
           <h3>채팅방 목록</h3>
           {isRoomListOpen &&
-            rooms.map((room) => (
+            roomData?.map((room) => (
               <RoomItem
-                key={room.id}
-                onClick={() => handleRoomClick(room.id)}
-                isSelected={room.id === selectedRoom}
+                key={room.roomId}
+                onClick={() => handleRoomClick(room.roomId)}
+                isSelected={room.roomId === selectedRoom}
               >
                 <TitleWrapper>
                   <p>{room.name}</p>
                   {room.isNew && <NewBadge>New</NewBadge>}
                 </TitleWrapper>
-                <span>{"최근 채팅 내용을 표시합니다."}</span>
+                <span>
+                  {room.lastMessageContent || '최근 채팅 내용을 표시합니다.'}
+                </span>
               </RoomItem>
             ))}
         </RoomListContainer>
@@ -70,11 +114,11 @@ const ChattingPage = () => {
       </RoomList>
       <ChatArea>
         <ChatContainer>
-          {chatHistory.map((msg) => (
+          {chatHistory?.map((msg) => (
             <ChatBubble
               key={msg.id}
-              sender={msg.sender}
-              message={msg.message}
+              sender={msg.senderId}
+              message={msg.content}
               isSender={msg.isSender}
             />
           ))}
@@ -94,7 +138,6 @@ const ChattingPage = () => {
   );
 };
 
-// 스타일 컴포넌트
 const ChatLayout = styled.div`
   display: flex;
   background-color: #f9f9f9;
@@ -105,7 +148,7 @@ const ChatLayout = styled.div`
 
 const RoomList = styled.div`
   display: flex;
-  width: ${({ isRoomListOpen }) => (isRoomListOpen ? "25vw" : "40px")};
+  width: ${({ isRoomListOpen }) => (isRoomListOpen ? '25vw' : '40px')};
   overflow: hidden;
   transition: width 0.5s ease;
   border: 1px solid #ccc;
@@ -115,7 +158,7 @@ const RoomList = styled.div`
 `;
 const ArrowIcon = styled(FaChevronLeft)`
   transform: ${({ isRoomListOpen }) =>
-    isRoomListOpen ? "rotate(0deg)" : "rotate(180deg)"};
+    isRoomListOpen ? 'rotate(0deg)' : 'rotate(180deg)'};
   transition: transform 0.5s ease;
   cursor: pointer;
   align-self: flex-start;
@@ -124,7 +167,7 @@ const ArrowIcon = styled(FaChevronLeft)`
 
 const RoomListContainer = styled.div`
   width: 100%;
-  display: ${({ isRoomListOpen }) => (isRoomListOpen ? "block" : "none")};
+  display: ${({ isRoomListOpen }) => (isRoomListOpen ? 'block' : 'none')};
   transition: 0.5s ease-out;
   h3 {
     color: #000;
@@ -141,7 +184,7 @@ const RoomItem = styled.div`
   padding: 12px;
   border-bottom: 1px solid #f0f0f0;
   background-color: ${({ isSelected }) =>
-    isSelected ? "var(--primary-color-20)" : "transparent"};
+    isSelected ? 'var(--primary-color-20)' : 'transparent'};
   &:hover {
     background-color: #f0f0f0;
   }
