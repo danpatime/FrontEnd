@@ -1,18 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ChatBubble from '../components/chat/ChatBubble';
 import { FaChevronLeft } from 'react-icons/fa';
 import { ReactComponent as NewBadge } from '../assets/icons/new_badge.svg';
 import request from '../api/request.ts';
+import { Client } from '@stomp/stompjs';
 
 const ChattingPage = () => {
-  // const ws = useRef(null); // 웹소켓 인스턴스 저장
-
   const [roomData, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(roomData[0]?.roomId);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChat, setCurrentChat] = useState('');
   const [isRoomListOpen, setIsRoomListOpen] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [client, setClient] = useState(null);
 
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.id;
@@ -55,6 +56,48 @@ const ChattingPage = () => {
     fetchChatHistory();
   }, [selectedRoom]);
 
+  useEffect(() => {
+    // 웹소켓 클라이언트 초기화
+    const stompClient = new Client({
+      brokerURL: process.env.REACT_APP_SOCKET_URL,
+      connectHeaders: {
+        // STOMP 연결 헤더 설정
+        Authorization: `Bearer ${localStorage.getItem('token')}`, // 필요한 경우 토큰을 설정
+      },
+      debug: (str) => {
+        console.log(str); // 디버그 메시지 출력
+      },
+      onConnect: () => {
+        console.log('STOMP 서버에 연결됨');
+        setIsConnected(true);
+
+        // 메시지 수신을 위한 구독
+        stompClient.subscribe(`/room/${selectedRoom}`, (message) => {
+          const messageData = JSON.parse(message.body);
+          setChatHistory((prevChatHistory) => [
+            ...prevChatHistory,
+            messageData,
+          ]);
+        });
+      },
+      onDisconnect: () => {
+        console.log('STOMP 서버 연결 끊김');
+        setIsConnected(false);
+      },
+      onStompError: (frame) => {
+        console.error('STOMP 에러', frame);
+      },
+    });
+
+    stompClient.activate();
+    setClient(stompClient);
+
+    // 컴포넌트 언마운트 시 클라이언트 비활성화
+    return () => {
+      stompClient.deactivate();
+    };
+  }, []);
+
   const handleInputChange = (e) => {
     setCurrentChat(e.target.value);
   };
@@ -64,17 +107,24 @@ const ChattingPage = () => {
     }
   };
 
+  // 메시지 전송 함수
   const handleSend = () => {
-    if (currentChat.trim() === '') return;
+    if (currentChat.trim() === '' || !isConnected) return;
 
-    const newMessage = {
-      id: chatHistory.length + 1,
-      sender: 'Me',
-      message: currentChat,
-      isSender: true,
+    const message = {
+      roomId: selectedRoom,
+      senderId: userId,
+      receiverId: 2, // 수신자 ID
+      content: currentChat,
     };
 
-    setChatHistory([...chatHistory, newMessage]);
+    if (client) {
+      client.publish({
+        destination: '/chat/send', // 메시지 전송
+        body: JSON.stringify(message), // 메시지 내용
+      });
+    }
+
     setCurrentChat('');
   };
 
