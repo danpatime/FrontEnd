@@ -16,6 +16,6 @@ const Main = styled.main`
   padding-top: 75.5px; //헤더 높이
   padding-bottom: 30px;
   background-color: var(--gray_bg);
-  min-height: calc(100vh - 75.5px); 
-`
+  min-height: 100vh;
+`;
 export default Layout;

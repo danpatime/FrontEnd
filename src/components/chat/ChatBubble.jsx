@@ -1,11 +1,13 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
-const ChatBubble = ({ message, sender, isSender }) => {
+const ChatBubble = ({ message, userId }) => {
+  const isMine = message.senderId == userId;
+
   return (
-    <BubbleContainer isSender={isSender}>
-      {!isSender && <SenderName>{sender}</SenderName>}
-      <Message isSender={isSender}>{message}</Message>
+    <BubbleContainer isMine={isMine}>
+      {!isMine && <SenderName>{message.senderId}</SenderName>}
+      <Message isMine={isMine}>{message.content}</Message>
     </BubbleContainer>
   );
 };
@@ -19,7 +21,7 @@ const BubbleContainer = styled.div`
   line-height: 1.5;
   display: flex;
   flex-direction: column;
-  align-self: ${(props) => (props.isSender ? "flex-end" : "flex-start")};
+  align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 `;
 
 const SenderName = styled.div`
@@ -30,11 +32,9 @@ const SenderName = styled.div`
 `;
 
 const Message = styled.div`
-  color: #333333;
   background-color: ${(props) =>
-    props.isSender ? "var(--primary-color-dark)" : "var(--gray_light)"};
-  color: ${(props) =>
-    props.isSender ? "white" : "black"};
+    props.isMine ? 'var(--primary-color-dark)' : 'var(--gray_light)'};
+  color: ${(props) => (props.isMine ? 'white' : 'black')};
   padding: 10px;
   border-radius: 10px;
   margin: 0 8px;
