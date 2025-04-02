@@ -46,6 +46,10 @@ function LoginModal({ onClose }) {
     }
   };
 
+  const handleSocialLogin = (provider) => {
+    window.location.href = `https://www.danpat.store/oauth2/authorization/${provider}`;
+  };
+
   return (
       <Modal onClose={onClose} title="로그인">
         <UserType>
@@ -100,8 +104,8 @@ function LoginModal({ onClose }) {
               <div></div>
             </Guide>
             <div id="sns-button-section">
-              <NaverButton id="naver" />
-              <KakaoButton id="kakao" />
+              <NaverButton id="naver" onClick={() => handleSocialLogin("naver")} />
+              <KakaoButton id="kakao" onClick={() => handleSocialLogin("kakao")} />
             </div>
           </SimpleLogin>
         )}
