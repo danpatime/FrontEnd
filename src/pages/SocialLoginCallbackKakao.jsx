@@ -38,7 +38,7 @@ const SocialLoginCallbackKakao = () => {
       } catch (error) {
         console.error("소셜 로그인 처리 중 오류 발생:", error);
         alert("로그인 중 오류가 발생했습니다.");
-        navigate("/login");
+        navigate("/");
       }
     };
 
