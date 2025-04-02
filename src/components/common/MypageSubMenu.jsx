@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -12,7 +12,10 @@ import { BsBookmarkFill } from "react-icons/bs";
 
 const MypageSubMenu = ({ userType }) => {
   const location = useLocation(); // 현재 경로 가져오기
+  const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState(null);
+
+  
 
   // 알바생과 사장님의 공통 메뉴 항목
   const commonMenu = [
@@ -43,8 +46,12 @@ const MypageSubMenu = ({ userType }) => {
     const activeItem = menuItems.find((item) => item.path === currentPath);
     if (activeItem) {
       setActiveMenu(activeItem.name);
+    } else {
+      const defaultMenu = menuItems[0]; // 첫 번째 메뉴를 기본값으로
+      setActiveMenu(defaultMenu.name);
+      navigate(defaultMenu.path, { replace: true });
     }
-  }, [location.pathname, menuItems]);
+  }, [location.pathname, menuItems, navigate]);
 
 
   // 메뉴 항목 클릭 시 activeMenu 상태 업데이트
