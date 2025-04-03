@@ -18,6 +18,10 @@ function SignUpModal({ onClose }) {
     onClose();
   };
 
+  const handleSocialSignUp = (provider) => {
+    window.location.href = `https://www.danpat.store/oauth2/authorization/${provider}`;
+  };
+
   return (
       <Modal onClose={onClose} title="회원가입" width="600px">
         <UserType>
@@ -34,15 +38,15 @@ function SignUpModal({ onClose }) {
             </div>
 
             <div id="sns-signup">
-              <SNSSignUpButton>
-                <SiNaver size={10}/>
-                네이버
-              </SNSSignUpButton>
-              <div id="line"></div>
-              <SNSSignUpButton>
-                <RiKakaoTalkFill size={14}/>
-                카카오톡
-              </SNSSignUpButton>
+            <SNSSignUpButton onClick={() => handleSocialSignUp("naver")}>
+              <SiNaver size={10} />
+              네이버
+            </SNSSignUpButton>
+            <div id="line"></div>
+            <SNSSignUpButton onClick={() => handleSocialSignUp("kakao")}>
+              <RiKakaoTalkFill size={14} />
+              카카오톡
+            </SNSSignUpButton>
             </div>
           </TypeOption>
           <TypeOption onClick={() => handleSignUp('owner')}>
