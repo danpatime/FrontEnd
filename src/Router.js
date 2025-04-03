@@ -17,8 +17,7 @@ import SavedWorkers from './pages/MyPage/SavedWorkers';
 import AlbaReviewPage from './pages/AlbaReviewPage';
 import MyResume from './pages/MyResume/MyResume';
 import MyStoreForm from './pages/MyPage/MyStore/MyStoreForm';
-import SocialLoginCallbackNaver from "./pages/SocialLoginCallbackNaver";
-import SocialLoginCallbackKakao from "./pages/SocialLoginCallbackKakao";
+import SocialLoginCallback from "./pages/SocialLoginCallback";
 
 const AppRouter = () => {
   return (
@@ -42,8 +41,7 @@ const AppRouter = () => {
       <Route path="/mypage/saved-workers" element={<SavedWorkers />} />
       <Route path="/support" element={<SupportPage />} />
       <Route path="/mypage/mystore-form" element={<MyStoreForm />} />
-      <Route path="/oauth2/redirect/naver" element={<SocialLoginCallbackNaver />} />
-      <Route path="/oauth2/callback/kakao" element={<SocialLoginCallbackKakao />} />
+      <Route path="/oauth2/callback" element={<SocialLoginCallback />} />
     </Routes>
   );
 };
