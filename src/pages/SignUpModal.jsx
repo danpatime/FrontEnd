@@ -25,14 +25,14 @@ function SignUpModal({ onClose }) {
   return (
       <Modal onClose={onClose} title="회원가입" width="600px">
         <UserType>
-          <TypeOption onClick={() => handleSignUp('worker')}>
+          <TypeOption>
             <div class="option-info">
               <img id="worker" src={IcWorker} alt="worker" />
               <span>개인 회원</span>
               <p>원하는 시간, 딱 맞는 알바,<br/>지금 시작해보세요!</p>
             </div>
 
-            <div class="signup-button">
+            <div class="signup-button"  onClick={() => handleSignUp('worker')}>
               <p>개인회원 가입하기</p>
               <IoIosArrowForward/>
             </div>
