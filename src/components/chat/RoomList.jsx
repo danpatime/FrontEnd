@@ -2,6 +2,7 @@ import React from 'react';
 import { FaChevronLeft } from 'react-icons/fa';
 import { ReactComponent as NewBadge } from '../../assets/icons/new_badge.svg';
 import styled from 'styled-components';
+
 const RoomList = ({
   rooms,
   selectedRoom,

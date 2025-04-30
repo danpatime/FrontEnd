@@ -26,6 +26,7 @@ const ChattingPage = () => {
       try {
         const response = await request.get(`/chat/summaries/${userId}`);
         setRooms(response.chatSummaries);
+        console.log(response);
         if (response.chatSummaries.length > 0) {
           setSelectedRoomId(response.chatSummaries[0].roomId);
         }
@@ -101,7 +102,7 @@ const ChatLayout = styled.div`
   background-color: #f9f9f9;
   gap: 20px;
   padding: 20px 20px 20px 0px;
-  height: 100%;
+  height: 100vh-75.5px;
 `;
 
 const ChatArea = styled.div`

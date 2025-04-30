@@ -6,15 +6,6 @@ const useChatting = (roomId, userId) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [client, setClient] = useState(null);
-
-  const readMsg = async (messageId) => {
-    try {
-      await request.post('/chat/read', { messageId });
-    } catch (error) {
-      console.error('메시지 읽음 처리 실패:', error);
-    }
-  };
-
   useEffect(() => {
     const fetchChatHistory = async () => {
       if (!roomId) return;
@@ -29,6 +20,28 @@ const useChatting = (roomId, userId) => {
 
     fetchChatHistory();
   }, [roomId, userId]);
+
+  const readMsg = (roomId, receiverId) => {
+    if (client) {
+      client.publish({
+        destination: '/chat/read',
+        body: JSON.stringify({ roomId, receiverId }),
+      });
+    }
+  };
+  const sendMessage = (message) => {
+    if (client) {
+      const updatedMessage = {
+        ...message,
+        senderId: userId,
+      };
+
+      client.publish({
+        destination: '/chat/send',
+        body: JSON.stringify(updatedMessage),
+      });
+    }
+  };
 
   useEffect(() => {
     if (!roomId || !userId) return;
@@ -49,7 +62,7 @@ const useChatting = (roomId, userId) => {
           ]);
           //읽음처리
           if (messageData.senderId !== userId) {
-            await readMsg(messageData.id);
+            await readMsg(roomId, receiverId);
           }
         });
       },
@@ -68,20 +81,6 @@ const useChatting = (roomId, userId) => {
       stompClient.deactivate();
     };
   }, [roomId, userId]);
-
-  const sendMessage = (message) => {
-    if (client) {
-      const updatedMessage = {
-        ...message,
-        senderId: userId,
-      };
-
-      client.publish({
-        destination: '/chat/send',
-        body: JSON.stringify(updatedMessage),
-      });
-    }
-  };
 
   return { chatHistory, isConnected, sendMessage };
 };

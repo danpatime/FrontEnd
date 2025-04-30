@@ -5,23 +5,27 @@ const ChatBubble = ({ message, userId }) => {
   const isMine = message.senderId == userId;
 
   return (
-    <BubbleContainer isMine={isMine}>
-      {!isMine && <SenderName>{message.senderId}</SenderName>}
-      <Message isMine={isMine}>{message.content}</Message>
-    </BubbleContainer>
+    <BubbleWrapper isMine={isMine}>
+      {isMine && !message.isRead && <ReadIcon>안 읽음</ReadIcon>}
+      <BubbleContainer isMine={isMine}>
+        {!isMine && <SenderName>{message.senderId}</SenderName>}
+        <Message isMine={isMine}>{message.content}</Message>
+      </BubbleContainer>
+    </BubbleWrapper>
   );
 };
 
 export default ChatBubble;
-
-const BubbleContainer = styled.div`
+const BubbleWrapper = styled.div`
   max-width: 60%;
+  display: flex;
+  align-items: end;
+  align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
   margin: 2px;
+`;
+const BubbleContainer = styled.div`
   font-size: 14px;
   line-height: 1.5;
-  display: flex;
-  flex-direction: column;
-  align-self: ${(props) => (props.isMine ? 'flex-end' : 'flex-start')};
 `;
 
 const SenderName = styled.div`
@@ -38,4 +42,9 @@ const Message = styled.div`
   padding: 10px;
   border-radius: 10px;
   margin: 0 8px;
+`;
+
+const ReadIcon = styled.p`
+  font-size: 0.7rem;
+  color: #9f9f9f;
 `;
