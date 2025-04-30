@@ -17,6 +17,7 @@ import SavedWorkers from './pages/MyPage/SavedWorkers';
 import AlbaReviewPage from './pages/AlbaReviewPage';
 import MyResume from './pages/MyResume/MyResume';
 import MyStoreForm from './pages/MyPage/MyStore/MyStoreForm';
+import SocialLoginCallback from "./pages/SocialLoginCallback";
 
 const AppRouter = () => {
   return (
@@ -40,6 +41,7 @@ const AppRouter = () => {
       <Route path="/mypage/saved-workers" element={<SavedWorkers />} />
       <Route path="/support" element={<SupportPage />} />
       <Route path="/mypage/mystore-form" element={<MyStoreForm />} />
+      <Route path="/oauth2/callback" element={<SocialLoginCallback />} />
     </Routes>
   );
 };

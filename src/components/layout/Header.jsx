@@ -60,7 +60,17 @@ function Header() {
         <NavItem to="/alba/search">알바찾기</NavItem>
         <NavItem to="/alba/review">알바후기</NavItem>
         <NavItem to="/support">고객지원</NavItem>
-        <NavItem to="/mypage">마이페이지</NavItem>
+        <NavItem 
+          to={isAuthenticated ? "/mypage" : "#"} 
+          onClick={(e) => {
+            if (!isAuthenticated) {
+              e.preventDefault();  // ✅ 기본 이동 동작 막기
+              alert("로그인 후 이용해주세요.");
+            }
+          }}
+        >
+          마이페이지
+        </NavItem>
       </NavMenu>
       {isAuthenticated ? (
         <ProfileSection>

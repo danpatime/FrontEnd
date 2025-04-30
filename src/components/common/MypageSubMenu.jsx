@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -12,7 +12,10 @@ import { BsBookmarkFill } from "react-icons/bs";
 
 const MypageSubMenu = ({ userType }) => {
   const location = useLocation(); // 현재 경로 가져오기
+  const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState(null);
+
+  
 
   // 알바생과 사장님의 공통 메뉴 항목
   const commonMenu = [
@@ -34,17 +37,24 @@ const MypageSubMenu = ({ userType }) => {
     ...commonMenu
   ];
 
-  // 사용자 타입에 맞는 메뉴 선택
-  const menuItems = userType === 'worker' ? workerMenu : ownerMenu;
-
-  // 초기 activeMenu를 현재 경로로 설정
+  const menuItems = useMemo(() => {
+    if (!userType) return [];
+    return userType === "worker" ? workerMenu : ownerMenu;
+  }, [userType]);
+  
   useEffect(() => {
+    if (!userType || menuItems.length === 0) return;
+  
     const currentPath = location.pathname;
     const activeItem = menuItems.find((item) => item.path === currentPath);
-    if (activeItem) {
+  
+    if (activeItem && activeMenu !== activeItem.name) {
       setActiveMenu(activeItem.name);
+    } else if (!activeItem && activeMenu !== menuItems[0].name) {
+      setActiveMenu(menuItems[0].name);
+      navigate(menuItems[0].path, { replace: true });
     }
-  }, [location.pathname, menuItems]);
+  }, [location.pathname, userType, menuItems, activeMenu, navigate]);
 
 
   // 메뉴 항목 클릭 시 activeMenu 상태 업데이트
